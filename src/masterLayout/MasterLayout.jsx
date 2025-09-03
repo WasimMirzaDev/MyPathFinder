@@ -43,6 +43,10 @@ const MasterLayout = ({ children }) => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
+  const isActive = (path) => {
+    return location.pathname === path ? "text-primary" : "";
+  };
+
   return (
     <main className=" main" id="top" data-bs-theme={theme}>
       <nav className={`navbar navbar-vertical ${isMobile ? "navbar-expand" : "navbar-expand active"} navbar-expand-lg mobile-expand bg-white navbar-light dark__bg-dark dark__navbar-dark`}>
@@ -58,44 +62,44 @@ const MasterLayout = ({ children }) => {
                 <hr className="navbar-vertical-line" />
 
                 <div className="nav-item-wrapper">
-                  <Link className="nav-link label-1 text-primary" to="/" role="button" data-bs-toggle="" aria-expanded="false">
+                  <Link className={`nav-link label-1 ${isActive('/')}`} to="/" role="button" data-bs-toggle="" aria-expanded="false">
                     <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:chart-pie-2' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text ">Dashboard</span></span>
                     </div>
                   </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/cv-builder" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/cv-builder')}`} to="/cv-builder" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:notes' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">CV Builder</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/application-tracker" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/application-tracker')}`} to="/application-tracker" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:calendar' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Application Tracker</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/interview" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/interview')}`} to="/interview" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:brand-line' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Interview Practise</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/job-search" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/job-search')}`} to="/job-search" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:search' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Job Search</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/events" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/events')}`} to="/events" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:bookmark' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Events</span></span>
                     {/* <span className="badge ms-2 badge bg-warning-subtle nav-link-badge ">Coming Soon</span> */}
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/community" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/community')}`} to="/community" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:brand-stackshare' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Community</span></span>
                   </div>
                 </Link>
@@ -106,37 +110,37 @@ const MasterLayout = ({ children }) => {
                 <p className="navbar-vertical-label">Support</p>
                 <hr className="navbar-vertical-line" />
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/get-started" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/get-started')}`} to="/get-started" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:brand-safari' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Getting Started</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/career-advice" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/career-advice')}`} to="/career-advice" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:help' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Careers Advice</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/support" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/support')}`} to="/support" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:world' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Support</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/payment-plans" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/payment-plans')}`} to="/payment-plans" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:tag' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Payment Plans</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="/notification" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/notification')}`} to="/notification" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:bell' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Notifications</span></span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className="nav-link label-1" to="" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1`} to="" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:logout' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Sign Out</span></span>
                   </div>
                 </Link>
