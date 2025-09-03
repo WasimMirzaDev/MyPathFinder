@@ -507,19 +507,31 @@ a:hover {
         transition: left 0.3s ease-in-out;
     }
 
-    .navbar-vertical.navbar-expand.active{
+    .navbar-vertical.navbar-expand.active {
         transition: left 0.3s ease-in-out;
         left: 0;
     }
 }
 
 
-.dropdown-toggle{
+.dropdown-toggle {
     background-color: #0000 !important;
 }
 
-.dropdown-toggle:hover{
+.dropdown-toggle:hover {
     background-color: #f1f1f1 !important;
     border-color: #f1f1f1 !important;
     color: #000 !important
+}
+
+.auth-bg-image {
+    background-image: url('../../src/assets/images/auth-image.png');
+}
+
+.welcome-page {
+    background-image: url(../images/breadcrumBg.avif);
+    /* background-image: url(https://framerusercontent.com/images/kOtXlxJNGlqvUUg8dp0bBCeDKs.jpg?scale-down-to=2048); */
+    background-position: left;
+    background-size: cover;
+    background-repeat: no-repeat;
 }

@@ -14,6 +14,12 @@ import GetStarted from "./pages/GetStarted/GetStarted";
 import PaymentPlans from "./pages/PaymentPlans/PaymentPlans";
 import Support from "./pages/Support/Support";
 
+import SignIn from "./pages/Auth/SignIn";
+import SignUp from "./pages/Auth/SignUp";
+import Verification from "./pages/Auth/Verification";
+import F2Verification from "./pages/Auth/F2Verification";
+import Welcome from "./pages/Welcome";
+
 const Loader = () => (
   <div id="preloader">
     <div id="loader"></div>
@@ -48,6 +54,14 @@ const routeConfig = [
   { path: '/get-started', element: <GetStarted />, public: true },
   { path: '/payment-plans', element: <PaymentPlans />, public: true },
   { path: '/support', element: <Support />, public: true },
+
+
+  { path: '/sign-in', element: <SignIn />, public: true },
+  { path: '/sign-up', element: <SignUp />, public: true },
+  { path: '/verification', element: <Verification />, public: true },
+  { path: '/2f-verification', element: <F2Verification />, public: true },
+
+  { path: '/welcome', element: <Welcome />, public: true },
 
   // Protected routes with role requirements
   // { 
