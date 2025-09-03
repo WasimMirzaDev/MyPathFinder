@@ -476,3 +476,50 @@ a:hover {
     -webkit-animation: spin 1.5s linear infinite;
     animation: spin 1.5s linear infinite;
 }
+
+
+@media (min-width: 992px) {
+    .navbar-vertical.navbar-expand {
+        width: 15.875rem;
+        border-right: 1px solid var(--phoenix-navbar-vertical-border-color);
+        margin: 0;
+        -webkit-transition: width 0.2s ease;
+        -o-transition: width 0.2s ease;
+        transition: width 0.2s ease;
+    }
+}
+
+
+@media (max-width: 991px) {
+    .navbar-vertical.mobile-expand {
+        width: 15.875rem;
+        border-right: 1px solid var(--phoenix-navbar-vertical-border-color);
+        margin: 0;
+        -webkit-transition: width 0.2s ease;
+        -o-transition: width 0.2s ease;
+        transition: width 0.2s ease;
+        position: fixed;
+    }
+
+    .navbar-vertical.navbar-expand {
+        position: fixed;
+        left: -15.875rem;
+        transition: left 0.3s ease-in-out;
+    }
+
+    .navbar-vertical.navbar-expand.active{
+        transition: left 0.3s ease-in-out;
+        left: 0;
+    }
+}
+
+
+.dropdown-toggle{
+    background-color: #0000 !important;
+}
+
+.dropdown-toggle:hover{
+    background-color: #f1f1f1 !important;
+    border-color: #f1f1f1 !important;
+    color: #000 !important
+}

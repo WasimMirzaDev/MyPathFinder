@@ -7,6 +7,12 @@ import { ToastContainer } from 'react-toastify';
 import ErrorPage from "./pages/ErrorPage";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import ApplicationTracker from "./pages/ApplicationTracker/ApplicationTracker";
+import CvBuilder from "./pages/CvBuilder/CvBuilder";
+import Interview from "./pages/Interview/Interview";
+import JobSearch from "./pages/JobSearch/JobSearch";
+import GetStarted from "./pages/GetStarted/GetStarted";
+import PaymentPlans from "./pages/PaymentPlans/PaymentPlans";
+import Support from "./pages/Support/Support";
 
 const Loader = () => (
   <div id="preloader">
@@ -36,6 +42,12 @@ const routeConfig = [
   // Public routes
   { path: '/', element: <Dashboard />, public: true },
   { path: '/application-tracker', element: <ApplicationTracker />, public: true },
+  { path: '/cv-builder', element: <CvBuilder />, public: true },
+  { path: '/interview', element: <Interview />, public: true },
+  { path: '/job-search', element: <JobSearch />, public: true },
+  { path: '/get-started', element: <GetStarted />, public: true },
+  { path: '/payment-plans', element: <PaymentPlans />, public: true },
+  { path: '/support', element: <Support />, public: true },
 
   // Protected routes with role requirements
   // { 
