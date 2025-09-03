@@ -15,6 +15,11 @@ const MasterLayout = ({ children }) => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
+  const [collapsed, setCollapsed] = useState(() => {
+    const savedState = localStorage.getItem("navbarCollapsed");
+    return savedState === "true" && window.innerWidth >= 992;
+  });
+
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "dark";
   });
@@ -47,8 +52,27 @@ const MasterLayout = ({ children }) => {
     return location.pathname === path ? "text-primary" : "";
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 992) {
+        setCollapsed(false);
+        localStorage.setItem("navbarCollapsed", "false");
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const toggleNavbar = () => {
+    if (window.innerWidth >= 992) {
+      const newState = !collapsed;
+      setCollapsed(newState);
+      localStorage.setItem("navbarCollapsed", newState.toString());
+    }
+  };
+
   return (
-    <main className=" main" id="top" data-bs-theme={theme}>
+    <main className={`main ${collapsed ? "navbar-vertical-collapsed" : ""}`} id="top" data-bs-theme={theme}>
       <nav className={`navbar navbar-vertical ${isMobile ? "navbar-expand" : "navbar-expand active"} navbar-expand-lg mobile-expand bg-white navbar-light dark__bg-dark dark__navbar-dark`}>
         <div className="collapse navbar-collapse" id="navbarVerticalCollapse">
 
@@ -150,7 +174,7 @@ const MasterLayout = ({ children }) => {
           </div>
         </div>
         <div className="navbar-vertical-footer">
-          <button className="btn navbar-vertical-toggle border-0 fw-semibold w-100 white-space-nowrap d-flex align-items-center"><span className="uil uil-left-arrow-to-left fs-8"></span><span className="uil uil-arrow-from-right fs-8"></span><span className="navbar-vertical-footer-text ms-2">Collapsed View</span></button>
+          <button className="btn navbar-vertical-toggle border-0 fw-semibold w-100 white-space-nowrap d-flex align-items-center" onClick={toggleNavbar}><span className="uil uil-left-arrow-to-left fs-8"></span><span className="uil uil-arrow-from-right fs-8"></span><span className="navbar-vertical-footer-text ms-2">Collapsed View</span></button>
         </div>
       </nav>
       <nav className="navbar navbar-top fixed-top navbar-expand-lg bg-white navbar-light dark__bg-dark dark__navbar-dark" id="navbarDefault">
