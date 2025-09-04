@@ -368,6 +368,87 @@ const MasterLayout = ({ children }) => {
             </div>
           </div>
         </footer>
+        <div className="modal fade" id="searchBoxModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true" data-phoenix-modal="data-phoenix-modal">
+          <div className="modal-dialog">
+            <div className="modal-content mt-15 rounded-pill">
+              <div className="modal-body p-0">
+                <div className="search-box navbar-top-search-box" data-list='{"valueNames":["title"]}' style={{width: 'auto'}}>
+                  <form className="position-relative" data-bs-toggle="search" data-bs-display="static">
+                    <input className="form-control search-input fuzzy-search rounded-pill form-control-lg" type="search" placeholder="Search..." aria-label="Search" />
+                    <span className="fas fa-search search-box-icon"></span>
+                  </form>
+                  <div className="btn-close position-absolute end-0 top-50 translate-middle cursor-pointer shadow-none" data-bs-dismiss="search">
+                    <button className="btn btn-link p-0" aria-label="Close"></button>
+                  </div>
+                  <div className="dropdown-menu border start-0 py-0 overflow-hidden w-100">
+                    <div className="scrollbar-overlay" style={{maxHeight: '30rem'}}>
+                      <div className="list pb-3">
+                        <h6 className="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Recently Searched</h6>
+                        <div className="py-2">
+                          <a className="dropdown-item" href="#">
+                            <div className="d-flex align-items-center">
+                              <div className="fw-normal text-body-highlight title">
+                                <span className="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span>
+                                CV Builder
+                              </div>
+                            </div>
+                          </a>
+                          <a className="dropdown-item" href="#">
+                            <div className="d-flex align-items-center">
+                              <div className="fw-normal text-body-highlight title">
+                                <span className="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span>
+                                Manchester Graphic Designer
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                        <h6 className="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Quick Links</h6>
+                        <div className="py-2">
+                          <a className="dropdown-item" href="cv-builder.html">
+                            <div className="d-flex align-items-center">
+                              <div className="fw-normal text-body-highlight title">
+                                <span className="fa-solid fa-link" data-fa-transform="shrink-2"></span>
+                                CV Builder
+                              </div>
+                            </div>
+                          </a>
+                          <a className="dropdown-item" href="interview.html">
+                            <div className="d-flex align-items-center">
+                              <div className="fw-normal text-body-highlight title">
+                                <span className="fa-solid fa-link" data-fa-transform="shrink-2"></span>
+                                Practise an Interview
+                              </div>
+                            </div>
+                          </a>
+                          <a className="dropdown-item" href="tracker.html">
+                            <div className="d-flex align-items-center">
+                              <div className="fw-normal text-body-highlight title">
+                                <span className="fa-solid fa-link" data-fa-transform="shrink-2"></span>
+                                View Application History
+                              </div>
+                            </div>
+                          </a>
+                          <a className="dropdown-item" href="job-search.html">
+                            <div className="d-flex align-items-center">
+                              <div className="fw-normal text-body-highlight title">
+                                <span className="fa-solid fa-link" data-fa-transform="shrink-2"></span>
+                                Search for a Vacancy
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                        <hr className="my-0" />
+                      </div>
+                      <div className="text-center">
+                        <p className="fallback fw-bold fs-7 d-none text-body-highlight">No Result Found.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );

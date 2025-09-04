@@ -1,0 +1,241 @@
+import React, { useMemo, useState } from "react";
+import DataTable from "react-data-table-component";
+import Avatar from '../../assets/images/team/72x72/58.webp'
+
+const VacanciesList = () => {
+    const [vacancies] = useState([
+        {
+            position: "Senior Software Developer",
+            location: "Manchester",
+            date: "01/08/2025",
+            salary: "£53,000+",
+            applyNow: "#",
+            applyWithMpf: "#"
+        },
+        {
+            position: "Team Leader",
+            location: "Stockport",
+            date: "01/08/2025",
+            salary: "£60,000+",
+            applyNow:
+                "https://uk.indeed.com/cmp/Clear-Business?from=mobviewjob&tk=1j31b3rm7l13m81f&fromjk=82f6edbbb857fc35&attributionid=mobvjcmp",
+            applyWithMpf: "#pdfModal"
+        }
+    ]);
+
+    // ✅ Define DataTable columns
+    const columns = useMemo(
+        () => [
+            {
+                name: ( <strong>Job Position</strong> ),
+                selector: (row) => row.position,
+                sortable: true,
+                cell: (row) => <span className="fw-bold text-primary">{row.position}</span>,
+                minWidth: '210px',
+            },
+            {
+                name: ( <strong>Location</strong> ),
+                selector: (row) => row.location,
+                sortable: true,
+                maxWidth: '160px'
+            },
+            {
+                name: ( <strong>Date</strong> ),
+                selector: (row) => row.date,
+                sortable: true,
+                maxWidth: '140px'
+            },
+            {
+                name: ( <strong>Salary</strong> ),
+                selector: (row) => row.salary,
+                sortable: true,
+                maxWidth: '140px'
+            },
+            {
+                name: ( <strong>Actions</strong> ),
+                cell: (row) => (
+                    <div className="d-flex gap-2">
+                        {/* Apply Now */}
+                        <a
+                            className="badge bg-secondary-subtle text-secondary-dark border"
+                            href={row.applyNow}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            Apply Now 
+                        </a>
+
+                        {/* Apply with MPF */}
+                        {row.applyWithMpf.startsWith("#") ? (
+                            <a
+                                className="badge"
+                                style={{ backgroundColor: "#ece5fc", color: "#BA67EF" }}
+                                href="#"
+                                data-bs-toggle="modal"
+                                data-bs-target={row.applyWithMpf}
+                            >
+                                Apply with MPF CV 
+                            </a>
+                        ) : (
+                            <a
+                                className="badge"
+                                style={{ backgroundColor: "#ece5fc", color: "#BA67EF" }}
+                                href={row.applyWithMpf}
+                            >
+                                Apply with MPF CV 
+                            </a>
+                        )}
+                    </div>
+                ),
+                minWidth: '220px',
+            }
+        ],
+        []
+    );
+
+    return (
+        <div className="pb-9">
+            <div className="row g-4 g-xl-6">
+                {/* Sidebar */}
+                <div className="col-xl-5 col-xxl-4">
+                    <div className="sticky-leads-sidebar">
+                        <div className="card mb-3">
+                            <div className="card-body">
+                                <div className="row align-items-center g-3">
+                                    <div className="col-12 col-sm-auto flex-1">
+                                        <div className="d-md-flex d-xl-block align-items-center justify-content-between">
+                                            <div className="d-flex align-items-center mb-3 mb-md-0 mb-xl-3">
+                                                <div className="avatar avatar-xl me-3">
+                                                    <img
+                                                        className="rounded-circle"
+                                                        src={Avatar}
+                                                        alt=""
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <h4>Alex Dobricic</h4>
+                                                    <div className="dropdown">
+                                                        <a
+                                                            className="text-body-secondary dropdown-toggle text-decoration-none dropdown-caret-none"
+                                                            href="#!"
+                                                            data-bs-toggle="dropdown"
+                                                            aria-expanded="false"
+                                                        >
+                                                            Senior Software Developer
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <span className="badge badge-phoenix badge-phoenix-secondary me-2">
+                                                    Skill 1
+                                                </span>
+                                                <span className="badge badge-phoenix badge-phoenix-secondary me-2">
+                                                    Skill 2
+                                                </span>
+                                                <span className="badge badge-phoenix badge-phoenix-secondary me-2">
+                                                    Skill 3
+                                                </span>
+                                                <span className="badge badge-phoenix badge-phoenix-secondary">
+                                                    Skill 4
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Filters */}
+                        <div className="card">
+                            <div className="card-body">
+                                <div className="row g-3">
+                                    <div className="col-12">
+                                        <div className="mb-4">
+                                            <div className="d-flex flex-wrap justify-content-between mb-2">
+                                                <h5 className="mb-0 text-body-highlight me-2">Industry</h5>
+                                            </div>
+                                            <select className="form-select mb-3" aria-label="category">
+                                                <option value="tech">Tech</option>
+                                                <option value="finance">Finance</option>
+                                                <option value="marketing">Marketing</option>
+                                                <option value="e-commerce">E-commerce</option>
+                                                <option value="catering">Catering</option>
+                                            </select>
+                                        </div>
+                                        <div className="mb-4">
+                                            <h5 className="mb-0 text-body-highlight mb-2">Location</h5>
+                                            <select className="form-select mb-3" aria-label="priority">
+                                                <option value="manchester">
+                                                    Manchester, Greater Manchester
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div className="mb-4">
+                                            <h5 className="mb-0 text-body-highlight mb-2">Date Posted</h5>
+                                            <select className="form-select mb-3" aria-label="stage">
+                                                <option value="any">Any time</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <div className="d-flex flex-wrap justify-content-between mb-2">
+                                                <h5 className="mb-0 text-body-highlight me-2">
+                                                    Salary Expectation
+                                                </h5>
+                                            </div>
+                                            <select className="form-select mb-3" aria-label="lead-source">
+                                                <option value="50k">£50,000 - £60,000</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Vacancies Table */}
+                <div className="col-xl-7 col-xxl-8">
+                    <div className="row g-3 justify-content-between mb-2">
+                        <div className="col-12">
+                            <div className="d-md-flex justify-content-between">
+                                <div className="d-flex mb-3">
+                                    <div className="search-box me-2">
+                                        <form className="position-relative">
+                                            <input
+                                                className="form-control search-input search"
+                                                type="search"
+                                                placeholder="Search vacancies"
+                                                aria-label="Search"
+                                            />
+                                            <svg width={13} className="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magnifying-glass" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"></path></svg>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Table */}
+                    <div className="row g-3">
+                        <div className="col-12">
+                            <div className="card h-100">
+                                <div className="card-body py-0 scrollbar to-do-list-body">
+                                    <DataTable
+                                        columns={columns}
+                                        data={vacancies}
+                                        pagination
+                                        responsive
+                                        persistTableHead
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default VacanciesList;

@@ -1,0 +1,149 @@
+import React, { useState } from 'react'
+import { Link } from "react-router-dom";
+import { Modal, Button, Card, Form } from "react-bootstrap";
+
+export default function BuildingComponents() {
+
+    const [show, setShow] = useState(false);
+    const [profTitle, setProfTitle] = useState("");
+    const [profSummary, setProfSummary] = useState("");
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // You can send form data to backend or redirect here
+        console.log("Form Submitted:", { profTitle, profSummary });
+        // Example: redirect to cv-generate.html
+        window.location.href = "/cv-generate";
+    };
+
+
+
+    return (
+        <>
+            <div className="row mb-3 g-3 feature-cards">
+                <div className="col-12 col-xl-4">
+                    <div className="card border h-100 w-100 overflow-hidden position-relative">
+                        <div className="card-body px-6 py-6 position-relative text-center">
+                            <div
+                                className="icon-item icon-item-md rounded-1 shadow-none mx-auto"
+                                style={{ backgroundColor: '#ece5fc' }}>
+                                <svg width={20} className="svg-inline--fa fa-file-import fs-7" style={{ color: '#ba67ef' }} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="file-import" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M128 64c0-35.3 28.7-64 64-64L352 0l0 128c0 17.7 14.3 32 32 32l128 0 0 288c0 35.3-28.7 64-64 64l-256 0c-35.3 0-64-28.7-64-64l0-112 174.1 0-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39L128 288l0-224zm0 224l0 48L24 336c-13.3 0-24-10.7-24-24s10.7-24 24-24l104 0zM512 128l-128 0L384 0 512 128z"></path></svg>
+                            </div>
+                            <h4 className="my-3">Upload an existing CV</h4>
+                            <p className="fs-8">
+                                Upload your existing CV and proceed with keyword optimisation for ATS compatibility.
+                            </p>
+
+                            <input
+                                id="cvUpload"
+                                type="file"
+                                className="visually-hidden"
+                                accept=".pdf,.doc,.docx,.rtf,.odt" />
+                            <label htmlFor="cvUpload" className="btn btn-primary w-100 stretched-link">Upload Now</label>
+                            <small id="cvUploadName" className="d-block mt-2 text-body-secondary"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-12 col-xl-4">
+                    <div className="card border h-100 w-100 overflow-hidden position-relative">
+                        <div className="card-body px-6 py-6 position-relative text-center">
+                            <div
+                                className="icon-item icon-item-md rounded-1 shadow-none mx-auto"
+                                style={{ backgroundColor: '#ece5fc' }}>
+                                <svg width={20} className="svg-inline--fa fa-file-pen fs-7" style={{ color: '#ba67ef' }} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="file-pen" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 125.7-86.8 86.8c-10.3 10.3-17.5 23.1-21 37.2l-18.7 74.9c-2.3 9.2-1.8 18.8 1.3 27.5L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM549.8 235.7l14.4 14.4c15.6 15.6 15.6 40.9 0 56.6l-29.4 29.4-71-71 29.4-29.4c15.6-15.6 40.9-15.6 56.6 0zM311.9 417L441.1 287.8l71 71L382.9 487.9c-4.1 4.1-9.2 7-14.9 8.4l-60.1 15c-5.5 1.4-11.2-.2-15.2-4.2s-5.6-9.7-4.2-15.2l15-60.1c1.4-5.6 4.3-10.8 8.4-14.9z"></path></svg>
+                            </div>
+                            <h4 className="my-3">Build from scratch</h4>
+                            <p className="fs-8">
+                                Build your CV from scratch, using clean, modern templates designed for recruiters.
+                            </p>
+                            <Link className="stretched-link btn btn-primary w-100" to="/cv-generate"
+                            >Launch CV Builder</Link>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-12 col-xl-4">
+                    <div className="card border h-100 w-100 overflow-hidden position-relative">
+                        <div className="card-body px-6 py-6 position-relative text-center">
+                            <div
+                                className="icon-item icon-item-md rounded-1 shadow-none mx-auto"
+                                style={{ backgroundColor: '#ece5fc' }}>
+                                <svg width={20} className="svg-inline--fa fa-microchip fs-7" style={{ color: '#ba67ef' }} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="microchip" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M176 24c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c-35.3 0-64 28.7-64 64l-40 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l40 0 0 56-40 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l40 0 0 56-40 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l40 0c0 35.3 28.7 64 64 64l0 40c0 13.3 10.7 24 24 24s24-10.7 24-24l0-40 56 0 0 40c0 13.3 10.7 24 24 24s24-10.7 24-24l0-40 56 0 0 40c0 13.3 10.7 24 24 24s24-10.7 24-24l0-40c35.3 0 64-28.7 64-64l40 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-40 0 0-56 40 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-40 0 0-56 40 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-40 0c0-35.3-28.7-64-64-64l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40-56 0 0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40-56 0 0-40zM160 128l192 0c17.7 0 32 14.3 32 32l0 192c0 17.7-14.3 32-32 32l-192 0c-17.7 0-32-14.3-32-32l0-192c0-17.7 14.3-32 32-32zm192 32l-192 0 0 192 192 0 0-192z"></path></svg>
+                            </div>
+                            <h4 className="my-3">Generate with AI</h4>
+                            <p className="fs-8">Track your progress, stay organised, and see where you can improve.</p>
+
+
+                            <button
+                                type="button"
+                                className="stretched-link btn btn-primary w-100"
+                                onClick={handleShow}>
+                                Get Started
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <Modal
+                show={show}
+                onHide={handleClose}
+                centered
+                backdrop="static"
+                keyboard={true}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Build Your AI-Powered CV</Modal.Title>
+                </Modal.Header>
+
+                <Form id="aiGenerateForm" onSubmit={handleSubmit}>
+                    <Modal.Body>
+                        {/* Professional Title */}
+                        <Form.Group className="mb-3 text-start" controlId="profTitle">
+                            <Form.Label>Professional Title</Form.Label>
+                            <div className="form-icon-container">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="e.g., Senior Software Engineer"
+                                    value={profTitle}
+                                    onChange={(e) => setProfTitle(e.target.value)}
+                                    required
+                                />
+                                <span className="fas fa-briefcase text-body fs-9 form-icon" />
+                            </div>
+                        </Form.Group>
+
+                        {/* Professional Summary */}
+                        <Form.Group className="mb-3 text-start" controlId="profSummary">
+                            <Form.Label>Professional Summary</Form.Label>
+                            <div className="form-icon-container">
+                                <Form.Control
+                                    as="textarea"
+                                    rows={6}
+                                    placeholder="Describe your professional background, key skills, achievements, and career goals..."
+                                    value={profSummary}
+                                    onChange={(e) => setProfSummary(e.target.value)}
+                                    required
+                                />
+                                <span className="fas fa-align-left text-body fs-9 form-icon" />
+                            </div>
+                            <Form.Text>Tip: aim for 3–6 concise sentences.</Form.Text>
+                        </Form.Group>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <Button variant="link" onClick={handleClose}>
+                            Close
+                        </Button>
+                        <Button type="submit" variant="primary">
+                            Generate
+                        </Button>
+                    </Modal.Footer>
+                </Form>
+            </Modal>
+        </>
+    )
+}

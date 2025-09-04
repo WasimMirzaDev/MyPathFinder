@@ -7,8 +7,13 @@ import { ToastContainer } from 'react-toastify';
 import ErrorPage from "./pages/ErrorPage";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import ApplicationTracker from "./pages/ApplicationTracker/ApplicationTracker";
+
 import CvBuilder from "./pages/CvBuilder/CvBuilder";
+import CvGenerate from "./pages/CvBuilder/CvGenerate";
+
 import Interview from "./pages/Interview/Interview";
+import Prepration from "./pages/Interview/Prepration";
+
 import JobSearch from "./pages/JobSearch/JobSearch";
 import GetStarted from "./pages/GetStarted/GetStarted";
 import PaymentPlans from "./pages/PaymentPlans/PaymentPlans";
@@ -19,6 +24,7 @@ import SignUp from "./pages/Auth/SignUp";
 import Verification from "./pages/Auth/Verification";
 import F2Verification from "./pages/Auth/F2Verification";
 import Welcome from "./pages/Welcome";
+import UploadProfile from "./pages/Auth/UploadProfile";
 
 const Loader = () => (
   <div id="preloader">
@@ -48,8 +54,13 @@ const routeConfig = [
   // Public routes
   { path: '/', element: <Dashboard />, public: true },
   { path: '/application-tracker', element: <ApplicationTracker />, public: true },
+
   { path: '/cv-builder', element: <CvBuilder />, public: true },
+  { path: '/cv-generate', element: <CvGenerate />, public: true },
+
   { path: '/interview', element: <Interview />, public: true },
+  { path: '/prepration', element: <Prepration />, public: true },
+  
   { path: '/job-search', element: <JobSearch />, public: true },
   { path: '/get-started', element: <GetStarted />, public: true },
   { path: '/payment-plans', element: <PaymentPlans />, public: true },
@@ -60,6 +71,7 @@ const routeConfig = [
   { path: '/sign-up', element: <SignUp />, public: true },
   { path: '/verification', element: <Verification />, public: true },
   { path: '/2f-verification', element: <F2Verification />, public: true },
+  { path: '/upload-profile', element: <UploadProfile />, public: true },
 
   { path: '/welcome', element: <Welcome />, public: true },
 
