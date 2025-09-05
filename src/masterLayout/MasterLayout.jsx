@@ -116,17 +116,19 @@ const MasterLayout = ({ children }) => {
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/events')}`} to="/events" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 disabled ${isActive('/events')}`} to="/events" role="button" data-bs-toggle="" aria-expanded="false" onClick={(e) => e.preventDefault()}>
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:bookmark' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Events</span></span>
-                    {/* <span className="badge ms-2 badge bg-warning-subtle nav-link-badge ">Coming Soon</span> */}
+                    <span className="badge ms-auto badge bg-warning-subtle nav-link-badge ">Coming Soon</span>
                   </div>
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/community')}`} to="/community" role="button" data-bs-toggle="" aria-expanded="false">
-                  <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:brand-stackshare' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Community</span></span>
-                  </div>
-                </Link>
+                <div className="nav-item-wrapper">
+                  <Link className={`nav-link label-1 disabled ${isActive('/community')}`} to="/community" role="button" data-bs-toggle="" aria-expanded="false" onClick={(e) => e.preventDefault()}>
+                    <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:brand-stackshare' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Community</span></span>
+                      <span className="badge ms-auto badge bg-warning-subtle nav-link-badge ">Coming Soon</span>
+                    </div>
+                  </Link>
                 </div>
               </li>
               <li className="nav-item">
@@ -158,11 +160,11 @@ const MasterLayout = ({ children }) => {
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/notification')}`} to="/notification" role="button" data-bs-toggle="" aria-expanded="false">
+                {/* <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/notification')}`} to="/notification" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:bell' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Notifications</span></span>
                   </div>
                 </Link>
-                </div>
+                </div> */}
 
                 <div className="nav-item-wrapper"><Link className={`nav-link label-1`} to="" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:logout' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Sign Out</span></span>
@@ -372,7 +374,7 @@ const MasterLayout = ({ children }) => {
           <div className="modal-dialog">
             <div className="modal-content mt-15 rounded-pill">
               <div className="modal-body p-0">
-                <div className="search-box navbar-top-search-box" data-list='{"valueNames":["title"]}' style={{width: 'auto'}}>
+                <div className="search-box navbar-top-search-box" data-list='{"valueNames":["title"]}' style={{ width: 'auto' }}>
                   <form className="position-relative" data-bs-toggle="search" data-bs-display="static">
                     <input className="form-control search-input fuzzy-search rounded-pill form-control-lg" type="search" placeholder="Search..." aria-label="Search" />
                     <span className="fas fa-search search-box-icon"></span>
@@ -381,7 +383,7 @@ const MasterLayout = ({ children }) => {
                     <button className="btn btn-link p-0" aria-label="Close"></button>
                   </div>
                   <div className="dropdown-menu border start-0 py-0 overflow-hidden w-100">
-                    <div className="scrollbar-overlay" style={{maxHeight: '30rem'}}>
+                    <div className="scrollbar-overlay" style={{ maxHeight: '30rem' }}>
                       <div className="list pb-3">
                         <h6 className="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Recently Searched</h6>
                         <div className="py-2">
