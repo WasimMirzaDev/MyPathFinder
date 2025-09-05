@@ -126,21 +126,13 @@ export default function SignUp() {
                     <div className="divider-content-center bg-body-emphasis">or use email</div>
                   </div>
 
-                  <Formik
-                    initialValues={formik.initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={formik.handleSubmit}
-                  >
-                    
-            
-                    {({ handleChange, handleBlur, values, errors, touched }) => (
-                      <BootstrapForm onSubmit={formik.handleSubmit}>
-                        {apiError && (
-                          <Alert variant="danger" className="d-flex align-items-center">
-                            <FaExclamationCircle className="me-2" />
-                            {apiError}
-                          </Alert>
-                        )}
+                  <BootstrapForm onSubmit={formik.handleSubmit}>
+                    {apiError && (
+                      <Alert variant="danger" className="d-flex align-items-center">
+                        <FaExclamationCircle className="me-2" />
+                        {apiError}
+                      </Alert>
+                    )}
 
                         <div className="mb-3 text-start">
                           <label className="form-label" htmlFor="name">Name</label>
@@ -289,10 +281,7 @@ export default function SignUp() {
                             Already a member? Click here to sign in.
                           </Link>
                         </div>
-                      </BootstrapForm>
-                    )}
-                    
-                  </Formik>
+                  </BootstrapForm>
                 </div>
               </div>
             </div>
