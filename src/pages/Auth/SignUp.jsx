@@ -141,7 +141,7 @@ export default function SignUp() {
                             name="name"
                             type="text"
                             placeholder="Name"
-                            className={`${touched.name && errors.name ? 'is-invalid' : ''}`}
+                            className={`${(touched.name && errors.name) ? 'is-invalid' : ''}`}
                             onChange={handleChange}
                             onBlur={handleBlur}
                             value={values.name}
