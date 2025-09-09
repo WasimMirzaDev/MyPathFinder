@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from "react-router-dom";
 
 
-import logo from '../assets/images/MPF-logo-Light.svg'
+import logo from '../assets/images/MPF-Logo-Light.svg'
 
 export default function Welcome() {
     return (
