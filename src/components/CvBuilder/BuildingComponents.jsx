@@ -1,8 +1,14 @@
-import React, { useState } from 'react'
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from "react-router-dom";
 import { Modal, Button, Card, Form } from "react-bootstrap";
+import { useDispatch, useSelector } from 'react-redux';
+import { createEmptyResume , uploadExistingResume } from '../../features/resume/resumeSlice';
+import { toast } from 'react-toastify';
 
 export default function BuildingComponents() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.resume);
 
     const [show, setShow] = useState(false);
     const [profTitle, setProfTitle] = useState("");
@@ -18,6 +24,83 @@ export default function BuildingComponents() {
         // Example: redirect to cv-generate.html
         window.location.href = "/cv-generate";
     };
+
+    const handleManualCV = async () => {
+        const emptyResume = {
+          candidateName: [{ firstName: '', familyName: '' }],
+          headline: '',
+          summary: '',
+          phoneNumber: [{ formattedNumber: '' }],
+          email: [''],
+          location: { formatted: '' },
+          workExperience: [],
+          education: [],
+          skill: [],
+          profilePic: null,
+          website: [''],
+          certifications: [],
+          languages: [],
+          hobbies: []
+        };
+
+        try {
+          const resultAction = await dispatch(createEmptyResume(emptyResume)).unwrap();
+          
+          if (resultAction?.data?.id) {
+            navigate(`/cv-generate/${resultAction.data.id}`);
+            // Show success message
+            toast.success('Empty resume created successfully! Start editing your CV.');
+          }
+        } catch (error) {
+          console.error('Error creating empty resume:', error);
+          toast.error(error?.message || "Failed to create empty resume. Please try again.");
+        }
+    };
+
+
+    const handleExistingCvUpload = async (file) => {
+      if (!file) {
+        toast.error('Please select a file to upload');
+        return;
+      }
+
+      console.log('Selected file:', file);
+      
+      // Create new FormData instance
+      const formData = new FormData();
+      // Append the file with the correct field name that the server expects
+      formData.append('file', file);
+      
+      try {
+        // Dispatch the action and wait for it to complete
+        const resultAction = await dispatch(uploadExistingResume(formData)).unwrap();
+        
+        console.log('Server response:', resultAction);
+        
+        if (resultAction?.data) {
+            toast.success('Resume uploaded successfully!');
+            try {
+                const resultAction2 = await dispatch(createEmptyResume(resultAction.data)).unwrap();
+                
+                if (resultAction2?.data?.id) {
+                  navigate(`/cv-generate/${resultAction2.data.id}`);
+                  // Show success message
+                  toast.success('Resume created successfully! Start editing your CV.');
+                }
+              } catch (error) {
+                console.error('Error creating empty resume:', error);
+                toast.error(error?.message || "Failed to create empty resume. Please try again.");
+              }
+
+        } else {
+          throw new Error('Invalid response from server');
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        const errorMessage = error?.response?.data?.message || error?.message || 'Failed to upload file';
+        toast.error(`Upload failed: ${errorMessage}`);
+      }
+    }
 
 
 
@@ -41,6 +124,14 @@ export default function BuildingComponents() {
                                 id="cvUpload"
                                 type="file"
                                 className="visually-hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        handleExistingCvUpload(file);
+                                    }
+                                    // Reset the input to allow selecting the same file again
+                                    e.target.value = null;
+                                }}
                                 accept=".pdf,.doc,.docx,.rtf,.odt" />
                             <label htmlFor="cvUpload" className="btn btn-primary w-100 stretched-link">Upload Now</label>
                             <small id="cvUploadName" className="d-block mt-2 text-body-secondary"></small>
@@ -60,7 +151,7 @@ export default function BuildingComponents() {
                             <p className="fs-8">
                                 Build your CV from scratch, using clean, modern templates designed for recruiters.
                             </p>
-                            <Link className="stretched-link btn btn-primary w-100" to="/cv-generate"
+                            <Link className="stretched-link btn btn-primary w-100" onClick={handleManualCV}
                             >Launch CV Builder</Link>
                         </div>
                     </div>

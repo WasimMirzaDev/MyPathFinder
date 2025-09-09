@@ -102,7 +102,7 @@ const protectedRoutes = [
   { path: '/upload-profile', element: <UploadProfile /> },
   { path: '/application-tracker', element: <ApplicationTracker /> },
   { path: '/cv-builder', element: <CvBuilder /> },
-  { path: '/cv-generate', element: <CvGenerate /> },
+  { path: '/cv-generate/:id', element: <CvGenerate /> },
   { path: '/interview', element: <Interview /> },
   { path: '/prepration', element: <Prepration /> },
   { path: '/job-search', element: <JobSearch /> },

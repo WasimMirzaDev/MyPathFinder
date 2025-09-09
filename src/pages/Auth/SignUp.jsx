@@ -9,6 +9,9 @@ import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { FaExclamationCircle } from 'react-icons/fa';
 import logo from '../../assets/images/MPF-logo.svg';
 import { Button, Form as BootstrapForm, Alert, Spinner } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { register } from '../../features/user/userSlice';
+
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -41,8 +44,18 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState('');
+  const dispatch = useDispatch();
 
-  const formik = useFormik({
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    isSubmitting,
+    setFieldError
+  } = useFormik({
     initialValues: {
       name: '',
       email: '',
@@ -51,36 +64,33 @@ export default function SignUp() {
       terms: false
     },
     validationSchema,
-    onSubmit: async (values, { setSubmitting, setFieldError }) => {
+    onSubmit: async (values, { setSubmitting }) => {
       try {
         setIsLoading(true);
         setApiError('');
 
-        const response = await axios.post('/api/register', {
-          name: values.name,
-          email: values.email,
-          password: values.password,
-          password_confirmation: values.password_confirmation
-        });
-
-        // localStorage.setItem('access_token', response.data.access_token);
-        toast.success('Registration successful! Redirecting...');
-        setTimeout(() => navigate('/upload-profile'), 1500);
+        try {
+          // Dispatch the register action with user data and wait for it to complete
+          const result = await dispatch(register(values)).unwrap();
+          
+          // If we get here, the registration was successful
+          toast.success('Registration successful! Redirecting...');
+          navigate('/upload-profile');
+        } catch (error) {
+          // Handle any errors from the API
+          if (error?.errors) {
+            // Handle validation errors from the server
+            Object.entries(error.errors).forEach(([field, errorMessages]) => {
+              setFieldError(field.toLowerCase(), errorMessages[0]);
+            });
+          }
+          setApiError(error?.message || 'Registration failed. Please try again.');
+          toast.error(error?.message || 'Registration failed. Please check the form for errors.');
+        }
       } catch (error) {
         console.error('Registration failed:', error);
-
-        if (error.response?.data?.errors) {
-          // Handle Laravel validation errors
-          Object.entries(error.response.data.errors).forEach(([field, errors]) => {
-            setFieldError(field.toLowerCase(), errors[0]);
-          });
-        } else if (error.response?.data?.message) {
-          setApiError(error.response.data.message);
-        } else {
-          setApiError('An error occurred during registration. Please try again.');
-        }
-
-        toast.error('Registration failed. Please check the form for errors.');
+        setApiError('An unexpected error occurred. Please try again.');
+        toast.error('Registration failed. Please try again.');
       } finally {
         setIsLoading(false);
         setSubmitting(false);
@@ -126,7 +136,7 @@ export default function SignUp() {
                     <div className="divider-content-center bg-body-emphasis">or use email</div>
                   </div>
 
-                  <BootstrapForm onSubmit={formik.handleSubmit}>
+                  <BootstrapForm onSubmit={handleSubmit}>
                     {apiError && (
                       <Alert variant="danger" className="d-flex align-items-center">
                         <FaExclamationCircle className="me-2" />
@@ -264,7 +274,7 @@ export default function SignUp() {
                           type="submit" 
                           variant="primary" 
                           className="w-100 mb-4"
-                          disabled={isLoading || !formik.isValid || formik.isSubmitting}
+                          disabled={isLoading || !Object.keys(errors).length === 0 || isSubmitting}
                         >
                           {isLoading ? (
                             <>

@@ -20,8 +20,10 @@ import {
 import { Row, Col, Button , Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
 import { setParsedResume , updateField } from "../../features/resume/resumeSlice";
+import { fetchResumeById , updateResumeById } from "../../features/resume/resumeSlice";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { useParams } from "react-router-dom";
 
 const cardTemplate = [
     // { name: 'Template1', template: ModernTemplate, image: 'dummy.jpg' },
@@ -42,8 +44,15 @@ const cardTemplate = [
 
 export default function CVBuilder() {
 
+    const {id} = useParams();
     const dispatch = useDispatch();
-    const { parsedResume } = useSelector((state) => state.resume);
+
+
+    useEffect(()=>{
+        dispatch(fetchResumeById(id));
+    },[id])
+
+    const { parsedResume , saveChangesLoader , error } = useSelector((state) => state.resume);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -86,6 +95,12 @@ export default function CVBuilder() {
             return newZoom;
         });
     };
+
+
+
+    const saveChanges = () =>{
+        dispatch(updateResumeById({id, parsedResume}));
+    }
 
 
 
@@ -153,6 +168,26 @@ export default function CVBuilder() {
                   dispatch(updateField({path:"languages", value: [...(parsedResume.languages || []), newLanguage]}));
                   setCurrentLanguage('');
               };
+
+
+              const handleAddHobby = () => {
+                if (!currentHobby.trim()) {
+                    toast.error("Please enter a hobby", {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    return;
+                }
+                dispatch(updateField({ path:"hobbies", value:[...(parsedResume.hobbies || []), currentHobby.trim()]}));
+                setCurrentHobby('');
+            };
           
 
 
@@ -476,7 +511,7 @@ export default function CVBuilder() {
                                     <div className="tab-pane fade active show" id="tabPreview" role="tabpanel" aria-labelledby="tabPreview-tab" tabIndex="0">
                             <div className="d-flex justify-content-between align-items-center mb-3">
                                 <h4 className="mb-0">Basic Information</h4>
-                                <button className="btn btn-primary btn-sm">Save Changes</button>
+                                <button className="btn btn-primary btn-sm" onClick={saveChanges} disabled={saveChangesLoader}>{saveChangesLoader ? "Saving..." : "Save Changes"}</button>
                             </div>
                                         <div className="accordion" id="cvAccordion">
                                             {/* Personal details */}
@@ -990,9 +1025,18 @@ export default function CVBuilder() {
                                                         <div className="card border-0">
                                                             <div className="border rounded p-3">
                                                                 <label className="form-label">Add Hobby</label>
-                                                                <input type="text" className="form-control" placeholder="Hobby name" />
+                                                                <input type="text" className="form-control" placeholder="Hobby name"
+                                                                value={currentHobby}
+                                                                onChange={(e) => setCurrentHobby(e.target.value)}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                                                        e.preventDefault();
+                                                                        handleAddHobby();
+                                                                    }
+                                                                }}
+                                                                />
                                                                 <div className="d-flex justify-content-end">
-                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3">
+                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3" onClick={handleAddHobby}>
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
                                                                             <line x1="12" y1="5" x2="12" y2="19"></line>
                                                                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -1001,7 +1045,26 @@ export default function CVBuilder() {
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                            <div className="mt-3 d-flex flex-wrap gap-2"></div>
+                                                            <div className="mt-3 d-flex flex-wrap gap-2">
+
+                                                                {parsedResume?.hobbies?.map((hobby, index) => (
+                                                                      <span key={index} className="badge bg-secondary d-inline-flex align-items-center skill-badge">
+                                                                          {hobby}
+                                                                          <button
+                                                                              type="button"
+                                                                              className="ms-2"
+                                                                              aria-label="Remove"
+                                                                              onClick={() => {
+                                                                                  const updatedHobbies = [...parsedResume.hobbies];
+                                                                                  updatedHobbies.splice(index, 1);
+                                                                                  dispatch(updateField({ path:"hobbies", value:updatedHobbies}));
+                                                                              }}
+                                                                          >
+                                                                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                                                          </button>
+                                                                      </span>
+                                                                  ))}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
