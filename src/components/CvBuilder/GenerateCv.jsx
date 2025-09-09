@@ -1,9 +1,342 @@
-import React, { useState, useRef } from 'react';
-
+import React, { useState, useRef ,useCallback , useEffect  } from 'react';
+import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus } from "react-icons/fi";
 import avatar from '../../assets/images/team/150x150/57.webp'
+import {
+    ModernTemplate,
+    ClassicTemplate,
+    ProfessionalTemplate2,
+    ProfessionalTemplate,
+    Template5,
+    Template6,
+    Template7,
+    Template8,
+    Template9,
+    Template10,
+    Template11,
+    Template12,
+    Template13
+} from "../templates";
+
+import { Row, Col, Button , Card } from 'react-bootstrap';
+import { useDispatch, useSelector } from "react-redux";
+import { setParsedResume , updateField } from "../../features/resume/resumeSlice";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
+const cardTemplate = [
+    // { name: 'Template1', template: ModernTemplate, image: 'dummy.jpg' },
+    // { name: 'Template2', template: ClassicTemplate, image: 'dummy.jpg' },
+    // { name: 'Template3', template: ProfessionalTemplate, image: 'dummy.jpg' },
+    // { name: 'Template4', template: ProfessionalTemplate2, image: 'dummy.jpg' },
+    { name: 'Luxe', template: Template13, image: 'default.png' },
+    { name: 'Classic', template: Template12, image: 'default.png' },
+    { name: 'Unique', template: Template11, image: 'chrono.png' },
+    { name: 'Simple', template: Template10, image: 'default.png' },
+    { name: 'Default', template: Template9, image: 'default.png' },
+    { name: 'Professional', template: Template5, image: 'professional.jpg' },
+    { name: 'Chrono', template: Template6, image: 'chrono.png' },
+    { name: 'Elegant', template: Template7, image: 'elegant.jpg' },
+    { name: 'Modern', template: Template8, image: 'modern.jpg' },
+];
+
 
 export default function CVBuilder() {
+
+    const dispatch = useDispatch();
+    const { parsedResume } = useSelector((state) => state.resume);
+    const [zoom, setZoom] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    
+    const [currentSkill, setCurrentSkill] = useState('');
+    const [currentLanguage, setCurrentLanguage] = useState('');
+    const [languageLevel, setLanguageLevel] = useState('Intermediate');
+    const [currentHobby, setCurrentHobby] = useState('');
+    const cvRef = useRef();
+
+    const [customSections, setCustomSections] = useState([]);
+
     // State for active tab
+    const [selectedTemplate, setSelectedTemplate] = useState("Default");
+
+    const handleTemplateChange = (templateName) => {
+        setSelectedTemplate(templateName);
+        dispatch(setParsedResume({
+          ...parsedResume,
+          template: templateName
+        }));
+      };
+
+
+    
+
+      const zoomIn = () => {
+        setZoom(prev => {
+            const newZoom = Math.min(prev + 0.1, 2);
+            console.log('Zoom In clicked. New zoom level:', newZoom);
+            return newZoom;
+        });
+    };
+
+    const zoomOut = () => {
+        setZoom(prev => {
+            const newZoom = Math.max(prev - 0.1, 0.5);
+            console.log('Zoom Out clicked. New zoom level:', newZoom);
+            return newZoom;
+        });
+    };
+
+
+
+        useEffect(() => {
+            if (parsedResume?.skill && parsedResume.skill.length > 0) {
+                // Check if any skills have the selected property
+                const hasSelectedProperty = parsedResume.skill.some(skill => 'selected' in skill);
+    
+                if (!hasSelectedProperty) {
+                    // Initialize first 5 skills as selected
+                    const updatedSkills = parsedResume.skill.map((skill, index) => ({
+                        ...skill,
+                        selected: index < 5
+                    }));
+                   dispatch(updateField({path:"skill", value: updatedSkills}));
+                }
+            }
+        }, [parsedResume?.skill]);
+
+
+
+        const handleAddSkill = () => {
+            if (currentSkill.trim()) {
+              const currentSkills = parsedResume?.skill || [];
+          
+              dispatch(
+                updateField({
+                  path: "skill",
+                  value: [
+                    ...currentSkills,
+                    {
+                      name: currentSkill.trim(),
+                      selected: true, // default selected
+                    },
+                  ],
+                })
+              );
+          
+              setCurrentSkill("");
+            }
+          };
+
+              const handleAddLanguage = () => {
+                  if (!currentLanguage.trim()) {
+                      toast.error("Please enter a language", {
+                          position: "top-right",
+                          autoClose: 3000,
+                          hideProgressBar: false,
+                          closeOnClick: false,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                          theme: "light",
+                          transition: Bounce,
+                      });
+                      return;
+                  }
+          
+                  const newLanguage = {
+                      name: currentLanguage.trim(),
+                      level: languageLevel,
+                      fluency: languageLevel
+                  };
+          
+                  dispatch(updateField({path:"languages", value: [...(parsedResume.languages || []), newLanguage]}));
+                  setCurrentLanguage('');
+              };
+          
+
+
+//     const updateField = (path, value) => {
+//         dispatch(setParsedResume((prev) => {
+//             const newResume = { ...prev };
+//             const pathParts = path.match(/(\w+)(?:\[(\d+)\])?\.?(\w+)?/);
+//             if (!pathParts) {
+//                 newResume[path] = value;
+//                 return newResume;
+//             }
+
+//             const [_, key, index, subKey] = pathParts;
+//             if (index && subKey) {
+//                 if (!newResume[key]) newResume[key] = [];
+//                 if (!newResume[key][index]) newResume[key][index] = {};
+//                 newResume[key][index][subKey] = value;
+//             } else if (index) {
+//                 if (!newResume[key]) newResume[key] = [];
+//                 newResume[key][index] = value;
+//             } else {
+//                 newResume[key] = value;
+//             }
+//             return newResume;
+//         })
+//     );
+//    }
+
+
+    const calculatePages = () => {
+        if (!cvRef.current) return 1;
+
+        const a4HeightPx = 1123; // A4 height in pixels at 96 DPI
+        const contentHeight = cvRef.current.scrollHeight;
+        const calculatedPages = Math.ceil(contentHeight / a4HeightPx);
+
+        // Check if the last page has meaningful content (at least 20% filled)
+        const lastPageContent = contentHeight % a4HeightPx;
+        if (calculatedPages > 1 && lastPageContent < (a4HeightPx * 0.2)) {
+            return calculatedPages - 1;
+        }
+        return calculatedPages;
+    };
+
+    // Update total pages when resume data changes
+    // Update total pages when resume data changes
+    useEffect(() => {
+        if (parsedResume && cvRef.current) {
+            setTimeout(() => {
+                const pages = calculatePages();
+                setTotalPages(pages);
+                if (currentPage > pages) {
+                    setCurrentPage(pages);
+                }
+            }, 100);
+        }
+    }, [parsedResume, currentPage]);
+
+
+
+        const handleDownloadPDF = async () => {
+            if (!cvRef.current) return;
+    
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const a4Width = 210; // A4 width in mm
+            const a4Height = 297; // A4 height in mm
+            const a4WidthPx = 794; // A4 width in pixels at 96 DPI
+            const a4HeightPx = 1123; // A4 height in pixels at 96 DPI
+            const padding = 0; // Padding in pixels
+    
+            // Create a temporary container for the entire content
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px';
+            tempContainer.style.width = `${a4WidthPx}px`;
+            tempContainer.style.backgroundColor = '#ffffff';
+            tempContainer.style.padding = `${padding}px`;
+            tempContainer.style.boxSizing = 'border-box';
+    
+            // Clone the CV content
+            const clonedContent = cvRef.current.cloneNode(true);
+    
+            // Apply PDF-specific styles to center the content
+            clonedContent.style.width = `${a4WidthPx - 2 * padding}px`; // Account for padding on both sides
+            clonedContent.style.margin = '0 auto'; // Center horizontally
+            clonedContent.style.padding = '0';
+            clonedContent.style.fontSize = '12px';
+            clonedContent.style.lineHeight = '1.4';
+    
+            // // Center all content elements
+            // const centerElements = clonedContent.querySelectorAll('*');
+            // centerElements.forEach(el => {
+            //   el.style.marginLeft = 'auto';
+            //   el.style.marginRight = 'auto';
+            //   el.style.maxWidth = '100%';
+            // });
+    
+            // Adjust heading sizes
+            const headings = clonedContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headings.forEach(heading => {
+                const currentSize = window.getComputedStyle(heading).fontSize;
+                const newSize = parseFloat(currentSize) * 0.8;
+                heading.style.fontSize = `${newSize}px`;
+                heading.style.marginBottom = '8px';
+                heading.style.marginTop = '12px';
+            });
+    
+            // Center sections
+            const sections = clonedContent.querySelectorAll('section, .section');
+            sections.forEach(section => {
+                section.style.marginLeft = 'auto';
+                section.style.marginRight = 'auto';
+                section.style.maxWidth = '100%';
+            });
+    
+            tempContainer.appendChild(clonedContent);
+            document.body.appendChild(tempContainer);
+    
+            try {
+                const totalPages = calculatePages();
+    
+                for (let i = 0; i < totalPages; i++) {
+                    const canvas = await html2canvas(clonedContent, {
+                        scale: 2,
+                        logging: false,
+                        useCORS: true,
+                        backgroundColor: '#ffffff',
+                        width: a4WidthPx,
+                        height: a4HeightPx,
+                        scrollY: i * a4HeightPx,
+                        windowHeight: a4HeightPx,
+                        y: i * a4HeightPx,
+                    });
+    
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+    
+                    if (i > 0) {
+                        pdf.addPage();
+                    }
+    
+                    // Center the image on the PDF page
+                    const imgWidth = a4Width;
+                    const imgHeight = (canvas.height * a4Width) / canvas.width;
+    
+                    // Calculate vertical position to center content
+                    const yPos = (a4Height - imgHeight) / 2;
+    
+                    pdf.addImage(imgData, 'PNG', 0, yPos > 0 ? yPos : 0, imgWidth, imgHeight);
+                }
+    
+                pdf.save(`${parsedResume?.candidateName?.[0]?.firstName||'CV'}.pdf`);
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+            } finally {
+                document.body.removeChild(tempContainer);
+            }
+        };
+
+
+
+            const previewContainerRef = useRef(null);
+        
+            const scrollToPage = useCallback((pageNumber) => {
+                if (!cvRef.current || !previewContainerRef.current || pageNumber < 1 || pageNumber > totalPages) return;
+        
+                const pageHeight = cvRef.current.scrollHeight / totalPages;
+                const scrollPosition = (pageNumber - 1) * pageHeight;
+        
+                previewContainerRef.current.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'smooth'
+                });
+        
+                setCurrentPage(pageNumber);
+            }, [totalPages]);
+        
+            // Handle page navigation
+            const goToPage = useCallback((page) => {
+                scrollToPage(page);
+            }, [scrollToPage]);
+
+
+
+
     const [activeTab, setActiveTab] = useState('tabPreview');
 
     // State for form fields
@@ -134,16 +467,17 @@ export default function CVBuilder() {
                         </div>
 
                         <div className="card-body pt-3">
-                            <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h4 className="mb-0">Basic Information</h4>
-                                <button className="btn btn-primary btn-sm">Save Changes</button>
-                            </div>
+
 
                             {/* Tab panes */}
                             <div className="tab-content" id="cvTabsContent">
                                 {/* TAB: Preview (main form) */}
                                 {activeTab === 'tabPreview' && (
                                     <div className="tab-pane fade active show" id="tabPreview" role="tabpanel" aria-labelledby="tabPreview-tab" tabIndex="0">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h4 className="mb-0">Basic Information</h4>
+                                <button className="btn btn-primary btn-sm">Save Changes</button>
+                            </div>
                                         <div className="accordion" id="cvAccordion">
                                             {/* Personal details */}
                                             <div className="accordion-item">
@@ -203,8 +537,15 @@ export default function CVBuilder() {
                                                                                 type="text"
                                                                                 className="form-control"
                                                                                 name="firstName"
-                                                                                value={formData.firstName}
-                                                                                onChange={handleInputChange}
+                                                                                value={parsedResume?.candidateName?.[0]?.firstName || ""}
+                                                                                onChange={(e) =>
+                                                                                  dispatch(
+                                                                                    updateField({
+                                                                                      path: "candidateName[0].firstName",
+                                                                                      value: e.target.value
+                                                                                    })
+                                                                                  )
+                                                                                }
                                                                             />
                                                                         </div>
                                                                         <div className="col-md-6">
@@ -213,8 +554,15 @@ export default function CVBuilder() {
                                                                                 type="text"
                                                                                 className="form-control"
                                                                                 name="lastName"
-                                                                                value={formData.lastName}
-                                                                                onChange={handleInputChange}
+                                                                                value={`${parsedResume?.candidateName?.[0]?.familyName || ''}`}
+                                                                                onChange={(e) =>
+                                                                                    dispatch(
+                                                                                      updateField({
+                                                                                        path: "candidateName[0].familyName",
+                                                                                        value: e.target.value
+                                                                                      })
+                                                                                    )
+                                                                                  }
                                                                             />
                                                                         </div>
                                                                         <div className="col-12">
@@ -223,8 +571,15 @@ export default function CVBuilder() {
                                                                                 type="text"
                                                                                 className="form-control"
                                                                                 name="headline"
-                                                                                value={formData.headline}
-                                                                                onChange={handleInputChange}
+                                                                                value={parsedResume?.headline || ''}
+                                                                                onChange={(e) =>
+                                                                                    dispatch(
+                                                                                      updateField({
+                                                                                        path: "headline",
+                                                                                        value: e.target.value
+                                                                                      })
+                                                                                    )
+                                                                                  }
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -239,8 +594,15 @@ export default function CVBuilder() {
                                                                         type="email"
                                                                         className="form-control"
                                                                         name="email"
-                                                                        value={formData.email}
-                                                                        onChange={handleInputChange}
+                                                                        value={parsedResume?.email?.[0] || ''}
+                                                                        onChange={(e) =>
+                                                                            dispatch(
+                                                                              updateField({
+                                                                                path: "email",
+                                                                                value: [e.target.value]
+                                                                              })
+                                                                            )
+                                                                        }
                                                                     />
                                                                 </div>
                                                                 <div className="col-md-6">
@@ -249,8 +611,15 @@ export default function CVBuilder() {
                                                                         type="text"
                                                                         className="form-control"
                                                                         name="phone"
-                                                                        value={formData.phone}
-                                                                        onChange={handleInputChange}
+                                                                        value={parsedResume?.phoneNumber?.[0]?.formattedNumber || ''}
+                                                                        onChange={(e) =>
+                                                                            dispatch(
+                                                                              updateField({
+                                                                                path: "phoneNumber[0].formattedNumber",
+                                                                                value: e.target.value
+                                                                              })
+                                                                            )
+                                                                        }
                                                                     />
                                                                 </div>
                                                             </div>
@@ -263,8 +632,15 @@ export default function CVBuilder() {
                                                                         type="text"
                                                                         className="form-control"
                                                                         name="address"
-                                                                        value={formData.address}
-                                                                        onChange={handleInputChange}
+                                                                        value={parsedResume?.location?.formatted || ''}
+                                                                        onChange={(e) =>
+                                                                            dispatch(
+                                                                              updateField({
+                                                                                path: "location.formatted",
+                                                                                value: e.target.value
+                                                                              })
+                                                                            )
+                                                                          }
                                                                     />
                                                                 </div>
                                                             </div>
@@ -277,8 +653,15 @@ export default function CVBuilder() {
                                                                         type="text"
                                                                         className="form-control"
                                                                         name="postCode"
-                                                                        value={formData.postCode}
-                                                                        onChange={handleInputChange}
+                                                                        value={parsedResume?.location?.postCode || ''}
+                                                                        onChange={(e) =>
+                                                                            dispatch(
+                                                                              updateField({
+                                                                                path: "location.postCode",
+                                                                                value: e.target.value
+                                                                              })
+                                                                            )
+                                                                          }
                                                                     />
                                                                 </div>
                                                                 <div className="col-md-6">
@@ -287,8 +670,15 @@ export default function CVBuilder() {
                                                                         type="text"
                                                                         className="form-control"
                                                                         name="city"
-                                                                        value={formData.city}
-                                                                        onChange={handleInputChange}
+                                                                        value={parsedResume?.location?.city || ''}
+                                                                        onChange={(e) =>
+                                                                            dispatch(
+                                                                              updateField({
+                                                                                path: "location.city",
+                                                                                value: e.target.value
+                                                                              })
+                                                                            )
+                                                                          }
                                                                     />
                                                                 </div>
                                                             </div>
@@ -302,8 +692,15 @@ export default function CVBuilder() {
                                                                         className="form-control"
                                                                         placeholder="Describe your professional background, key skills, achievements, and career goals. Be specific about technologies, methodologies, and results..."
                                                                         name="summary"
-                                                                        value={formData.summary}
-                                                                        onChange={handleInputChange}
+                                                                        value={parsedResume?.summary || ''}
+                                                                        onChange={(e) =>
+                                                                            dispatch(
+                                                                              updateField({
+                                                                                path: "summary",
+                                                                                value: e.target.value
+                                                                              })
+                                                                            )
+                                                                          }
                                                                     ></textarea>
                                                                 </div>
                                                             </div>
@@ -358,9 +755,11 @@ export default function CVBuilder() {
                                                     className={`accordion-collapse collapse ${openSections.employment ? 'show' : ''}`}
                                                     aria-labelledby="headingEmployment"
                                                 >
+
                                                     <div className="accordion-body">
                                                         <div className="card border-0">
-                                                            <button type="button" className="btn btn-outline-secondary btn-sm mt-2">
+
+                                                            <button type="button" className="btn btn-outline-secondary btn-sm mt-2" onClick={() => addSectionEmployment()}>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
                                                                     <line x1="12" y1="5" x2="12" y2="19"></line>
                                                                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -392,9 +791,26 @@ export default function CVBuilder() {
                                                         <div className="card border-0">
                                                             <div className="border rounded p-3">
                                                                 <label className="form-label">Add Skills (one per line)</label>
-                                                                <input type="text" className="form-control me-2" placeholder="Type a skill and press Enter to add it" />
+                                                                <input type="text" className="form-control me-2" placeholder="Type a skill and press Enter to add it"
+                                                                value={currentSkill}
+                                                                onChange={(e) => setCurrentSkill(e.target.value)}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                                                        e.preventDefault();
+                                                                        handleAddSkill();
+                                                                    }
+                                                                }}
+                                                                />
                                                                 <div className="d-flex justify-content-end">
-                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3">
+                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3"
+                                                                        onClick={() => {
+                                                                            if (currentSkill.trim()) {
+                                                                                const currentSkills = parsedResume?.skill || [];
+                                                                                handleAddSkill();
+                                                                                setCurrentSkill('');
+                                                                            }
+                                                                        }}
+                                                                    >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
                                                                             <line x1="12" y1="5" x2="12" y2="19"></line>
                                                                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -407,11 +823,62 @@ export default function CVBuilder() {
                                                             <div className="mt-3">
                                                                 <div className="mb-3">
                                                                     <h6>Selected Skills</h6>
-                                                                    <div className="d-flex flex-wrap gap-2"></div>
+                                                                    <div className="d-flex flex-wrap gap-2">
+                                                                    {parsedResume?.skill
+                                                    ?.filter(skill => skill.selected)
+                                                    .map((skill, index) => (
+                                                        <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
+                                                            {skill.name}
+                                                            <button
+                                                                type="button"
+                                                                className="ms-1"
+                                                                aria-label="Remove"
+                                                                onClick={() => {
+                                                                    const updatedSkills = [...parsedResume.skill];
+                                                                    updatedSkills.splice(updatedSkills.findIndex(s => s.name === skill.name), 1);
+                                                                    dispatch(updateField({path:"skill", value: updatedSkills}));
+                                                                }}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
+                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                    <path d="M18 6l-12 12" />
+                                                                    <path d="M6 6l12 12" />
+                                                                </svg>
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                                    </div>
                                                                 </div>
                                                                 <div>
                                                                     <h6>Suggested Skills</h6>
-                                                                    <div className="d-flex flex-wrap gap-2"></div>
+                                                                    <div className="d-flex flex-wrap gap-2">
+                                                                    {parsedResume?.skill
+                                                    ?.filter(skill => !skill.selected)
+                                                    .map((skill, index) => (
+                                                        <span key={index} className="badge bg-secondary d-inline-flex align-items-center skill-badge">
+                                                            {skill.name}
+                                                            <button
+                                                                type="button"
+                                                                className="ms-1"
+                                                                aria-label="Select"
+                                                                onClick={() => {
+                                                                    const updatedSkills = [...parsedResume.skill];
+                                                                    const skillIndex = updatedSkills.findIndex(s => s.name === skill.name);
+                                                                    updatedSkills[skillIndex] = {
+                                                                        ...updatedSkills[skillIndex],
+                                                                        selected: true
+                                                                    };
+                                                                    dispatch(updateField({ path:"skill", value: updatedSkills}));
+                                                                }}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                    <path d="M5 12l5 5l10 -10" />
+                                                                </svg>
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -443,19 +910,33 @@ export default function CVBuilder() {
                                                                 <label className="form-label">Add Language</label>
                                                                 <div className="row g-2">
                                                                     <div className="col-md-8">
-                                                                        <input type="text" className="form-control" placeholder="Language name" />
+                                                                        <input type="text" className="form-control" placeholder="Language name"
+                                                                         value={currentLanguage}
+                                                                         onChange={(e) => setCurrentLanguage(e.target.value)}
+                                                                         onKeyDown={(e) => {
+                                                                             if (e.key === 'Enter' && !e.shiftKey) {
+                                                                                 e.preventDefault();
+                                                                                 handleAddLanguage();
+                                                                             }
+                                                                         }}
+                                                                        />
                                                                     </div>
                                                                     <div className="col-md-4">
-                                                                        <select className="form-select">
-                                                                            <option>Beginner</option>
-                                                                            <option>Intermediate</option>
-                                                                            <option>Advanced</option>
-                                                                            <option>Native</option>
+                                                                        <select className="form-select"
+                                                                        value={languageLevel}
+                                                                        onChange={(e) => setLanguageLevel(e.target.value)}
+                                                                        >
+                                                                            <option value="Beginner">Beginner</option>
+                                                                            <option value="Intermediate">Intermediate</option>
+                                                                            <option value="Advanced">Advanced</option>
+                                                                            <option value="Native">Native</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
                                                                 <div className="d-flex justify-content-end">
-                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3">
+                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3"
+                                                                      onClick={handleAddLanguage}
+                                                                    >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
                                                                             <line x1="12" y1="5" x2="12" y2="19"></line>
                                                                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -464,7 +945,26 @@ export default function CVBuilder() {
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                            <div className="mt-3 d-flex flex-wrap gap-2"></div>
+                                                            <div className="mt-3 d-flex flex-wrap gap-2">
+
+                                                            {parsedResume?.languages?.map((lang, index) => (
+                                            <span key={index} className="badge bg-secondary d-inline-flex align-items-center skill-badge">
+                                                {lang.name} ({lang.level})
+                                                <button
+                                                    type="button"
+                                                    className=""
+                                                    aria-label="Remove"
+                                                    onClick={() => {
+                                                        const updatedLangs = [...parsedResume.languages];
+                                                        updatedLangs.splice(index, 1);
+                                                        dispatch(updateField({ path:"languages", value:updatedLangs}));
+                                                    }}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                                </button>
+                                            </span>
+                                        ))}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -524,8 +1024,46 @@ export default function CVBuilder() {
 
                                 {/* TAB placeholders */}
                                 {activeTab === 'tabDesign' && (
-                                    <div className="tab-pane fade" id="tabDesign" role="tabpanel" aria-labelledby="tabDesign-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-sm"><div className="card-body">Design options go here.</div></div>
+                                    <div className={`tab-pane fade ${activeTab === 'tabDesign' ? 'show active' : ''}`} id="tabDesign" role="tabpanel" aria-labelledby="tabDesign-tab" tabIndex="0">
+                                        <div className="card border-0 shadow-sm"><div className="card-body">          
+                                            <Row className="g-4">
+                                {cardTemplate.map((template) => (
+                                    <Col key={template.name} xs={6} sm={6} md={4} lg={3} xl={2}>
+                                        <div 
+                                            className={`template-card p-3 text-center cursor-pointer ${selectedTemplate === template.name ? 'border border-primary rounded-3' : 'border border-light-subtle rounded-3'}`}
+                                            onClick={() => handleTemplateChange(template.name)}
+                                            style={{
+                                                transition: 'all 0.2s ease-in-out',
+                                                height: '100%',
+                                                backgroundColor: selectedTemplate === template.name ? 'rgba(13, 110, 253, 0.05)' : 'white'
+                                            }}
+                                        >
+                                            <div className="position-relative mb-3" style={{ paddingTop: '141.4%' }}>
+                                                <img
+                                                    src={`/assets/images/${template.image}`}
+                                                    alt={template.name}
+                                                    className="img-fluid position-absolute top-0 start-0 w-100 h-100 object-fit-cover rounded-2 border"
+                                                    style={{
+                                                        objectFit: 'cover',
+                                                        transition: 'transform 0.3s ease-in-out',
+                                                    }}
+                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                />
+                                                {selectedTemplate === template.name && (
+                                                    <div className="position-absolute top-0 end-0 m-2">
+                                                        <span className="badge bg-primary rounded-pill">
+                                                            <i className="fas fa-check"></i> Selected
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <h6 className="mb-0 fw-medium">{template.name}</h6>
+                                        </div>
+                                    </Col>
+                                ))}
+                            </Row>
+                                </div></div>
                                     </div>
                                 )}
                                 {activeTab === 'tabAnalysis' && (
@@ -548,48 +1086,129 @@ export default function CVBuilder() {
                     </div>
                 </div>
 
-                <div className="col-12 col-xxl-6 col-lg-5">
-                    <div className="card border h-100">
-                        <div className="card-header bg-white border-bottom">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <h3 className="mb-0">CV Preview</h3>
-                                <div className="d-flex align-items-center gap-2">
-                                    <button type="button" className="btn btn-outline-primary btn-sm" title="Zoom Out"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
-                                    <button type="button" className="btn btn-outline-primary btn-sm" title="Zoom In"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
-                                    <button type="button" className="btn btn-outline-primary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg><span className="d-none d-xl-inline ms-1">New Upload</span></button>
-                                    <button type="button" className="btn btn-outline-primary btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span className="d-none d-xl-inline ms-1">Download PDF</span></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card-body">
-                            <div className="bg-white border rounded p-3" style={{minHeight: '1080px'}}>
-                                <div className="mx-auto" style={{maxWidth: 850, fontSize: 14, lineHeight:1.4}}>
-                                    <div className="d-flex justify-content-between align-items-start mb-3">
-                                        <div>
-                                            <h1 className="h5 mb-1">Your Name</h1>
-                                            <p className="fst-italic text-muted mb-0">Professional title</p>
+                <Col lg={5} xxl={6} className='right-section'>
+                                    <Card className="border-0 shadow-custom mb-3">
+                                        <Card.Header className="bg-white border-bottom p-3">
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>CV Preview</h5>
+                                                <div className="d-flex align-items-center gap-3">
+                                                    <div className="d-flex align-items-center gap-1">
+                                                        <Button variant="outline-primary" size="sm" onClick={zoomOut}>
+                                                            <FiMinus />
+                                                        </Button>
+                                                        <Button variant="outline-primary" size="sm" onClick={zoomIn}>
+                                                            <FiPlus />
+                                                        </Button>
+                                                        {/* <Button
+                                                            variant="outline-primary"
+                                                            size="sm"
+                                                            onClick={handleUploadNew}
+                                                            className="btn btn-outline-primary"
+                                                        >
+                                                            <FiUpload size={14} /> 
+                                                            <span className="d-none d-xl-inline ms-1">New Upload</span>
+                                                        </Button> */}
+                                                        <Button
+                                                            variant="outline-primary"
+                                                            size="sm"
+                                                            onClick={handleDownloadPDF}
+                                                            className="btn btn-outline-primary"
+                                                        >
+                                                            {/* <FiDownload size={14} />  */}
+                                                            <span className="d-none d-xl-inline ms-1">Download PDF</span>
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </Card.Header>
+                                        <div
+                                            ref={previewContainerRef}
+                                            className="cv-template-div"
+                                        >
+                                            <div
+                                                ref={cvRef}
+                                                style={{
+                                                    background: 'white',
+                                                    padding: '16px',
+                                                    minHeight: `${Math.max(1, totalPages) * 1080}px`,
+                                                    transform: `scale(${zoom})`,
+                                                    transformOrigin: 'top center',
+                                                    transition: 'transform 0.2s ease-in-out',
+                                                }}
+                                            >
+                                                {(() => {
+                                                    const selectedTemplateData = cardTemplate.find(t => t.name === selectedTemplate);
+                                                    if (!selectedTemplateData) {
+                                                        return <div className="alert alert-warning">Please select a template</div>;
+                                                    }
+
+                                                    const TemplateComponent = selectedTemplateData.template;
+                                                    return (
+                                                        <TemplateComponent
+                                                            resumeData={{
+                                                                ...(parsedResume || {
+                                                                    candidateName: [{ firstName: '', familyName: '' }],
+                                                                    headline: '',
+                                                                    summary: '',
+                                                                    phoneNumber: [{ formattedNumber: '' }],
+                                                                    email: [''],
+                                                                    location: { formatted: '' },
+                                                                    workExperience: [],
+                                                                    education: [],
+                                                                    skill: [],
+                                                                    profilePic: null,
+                                                                    website: [''],
+                                                                    certifications: [],
+                                                                    languages: [],
+                                                                    hobbies: []
+                                                                }),
+                                                                customSections
+                                                            }}
+                                                        />
+                                                    );
+                                                })()}
+                                            </div>
+
+                                            {/* Only show page dividers if we have multiple pages with content */}
+                                            {totalPages > 1 && Array.from({ length: totalPages - 1 }).map((_, index) => (
+                                                <div
+                                                    key={index}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        left: 0,
+                                                        right: 0,
+                                                        top: `${(index + 1) * 1123}px`,
+                                                        borderTop: '2px dashed #ccc',
+                                                        pointerEvents: 'none'
+                                                    }}
+                                                />
+                                            ))}
                                         </div>
-                                        <div style={{width: 80, height: 80, borderRadius: '50%', overflow: 'hidden'}}>
-                                            <img src={avatar} alt="" style={{width: '100%', height: '100%', objectFit:'cover'}} />
-                                        </div>
-                                    </div>
-
-                                    <h2 className="h6 border-bottom pb-1">Personal details</h2>
-                                    <table className="table table-sm mb-3"><tbody><tr><th className="w-25">Name</th><td></td></tr></tbody></table>
-
-                                    <h2 className="h6 border-bottom pb-1">Profile</h2>
-                                    <p>Professional summary goes here...</p>
-
-                                    <h2 className="h6 border-bottom pb-1">Employment</h2>
-                                    <div className="mb-3"></div>
-
-                                    <h2 className="h6 border-bottom pb-1">Education</h2>
-                                    <div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                    </Card>
+                                    <Card className="border-0 shadow-custom">
+                                        <Card.Body className="p-3">
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                {/* <Button
+                                                    variant="outline-primary"
+                                                    onClick={handlePreviousStep}
+                                                    disabled={activeTab === "Preview"}
+                                                    className="d-flex align-items-center gap-2"
+                                                >
+                                                    <FiChevronLeft /> Previous
+                                                </Button>
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={handleNextStep}
+                                                    disabled={activeTab === "Cover Letter"}
+                                                    className="d-flex align-items-center gap-2"
+                                                >
+                                                    Next <FiChevronRight />
+                                                </Button> */}
+                                            </div>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
             </div>
         </div>
     );

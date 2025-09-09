@@ -9,9 +9,12 @@ import { Button } from 'react-bootstrap';
 import logo from '../assets/images/MPF-logo.svg';
 import logoLight from '../assets/images/MPF-Logo-Light.svg';
 import avatar from '../assets/images/team/40x40/57.webp'
-
+import { useDispatch } from "react-redux";
+import { logout } from "../features/user/userSlice";
 
 const MasterLayout = ({ children }) => {
+
+  const dispatch = useDispatch();
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
@@ -166,7 +169,7 @@ const MasterLayout = ({ children }) => {
                 </Link>
                 </div> */}
 
-                <div className="nav-item-wrapper"><Link className={`nav-link label-1`} to="" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1`} to="" role="button" data-bs-toggle="" aria-expanded="false" onClick={() => dispatch(logout())}>
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:logout' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Sign Out</span></span>
                   </div>
                 </Link>

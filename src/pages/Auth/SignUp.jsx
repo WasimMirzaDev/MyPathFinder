@@ -63,7 +63,7 @@ export default function SignUp() {
           password_confirmation: values.password_confirmation
         });
 
-        localStorage.setItem('access_token', response.data.access_token);
+        // localStorage.setItem('access_token', response.data.access_token);
         toast.success('Registration successful! Redirecting...');
         setTimeout(() => navigate('/upload-profile'), 1500);
       } catch (error) {

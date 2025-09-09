@@ -1,24 +1,19 @@
-// // src/components/PrivateRoute.jsx
-// import React from "react";
-// import { Navigate } from "react-router-dom";
-// import { useAuth } from "../context/AuthContext";
+// src/components/PrivateRoute.jsx
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-// const PrivateRoute = ({ allowedRoles = [], children }) => {
-//   const { user, loading } = useAuth();
+const PrivateRoute = ({ children }) => {
+  const { accessToken } = useSelector((state) => state.user);
 
-//   if (loading) return <div>Loading...</div>;
-//   if (!user) return <Navigate to="/sign-in" replace />;
-//   // ✅ If allowedRoles is empty, allow all logged-in users
-//   if (allowedRoles.length === 0) {
-//     return children;
-//   }
+  // fallback: also check localStorage
+  const token = accessToken || localStorage.getItem("access_token");
 
-//   // 🔐 If role is NOT allowed, redirect to unauthorized
-//   if (!allowedRoles.includes(user.roleName)) {
-//     return <Navigate to="/unauthorized" replace />;
-//   }
+  if (!token) {
+    return <Navigate to="/sign-in" replace />;
+  }
 
-//   return children;
-// };
+  return children;
+};
 
-// export default PrivateRoute;
+export default PrivateRoute;

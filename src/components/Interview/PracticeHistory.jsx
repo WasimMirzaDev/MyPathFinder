@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from "react-router-dom";
 
-export default function PracticeHistory() {
+export default function PracticeHistory({history}) {
 
     const questions = [
         {
@@ -61,7 +61,7 @@ export default function PracticeHistory() {
                 </div>
             </div>
             <div className="row g-3 list feature-cards mb-4">
-                {questions.map((q, index) => (
+                {history?.map((q, index) => (
                     <div className="col-12 col-xl-4" key={index}>
                         <div className="card h-100">
                             <div className="card-body">
@@ -72,13 +72,13 @@ export default function PracticeHistory() {
                                                 className="fw-bold fs-8 lh-sm title line-clamp-1"
                                                 to={q.path}
                                             >
-                                                {q.title}
+                                                {q.question?.title}
                                             </Link>
                                         </div>
                                     </div>
-                                    <p className="fs-9 fw-semibold text-body text mb-4">
-                                        {q.description}
-                                    </p>
+                                    {/* <p className="fs-9 fw-semibold text-body text mb-4">
+                                        {q.question?.description}
+                                    </p> */}
                                 </div>
 
                                 <div className="row g-1 g-sm-3 mt-2 lh-1">
@@ -86,7 +86,7 @@ export default function PracticeHistory() {
                                     <div className="col-12 col-sm-auto flex-1 text-truncate">
                                         <h6>Your Score</h6>
                                         <div className="d-flex align-items-center gap-1">
-                                            <div style={{ "--phoenix-circle-progress-bar": q.yourScore }}>
+                                            <div style={{ "--phoenix-circle-progress-bar": q.evaluation?.score }}>
                                                 <svg
                                                     className="circle-progress-svg"
                                                     width="38"
@@ -109,12 +109,12 @@ export default function PracticeHistory() {
                                                         r="54"
                                                         fill="none"
                                                         strokeLinecap="round"
-                                                        stroke={q.yourColor}
+                                                        stroke={q.evaluation?.score <= 20 ? "red" : q.evaluation?.score <= 60 ? "orange" : "green"}
                                                         strokeWidth="12"
                                                     ></circle>
                                                 </svg>
                                             </div>
-                                            <h6 className="mb-0 text-body">{q.yourScore}%</h6>
+                                            <h6 className="mb-0 text-body">{q.evaluation?.score}%</h6>
                                         </div>
                                     </div>
 
