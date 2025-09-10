@@ -53,7 +53,7 @@ const ModernTemplate = ({ resumeData }) => {
           <p style={{ marginBottom: '8px' }}>{resumeData?.location?.formatted}</p>
           <p style={{ marginBottom: '8px' }}>{resumeData?.location?.city}</p>
           <p style={{ marginBottom: '8px' }}>{resumeData?.location?.postCode}</p>
-          {resumeData?.website?.[0] && <p>{resumeData?.website?.[0]}</p>}
+          {/* {resumeData?.website?.[0] && <p>{resumeData?.website?.[0]}</p>} */}
         </section>
 
         <section style={{ marginBottom: '25px' }}>

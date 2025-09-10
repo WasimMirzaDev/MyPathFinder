@@ -129,11 +129,11 @@ const Template11 = ({ resumeData }) => {
               <span style={styles.label}>Phone number:</span> {resumeData.phoneNumber[0].formattedNumber}
             </div>
           )}
-          {resumeData?.website?.[0] && (
+          {/* {resumeData?.website?.[0] && (
             <div style={styles.detailItem}>
               <span style={styles.label}>LinkedIn:</span> {resumeData.website[0].replace(/^https?:\/\//, '')}
             </div>
-          )}
+          )} */}
         </div>
       </section>
 

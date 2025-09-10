@@ -223,14 +223,14 @@ const Template8 = ({ resumeData }) => {
             </div>
           )}
 
-          {resumeData?.website?.[0] && (
+          {/* {resumeData?.website?.[0] && (
             <div style={styles.detailItem}>
               <div style={styles.detailIcon}>💼</div>
               <span style={styles.detailText}>
                 {resumeData.website[0].replace(/^https?:\/\//, '')}
               </span>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Languages */}
@@ -256,7 +256,7 @@ const Template8 = ({ resumeData }) => {
         </div>
 
         {/* Qualities */}
-        <div style={{ marginBottom: '25px' }}>
+        {/* <div style={{ marginBottom: '25px' }}>
           <h3 style={styles.sectionTitle}>Qualités</h3>
           
           {resumeData?.qualities?.map((quality, index) => (
@@ -265,7 +265,7 @@ const Template8 = ({ resumeData }) => {
               <span style={styles.detailText}>{quality}</span>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Hobbies */}
         <div>

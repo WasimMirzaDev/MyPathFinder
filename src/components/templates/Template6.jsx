@@ -142,13 +142,13 @@ const Template6 = ({ resumeData }) => {
           <p style={styles.contactInfo}>
             ✉️ {resumeData?.email?.[0]}   📞 {resumeData?.phoneNumber?.[0]?.formattedNumber}   📍 {resumeData?.location?.formatted} | {resumeData?.location?.city} | {resumeData?.location?.postCode}
           </p>
-          {resumeData?.website?.[0] && (
+          {/* {resumeData?.website?.[0] && (
             <p style={styles.contactInfo}>
               <a href={resumeData.website[0]} style={styles.link}>
                 {resumeData.website[0].replace(/^https?:\/\//, '')}
               </a>
             </p>
-          )}
+          )} */}
         </div>
         <img 
           src={resumeData?.profilePic || demo_profile} 

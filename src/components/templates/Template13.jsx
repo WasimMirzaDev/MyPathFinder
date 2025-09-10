@@ -127,7 +127,7 @@ const Template13 = ({ resumeData }) => {
             <div>{resumeData.location.formatted}</div>
           </div>
         )}
-                {resumeData?.location?.city && (
+        {resumeData?.location?.city && (
           <div style={styles.personalDetailItem}>
             <div style={styles.label}>City</div>
             <div>{resumeData.location.city}</div>
@@ -139,12 +139,12 @@ const Template13 = ({ resumeData }) => {
             <div>{resumeData.location.postCode}</div>
           </div>
         )}
-        {resumeData?.website?.[0] && (
+        {/* {resumeData?.website?.[0] && (
           <div style={styles.personalDetailItem}>
             <div style={styles.label}>LinkedIn</div>
             <div>{resumeData.website[0].replace(/^https?:\/\//, '')}</div>
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Summary */}

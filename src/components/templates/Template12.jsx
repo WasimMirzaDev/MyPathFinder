@@ -123,11 +123,11 @@ const Template12 = ({ resumeData }) => {
                 <strong>Postcode:</strong> {resumeData.location.postCode}
               </p>
             )}
-            {resumeData?.website?.[0] && (
+            {/* {resumeData?.website?.[0] && (
               <p style={styles.contactParagraph}>
                 <strong>Website:</strong> {resumeData.website[0].replace(/^https?:\/\//, '')}
               </p>
-            )}
+            )} */}
           </div>
         </section>
 

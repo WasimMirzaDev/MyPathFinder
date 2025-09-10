@@ -217,11 +217,11 @@ const Template10 = ({ resumeData }) => {
               <span style={styles.label}>Postcode:</span> {resumeData.location.postCode}
             </div>
           )}
-          {resumeData?.website?.[0] && (
+          {/* {resumeData?.website?.[0] && (
             <div style={styles.detailItem}>
               <span style={styles.label}>LinkedIn:</span> {resumeData.website[0].replace(/^https?:\/\//, '')}
             </div>
-          )}
+          )} */}
         </div>
       </section>
 

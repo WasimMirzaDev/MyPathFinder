@@ -194,10 +194,10 @@ const Template5 = ({ resumeData }) => {
           {/* Personal Details */}
           <section style={styles.sidebarSection}>
             <h3 style={styles.sidebarTitle}>Personal Details</h3>
-            <p style={styles.sidebarText}>
+            {/* <p style={styles.sidebarText}>
               Website<br />
               <a href="#" style={styles.link}>{resumeData?.website?.[0]}</a>
-            </p>
+            </p> */}
           </section>
 
           {/* Languages */}
@@ -224,7 +224,7 @@ const Template5 = ({ resumeData }) => {
             })}
           </section>
 
-          {/* Qualities */}
+          {/* Qualities
           <section style={styles.sidebarSection}>
             <h3 style={styles.sidebarTitle}>Qualities</h3>
             <ul style={styles.list}>
@@ -232,7 +232,7 @@ const Template5 = ({ resumeData }) => {
                 <li key={idx}>{quality}</li>
               ))}
             </ul>
-          </section>
+          </section> */}
 
           {/* Hobbies */}
           <section style={styles.sidebarSection}>

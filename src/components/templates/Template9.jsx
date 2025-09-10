@@ -160,14 +160,14 @@ const Template9 = ({ resumeData }) => {
                 <td style={styles.tableValue}>{resumeData.location.postCode}</td>
               </tr>
             )}
-            {resumeData?.website?.[0] && (
+            {/* {resumeData?.website?.[0] && (
               <tr>
                 <td style={styles.tableLabel}>LinkedIn</td>
                 <td style={styles.tableValue}>
                   {resumeData.website[0].replace(/^https?:\/\//, '')}
                 </td>
               </tr>
-            )}
+            )} */}
           </tbody>
         </table>
 

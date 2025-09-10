@@ -116,7 +116,7 @@ const Template7 = ({ resumeData }) => {
         </div>
 
         {/* Qualities */}
-        <div style={{ marginBottom: '30px' }}>
+        {/* <div style={{ marginBottom: '30px' }}>
           <h3 style={styles.sidebarTitle}>QUALITIES</h3>
           <ul style={styles.sidebarList}>
             {resumeData?.qualities?.map((quality, index) => (
@@ -125,7 +125,7 @@ const Template7 = ({ resumeData }) => {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
 
         {/* Hobbies */}
         <div>
@@ -168,9 +168,9 @@ const Template7 = ({ resumeData }) => {
             {resumeData?.location?.postCode && (
               <p style={styles.contactInfo}>📍 {resumeData.location.postCode}</p>
             )}
-            {resumeData?.website?.[0] && (
+            {/* {resumeData?.website?.[0] && (
               <p style={styles.contactInfo}>🔗 {resumeData.website[0].replace(/^https?:\/\//, '')}</p>
-            )}
+            )} */}
           </div>
         </div>
 
