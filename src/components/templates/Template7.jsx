@@ -162,6 +162,12 @@ const Template7 = ({ resumeData }) => {
             {resumeData?.location?.formatted && (
               <p style={styles.contactInfo}>📍 {resumeData.location.formatted}</p>
             )}
+            {resumeData?.location?.city && (
+              <p style={styles.contactInfo}>📍 {resumeData.location.city}</p>
+            )}
+            {resumeData?.location?.postCode && (
+              <p style={styles.contactInfo}>📍 {resumeData.location.postCode}</p>
+            )}
             {resumeData?.website?.[0] && (
               <p style={styles.contactInfo}>🔗 {resumeData.website[0].replace(/^https?:\/\//, '')}</p>
             )}

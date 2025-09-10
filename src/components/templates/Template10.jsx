@@ -207,6 +207,16 @@ const Template10 = ({ resumeData }) => {
               <span style={styles.label}>Address:</span> {resumeData.location.formatted}
             </div>
           )}
+          {resumeData?.location?.city && (
+            <div style={styles.detailItem}>
+              <span style={styles.label}>City:</span> {resumeData.location.city}
+            </div>
+          )}
+          {resumeData?.location?.postCode && (
+            <div style={styles.detailItem}>
+              <span style={styles.label}>Postcode:</span> {resumeData.location.postCode}
+            </div>
+          )}
           {resumeData?.website?.[0] && (
             <div style={styles.detailItem}>
               <span style={styles.label}>LinkedIn:</span> {resumeData.website[0].replace(/^https?:\/\//, '')}

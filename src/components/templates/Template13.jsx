@@ -127,6 +127,18 @@ const Template13 = ({ resumeData }) => {
             <div>{resumeData.location.formatted}</div>
           </div>
         )}
+                {resumeData?.location?.city && (
+          <div style={styles.personalDetailItem}>
+            <div style={styles.label}>City</div>
+            <div>{resumeData.location.city}</div>
+          </div>
+        )}
+        {resumeData?.location?.postCode && (
+          <div style={styles.personalDetailItem}>
+            <div style={styles.label}>postCode</div>
+            <div>{resumeData.location.postCode}</div>
+          </div>
+        )}
         {resumeData?.website?.[0] && (
           <div style={styles.personalDetailItem}>
             <div style={styles.label}>LinkedIn</div>

@@ -140,7 +140,7 @@ const Template6 = ({ resumeData }) => {
             {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
           </h1>
           <p style={styles.contactInfo}>
-            ✉️ {resumeData?.email?.[0]}   📞 {resumeData?.phoneNumber?.[0]?.formattedNumber}   📍 {resumeData?.location?.formatted}
+            ✉️ {resumeData?.email?.[0]}   📞 {resumeData?.phoneNumber?.[0]?.formattedNumber}   📍 {resumeData?.location?.formatted} | {resumeData?.location?.city} | {resumeData?.location?.postCode}
           </p>
           {resumeData?.website?.[0] && (
             <p style={styles.contactInfo}>

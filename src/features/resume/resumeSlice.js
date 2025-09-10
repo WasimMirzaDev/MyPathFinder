@@ -80,12 +80,17 @@ const resumeSlice = createSlice({
       saveChangesLoader: false,
       AiCvLoader: false,
       AiSummaryLoader: false,
+      selectedTemplate:"Default",
+      prevParsedResume:{},
       SummaryIssues: [],
       SummarySuggestions: "",
       loading: false,
       error: null,
     },
     reducers: {
+      setSelectedTemplate: (state, action) => {
+        state.selectedTemplate = action.payload;
+      },
       setParsedResume: (state, action) => {
         state.parsedResume = action.payload;
       },
@@ -160,6 +165,7 @@ const resumeSlice = createSlice({
         .addCase(fetchResumeById.fulfilled, (state, action) => {
           state.loading = false;
           if (action.payload?.data?.cv_resumejson) {
+            state.prevParsedResume = action.payload.data.cv_resumejson;
             state.parsedResume = action.payload.data.cv_resumejson;
           }
         })
@@ -176,6 +182,7 @@ const resumeSlice = createSlice({
         .addCase(updateResumeById.fulfilled, (state, action) => {
           state.saveChangesLoader = false;
           if (action.payload?.data?.cv_resumejson) {
+            state.prevParsedResume = action.payload.data.cv_resumejson;
             state.parsedResume = action.payload.data.cv_resumejson;
           }
         })
@@ -234,5 +241,5 @@ const resumeSlice = createSlice({
   });
   
 
-export const { setParsedResume , updateField  } = resumeSlice.actions;
+export const { setParsedResume , updateField , setSelectedTemplate } = resumeSlice.actions;
 export default resumeSlice.reducer;

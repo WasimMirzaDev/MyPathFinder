@@ -109,6 +109,16 @@ const Template11 = ({ resumeData }) => {
               <span style={styles.label}>Address:</span> {resumeData.location.formatted}
             </div>
           )}
+          {resumeData?.location?.city && (
+            <div style={styles.detailItem}>
+              <span style={styles.label}>City:</span> {resumeData.location.city}
+            </div>
+          )}
+          {resumeData?.location?.postCode && (
+            <div style={styles.detailItem}>
+              <span style={styles.label}>Postcode:</span> {resumeData.location.postCode}
+            </div>
+          )}
           {resumeData?.email?.[0] && (
             <div style={styles.detailItem}>
               <span style={styles.label}>Email address:</span> {resumeData.email[0]}

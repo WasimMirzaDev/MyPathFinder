@@ -28,6 +28,8 @@ const ProfessionalTemplate2 = ({ resumeData }) => {
           <p>{resumeData?.email?.[0]}</p>
           <p>{resumeData?.phoneNumber?.[0]?.formattedNumber}</p>
           <p>{resumeData?.location?.formatted}</p>
+          <p>{resumeData?.location?.city}</p>
+          <p>{resumeData?.location?.postCode}</p>
           <p>{resumeData?.website?.[0]}</p>
         </div>
 

@@ -143,6 +143,8 @@ const Template5 = ({ resumeData }) => {
           </h1>
           <p style={styles.contact}>{resumeData?.email?.[0]} | {resumeData?.phoneNumber?.[0]?.formattedNumber}</p>
           <p style={styles.contact}>{resumeData?.location?.formatted}</p>
+          <p style={styles.contact}>{resumeData?.location?.city}</p>
+          <p style={styles.contact}>{resumeData?.location?.postCode}</p>
         </div>
       </div>
 

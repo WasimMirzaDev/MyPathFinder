@@ -148,6 +148,18 @@ const Template9 = ({ resumeData }) => {
                 <td style={styles.tableValue}>{resumeData.location.formatted}</td>
               </tr>
             )}
+            {resumeData?.location?.city && (
+              <tr>
+                <td style={styles.tableLabel}>City</td>
+                <td style={styles.tableValue}>{resumeData.location.city}</td>
+              </tr>
+            )}
+            {resumeData?.location?.postCode && (
+              <tr>
+                <td style={styles.tableLabel}>Postcode</td>
+                <td style={styles.tableValue}>{resumeData.location.postCode}</td>
+              </tr>
+            )}
             {resumeData?.website?.[0] && (
               <tr>
                 <td style={styles.tableLabel}>LinkedIn</td>

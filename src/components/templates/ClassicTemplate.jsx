@@ -45,7 +45,9 @@ const ClassicTemplate = ({ resumeData }) => {
       }}>
         {resumeData?.phoneNumber?.[0]?.formattedNumber}<br/>
         {resumeData?.email?.[0]}<br/>
-        {resumeData?.location?.formatted}
+        {resumeData?.location?.formatted}<br/>
+        {resumeData?.location?.city}<br/>
+        {resumeData?.location?.postCode}<br/>
       </div>
       
       <hr style={{
