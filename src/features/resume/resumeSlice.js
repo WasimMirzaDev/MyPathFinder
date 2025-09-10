@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchInterviewUserHistory , createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume } from "./resumeAPI";
+import { fetchInterviewUserHistory , createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserSummaryAi } from "./resumeAPI";
 
 export const fetchInterviewHistory = createAsyncThunk("interview/history", async () => {
   return await fetchInterviewUserHistory();
@@ -49,6 +49,28 @@ export const uploadExistingResume = createAsyncThunk("resume/upload-existing",
   }
 );
 
+export const generateCvAi = createAsyncThunk("resume/generate-cv-ai", 
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await generateUserCvAi(formData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const analyzeSummaryAi = createAsyncThunk("resume/analyze-summary-ai", 
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await analyzeUserSummaryAi(formData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 
 const resumeSlice = createSlice({
     name: "resume",
@@ -56,6 +78,10 @@ const resumeSlice = createSlice({
       parsedResume: {},
       history: null,
       saveChangesLoader: false,
+      AiCvLoader: false,
+      AiSummaryLoader: false,
+      SummaryIssues: [],
+      SummarySuggestions: "",
       loading: false,
       error: null,
     },
@@ -91,9 +117,11 @@ const resumeSlice = createSlice({
       }          
     },
     extraReducers: (builder) => {
+      // Fetch Interview History
       builder
         .addCase(fetchInterviewHistory.pending, (state) => {
           state.loading = true;
+          state.error = null;
         })
         .addCase(fetchInterviewHistory.fulfilled, (state, action) => {
           state.loading = false;
@@ -102,11 +130,9 @@ const resumeSlice = createSlice({
         .addCase(fetchInterviewHistory.rejected, (state, action) => {
           state.loading = false;
           state.error = action.error.message;
-        });
+        })
         
-    },
-    extraReducers: (builder) => {
-      builder
+        // Create Empty Resume
         .addCase(createEmptyResume.pending, (state) => {
           state.loading = true;
           state.error = null;
@@ -124,26 +150,25 @@ const resumeSlice = createSlice({
         .addCase(createEmptyResume.rejected, (state, action) => {
           state.loading = false;
           state.error = action.payload || 'Failed to create empty resume';
-        });
-    },
-    extraReducers: (builder) => {
-      builder
-      .addCase(fetchResumeById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchResumeById.fulfilled, (state, action) => {
-        state.loading = false;
-        console.log("action.payload",action.payload)
-        state.parsedResume = action.payload.data.cv_resumejson;
-      })
-      .addCase(fetchResumeById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to create empty resume';
-      });
-    },
-    extraReducers: (builder) => {
-      builder
+        })
+        
+        // Fetch Resume By ID
+        .addCase(fetchResumeById.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(fetchResumeById.fulfilled, (state, action) => {
+          state.loading = false;
+          if (action.payload?.data?.cv_resumejson) {
+            state.parsedResume = action.payload.data.cv_resumejson;
+          }
+        })
+        .addCase(fetchResumeById.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload || 'Failed to fetch resume';
+        })
+        
+        // Update Resume By ID
         .addCase(updateResumeById.pending, (state) => {
           state.saveChangesLoader = true;
           state.error = null;
@@ -157,10 +182,9 @@ const resumeSlice = createSlice({
         .addCase(updateResumeById.rejected, (state, action) => {
           state.saveChangesLoader = false;
           state.error = action.payload || 'Failed to update resume';
-        });
-    },
-    extraReducers: (builder) => {
-      builder
+        })
+        
+        // Upload Existing Resume
         .addCase(uploadExistingResume.pending, (state) => {
           state.loading = true;
           state.error = null;
@@ -174,6 +198,37 @@ const resumeSlice = createSlice({
         .addCase(uploadExistingResume.rejected, (state, action) => {
           state.loading = false;
           state.error = action.payload || 'Failed to upload resume';
+        })
+
+        // Generate CV AI
+        .addCase(generateCvAi.pending, (state) => {
+          state.AiCvLoader = true;
+          state.error = null;
+        })
+        .addCase(generateCvAi.fulfilled, (state, action) => {
+          state.AiCvLoader = false;
+          console.log("action.payload CV AI",action.payload);
+          if (action.payload?.data) {
+            state.parsedResume = action.payload.data;
+          }
+        })
+        .addCase(generateCvAi.rejected, (state, action) => {
+          state.AiCvLoader = false;
+          state.error = action.payload || 'Failed to generate CV';
+        })
+        .addCase(analyzeSummaryAi.pending, (state) => {
+          state.AiSummaryLoader = true;
+          state.error = null;
+        })
+        .addCase(analyzeSummaryAi.fulfilled, (state, action) => {
+          state.AiSummaryLoader = false;
+          console.log("action.payload analyze summary AI",action.payload);
+          state.SummaryIssues = action.payload.data.issues;
+          state.SummarySuggestions = action.payload.data.suggested_changes;
+        })
+        .addCase(analyzeSummaryAi.rejected, (state, action) => {
+          state.AiSummaryLoader = false;
+          state.error = action.payload || 'Failed to generate CV';
         });
     }
   });

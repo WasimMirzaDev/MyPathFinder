@@ -34,3 +34,15 @@ export const uploadExistingUserResume = async (formData) => {
   });
   return response.data;
 }
+
+
+export const generateUserCvAi = async (formData) => {
+  const response = await axios.post("/generate-cv-ai", formData);
+  return response.data;
+}
+
+
+export const analyzeUserSummaryAi = async (formData) => {
+  const response = await axios.post("/analyze-paragraph", formData);
+  return response.data;
+}

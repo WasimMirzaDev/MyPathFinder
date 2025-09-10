@@ -2,17 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, Button, Card, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from 'react-redux';
-import { createEmptyResume , uploadExistingResume } from '../../features/resume/resumeSlice';
+import { createEmptyResume , uploadExistingResume , updateResumeById , generateCvAi } from '../../features/resume/resumeSlice';
 import { toast } from 'react-toastify';
 
 export default function BuildingComponents() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.resume);
+  const { loading, error ,AiCvLoader } = useSelector((state) => state.resume);
 
     const [show, setShow] = useState(false);
     const [profTitle, setProfTitle] = useState("");
     const [profSummary, setProfSummary] = useState("");
+
+
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        address: "",
+        jobTitle: "",
+        description: "",
+      });
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -25,7 +36,12 @@ export default function BuildingComponents() {
         window.location.href = "/cv-generate";
     };
 
-    const handleManualCV = async () => {
+
+    const handleAICV = async () => {
+        handleShow();
+    };
+
+      const handleManualCV = async () => {
         const emptyResume = {
           candidateName: [{ firstName: '', familyName: '' }],
           headline: '',
@@ -56,6 +72,74 @@ export default function BuildingComponents() {
           toast.error(error?.message || "Failed to create empty resume. Please try again.");
         }
     };
+
+
+    const handleCvAiUpload = async () => {
+
+        const emptyResume = {
+            candidateName: [{ firstName: '', familyName: '' }],
+            headline: '',
+            summary: '',
+            phoneNumber: [{ formattedNumber: '' }],
+            email: [''],
+            location: { formatted: '' },
+            workExperience: [],
+            education: [],
+            skill: [],
+            profilePic: null,
+            website: [''],
+            certifications: [],
+            languages: [],
+            hobbies: []
+          };
+  
+          try {
+            const resultAction = await dispatch(createEmptyResume(emptyResume)).unwrap();
+            
+            if (resultAction?.data?.id) {
+                
+                const resumeId = resultAction.data.id;
+                
+                try {
+                    const resultAction = await dispatch(generateCvAi(formData)).unwrap();
+                    
+                    const updatedResume = {
+                        ...resultAction.data,
+                        id: resumeId,
+                        template: "Default"
+                    }
+                    dispatch(updateResumeById({id: resumeId , parsedResume: updatedResume}))
+
+                    navigate(`/cv-generate/${resumeId}`);
+                    // if (resultAction?.data?.id) {
+                    //     const updatedResume = {
+                    //         ...emptyResume,
+                    //         id: resultAction.data.id
+                    //       }
+        
+                    //     dispatch(updateResumeById({id: resultAction.data.id , parsedResume: updatedResume}))
+        
+                    //     handleShow();
+        
+                    // //   navigate(`/cv-generate/${resultAction.data.id}`);
+                    //   // Show success message
+                    //   toast.success('Empty resume created successfully! Start editing your CV.');
+                    // }
+                  } catch (error) {
+                    console.error('Error creating empty resume:', error);
+                    toast.error(error?.message || "Failed to create empty resume. Please try again.");
+                  }
+
+            //   navigate(`/cv-generate/${resultAction.data.id}`);
+              // Show success message
+              toast.success('Empty resume created successfully! Start editing your CV.');
+            }
+          } catch (error) {
+            console.error('Error creating empty resume:', error);
+            toast.error(error?.message || "Failed to create empty resume. Please try again.");
+          }
+        
+    }
 
 
     const handleExistingCvUpload = async (file) => {
@@ -133,7 +217,7 @@ export default function BuildingComponents() {
                                     e.target.value = null;
                                 }}
                                 accept=".pdf,.doc,.docx,.rtf,.odt" />
-                            <label htmlFor="cvUpload" className="btn btn-primary w-100 stretched-link">Upload Now</label>
+                            <label htmlFor="cvUpload" className="btn btn-primary w-100 stretched-link"> {loading ? "Uploading..." : "Upload Now"}</label>
                             <small id="cvUploadName" className="d-block mt-2 text-body-secondary"></small>
                         </div>
                     </div>
@@ -171,7 +255,7 @@ export default function BuildingComponents() {
                             <button
                                 type="button"
                                 className="stretched-link btn btn-primary w-100"
-                                onClick={handleShow}>
+                                onClick={handleAICV}>
                                 Get Started
                             </button>
                         </div>
@@ -190,17 +274,83 @@ export default function BuildingComponents() {
                     <Modal.Title>Build Your AI-Powered CV</Modal.Title>
                 </Modal.Header>
 
-                <Form id="aiGenerateForm" onSubmit={handleSubmit}>
+                <Form id="aiGenerateForm" >
                     <Modal.Body>
                         {/* Professional Title */}
+                        <Form.Group className="mb-3 text-start" controlId="firstName">
+                            <Form.Label>First Name</Form.Label>
+                            <div className="form-icon-container">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="e.g., John"
+                                    value={formData.firstName}
+                                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                    required
+                                />
+                                <span className="fas fa-briefcase text-body fs-9 form-icon" />
+                            </div>
+                        </Form.Group>
+                        <Form.Group className="mb-3 text-start" controlId="lastName">
+                            <Form.Label>Last Name</Form.Label>
+                            <div className="form-icon-container">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="e.g., Doe"
+                                    value={formData.lastName}
+                                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                    required
+                                />
+                                <span className="fas fa-briefcase text-body fs-9 form-icon" />
+                            </div>
+                        </Form.Group>
+                        <Form.Group className="mb-3 text-start" controlId="email">
+                            <Form.Label>Email</Form.Label>
+                            <div className="form-icon-container">
+                                <Form.Control
+                                    type="email"
+                                    placeholder="e.g., your.email@example.com"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    required
+                                />
+                                <span className="fas fa-briefcase text-body fs-9 form-icon" />
+                            </div>
+                        </Form.Group>
+                        <Form.Group className="mb-3 text-start" controlId="phone">
+                            <Form.Label>Phone</Form.Label>
+                            <div className="form-icon-container">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="e.g., +1234567890"
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    required
+                                />
+                                <span className="fas fa-briefcase text-body fs-9 form-icon" />
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3 text-start" controlId="address">
+                            <Form.Label> Address</Form.Label>
+                            <div className="form-icon-container">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="e.g., 123 Main St, Anytown, USA"
+                                    value={formData.address}
+                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                    required
+                                />
+                                <span className="fas fa-briefcase text-body fs-9 form-icon" />
+                            </div>
+                        </Form.Group>
                         <Form.Group className="mb-3 text-start" controlId="profTitle">
                             <Form.Label>Professional Title</Form.Label>
                             <div className="form-icon-container">
                                 <Form.Control
                                     type="text"
                                     placeholder="e.g., Senior Software Engineer"
-                                    value={profTitle}
-                                    onChange={(e) => setProfTitle(e.target.value)}
+                                    value={formData.jobTitle}
+                                    onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
                                     required
                                 />
                                 <span className="fas fa-briefcase text-body fs-9 form-icon" />
@@ -208,15 +358,15 @@ export default function BuildingComponents() {
                         </Form.Group>
 
                         {/* Professional Summary */}
-                        <Form.Group className="mb-3 text-start" controlId="profSummary">
+                        <Form.Group className="mb-3 text-start" controlId="description">
                             <Form.Label>Professional Summary</Form.Label>
                             <div className="form-icon-container">
                                 <Form.Control
                                     as="textarea"
                                     rows={6}
                                     placeholder="Describe your professional background, key skills, achievements, and career goals..."
-                                    value={profSummary}
-                                    onChange={(e) => setProfSummary(e.target.value)}
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     required
                                 />
                                 <span className="fas fa-align-left text-body fs-9 form-icon" />
@@ -229,8 +379,8 @@ export default function BuildingComponents() {
                         <Button variant="link" onClick={handleClose}>
                             Close
                         </Button>
-                        <Button type="submit" variant="primary">
-                            Generate
+                        <Button type="button" variant="primary" onClick={handleCvAiUpload}>
+                            {AiCvLoader ? "Generating..." : "Generate"}
                         </Button>
                     </Modal.Footer>
                 </Form>
