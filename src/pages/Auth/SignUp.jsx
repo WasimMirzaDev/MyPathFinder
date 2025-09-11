@@ -31,6 +31,9 @@ const validationSchema = Yup.object().shape({
   password_confirmation: Yup.string()
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
     .required('Confirm Password is required'),
+  // phone: Yup.string()
+  //   .matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits')
+  //   .required('Phone number is required'),
   terms: Yup.boolean()
     .oneOf([true], 'You must accept the terms and conditions')
     .required('You must accept the terms and conditions')
@@ -61,6 +64,7 @@ export default function SignUp() {
       email: '',
       password: '',
       password_confirmation: '',
+      phone: '',
       terms: false
     },
     validationSchema,
@@ -182,6 +186,27 @@ export default function SignUp() {
                           {touched.email && errors.email && (
                             <div className="invalid-feedback d-block">
                               {errors.email}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mb-3 text-start">
+                          <label className="form-label" htmlFor="phone">Phone number</label>
+                          <BootstrapForm.Control
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            placeholder="+92 3123456789"
+                            className={`${touched.phone && errors.phone ? 'is-invalid' : ''}`}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            value={values.phone}
+                            autoComplete="phone"
+                            required
+                          />
+                          {touched.phone && errors.phone && (
+                            <div className="invalid-feedback d-block">
+                              {errors.phone}
                             </div>
                           )}
                         </div>
