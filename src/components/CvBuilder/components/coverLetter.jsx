@@ -116,13 +116,20 @@ const CoverLetter = () =>{
   return (
     <>
      <div>
-        <button className='btn btn-primary' onClick={handleGenerateCoverLetter} disabled={coverletterLoader}>{coverletterLoader ? "Generating Cover Letter..." : "Generate Cover Letter"}</button>
-        <button className='btn btn-primary' onClick={handleDownloadCoverLetter}>Download Cover Letter</button>
+      <div className="d-flex gap-2 mb-3">
+        <div>
+          <button className='btn btn-primary' onClick={handleGenerateCoverLetter} disabled={coverletterLoader}>{coverletterLoader ? "Generating Cover Letter..." : "Generate Cover Letter"}</button>
+        </div>
+        <div>
+          <button className='btn btn-primary' onClick={handleDownloadCoverLetter}>Download Cover Letter</button>
+        
+        </div>
+      </div>
         <h3>Classic Cover Letter</h3>
         <div ref={coverRef}>
           <ClassicCoverLetterTemplate coverLetter={coverletterjson} />
         </div>
-        <button onClick={handleCopyToClipboard}>Copy to clipboard</button>
+        <button className="btn btn-primary border-0 mt-2" onClick={handleCopyToClipboard}>Copy to clipboard</button>
       </div>
     </>
   )

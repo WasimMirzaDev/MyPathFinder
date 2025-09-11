@@ -151,7 +151,7 @@ const Template7 = ({ resumeData }) => {
           />
           <div>
             <h1 style={styles.name}>
-              {resumeData?.candidateName?.[0]?.firstName.toUpperCase()} {resumeData?.candidateName?.[0]?.familyName.toUpperCase()}
+              {resumeData?.candidateName?.[0]?.firstName?.toUpperCase()} {resumeData?.candidateName?.[0]?.familyName?.toUpperCase()}
             </h1>
             {resumeData?.email?.[0] && (
               <p style={styles.contactInfo}>📧 {resumeData.email[0]}</p>

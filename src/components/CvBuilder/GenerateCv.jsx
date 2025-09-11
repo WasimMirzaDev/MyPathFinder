@@ -1,4 +1,4 @@
-import React, { useState, useRef ,useCallback , useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus } from "react-icons/fi";
 import avatar from '../../assets/images/team/150x150/57.webp'
 import {
@@ -17,9 +17,9 @@ import {
     Template13
 } from "../templates";
 
-import { Row, Col, Button , Card } from 'react-bootstrap';
+import { Row, Col, Button, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { setParsedResume , updateField , analyzeSummaryAi , setSelectedTemplate , fetchResumeById, updateResumeById } from "../../features/resume/resumeSlice";
+import { setParsedResume, updateField, analyzeSummaryAi, setSelectedTemplate, fetchResumeById, updateResumeById } from "../../features/resume/resumeSlice";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from 'react-toastify';
@@ -46,41 +46,41 @@ const cardTemplate = [
 
 const coverLetterjson = {
     header: {
-      applicant_name: "John Doe",
-      applicant_address: "123 Main Street, Faisalabad, Pakistan",
-      applicant_email: "johndoe@email.com",
-      applicant_phone: "+92 300 1234567",
-      date: "September 5, 2025"
+        applicant_name: "John Doe",
+        applicant_address: "123 Main Street, Faisalabad, Pakistan",
+        applicant_email: "johndoe@email.com",
+        applicant_phone: "+92 300 1234567",
+        date: "September 5, 2025"
     },
     recipient: {
-      hiring_manager_name: "Jane Smith",
-      company_name: "Tech Solutions Ltd.",
-      company_address: "456 Business Road, London, UK"
+        hiring_manager_name: "Jane Smith",
+        company_name: "Tech Solutions Ltd.",
+        company_address: "456 Business Road, London, UK"
     },
     body: {
-      greeting: "Dear Hiring Manager,",
-      opening_paragraph: "I am excited to apply for the Frontend Developer position at Tech Solutions Ltd...",
-      middle_paragraphs: [
-        "At Techtrack Software Solutions, I contributed to multiple Laravel and React projects...",
-        "I am also proficient in Flutter/Dart and exploring Machine Learning..."
-      ],
-      closing_paragraph: "I would be delighted to discuss how my skills can contribute to your company’s success.",
-      signature: "Sincerely, John Doe"
+        greeting: "Dear Hiring Manager,",
+        opening_paragraph: "I am excited to apply for the Frontend Developer position at Tech Solutions Ltd...",
+        middle_paragraphs: [
+            "At Techtrack Software Solutions, I contributed to multiple Laravel and React projects...",
+            "I am also proficient in Flutter/Dart and exploring Machine Learning..."
+        ],
+        closing_paragraph: "I would be delighted to discuss how my skills can contribute to your company’s success.",
+        signature: "Sincerely, John Doe"
     }
-  };
-  
+};
+
 
 
 export default function CVBuilder() {
     const { id } = useParams();
     const dispatch = useDispatch();
-    const { parsedResume , SummaryIssues , SummarySuggestions , AiSummaryLoader , selectedTemplate , prevParsedResume ,saveChangesLoader } = useSelector((state) => state.resume);
+    const { parsedResume, SummaryIssues, SummarySuggestions, AiSummaryLoader, selectedTemplate, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [profilePic, setProfilePic] = useState(null);
 
-    
+
     const [currentSkill, setCurrentSkill] = useState('');
     const [currentLanguage, setCurrentLanguage] = useState('');
     const [languageLevel, setLanguageLevel] = useState('Intermediate');
@@ -100,29 +100,29 @@ export default function CVBuilder() {
 
     const handleTemplateChange = (templateName) => {
         dispatch(setParsedResume({
-          ...parsedResume,
-          template: templateName
+            ...parsedResume,
+            template: templateName
         }));
         dispatch(setSelectedTemplate(templateName));
-      };
+    };
 
-    useEffect(()=>{
-        if(id){
+    useEffect(() => {
+        if (id) {
             dispatch(fetchResumeById(id));
         }
-    },[id])
+    }, [id])
 
 
     const handleSaveChanges = () => {
-        if(parsedResume != prevParsedResume){
-        dispatch(updateResumeById({id , parsedResume}));
+        if (parsedResume != prevParsedResume) {
+            dispatch(updateResumeById({ id, parsedResume }));
         }
     }
 
 
-    
 
-      const zoomIn = () => {
+
+    const zoomIn = () => {
         setZoom(prev => {
             const newZoom = Math.min(prev + 0.1, 2);
             console.log('Zoom In clicked. New zoom level:', newZoom);
@@ -148,119 +148,119 @@ export default function CVBuilder() {
 
 
 
-        useEffect(() => {
-            if (parsedResume?.skill && parsedResume.skill.length > 0) {
-                // Check if any skills have the selected property
-                const hasSelectedProperty = parsedResume.skill.some(skill => 'selected' in skill);
-    
-                if (!hasSelectedProperty) {
-                    // Initialize first 5 skills as selected
-                    const updatedSkills = parsedResume.skill.map((skill, index) => ({
-                        ...skill,
-                        selected: index < 5
-                    }));
-                   dispatch(updateField({path:"skill", value: updatedSkills}));
-                }
+    useEffect(() => {
+        if (parsedResume?.skill && parsedResume.skill.length > 0) {
+            // Check if any skills have the selected property
+            const hasSelectedProperty = parsedResume.skill.some(skill => 'selected' in skill);
+
+            if (!hasSelectedProperty) {
+                // Initialize first 5 skills as selected
+                const updatedSkills = parsedResume.skill.map((skill, index) => ({
+                    ...skill,
+                    selected: index < 5
+                }));
+                dispatch(updateField({ path: "skill", value: updatedSkills }));
             }
-        }, [parsedResume?.skill]);
+        }
+    }, [parsedResume?.skill]);
 
 
 
-        const handleAddSkill = () => {
-            if (currentSkill.trim()) {
-              const currentSkills = parsedResume?.skill || [];
-          
-              dispatch(
+    const handleAddSkill = () => {
+        if (currentSkill.trim()) {
+            const currentSkills = parsedResume?.skill || [];
+
+            dispatch(
                 updateField({
-                  path: "skill",
-                  value: [
-                    ...currentSkills,
-                    {
-                      name: currentSkill.trim(),
-                      selected: true, // default selected
-                    },
-                  ],
+                    path: "skill",
+                    value: [
+                        ...currentSkills,
+                        {
+                            name: currentSkill.trim(),
+                            selected: true, // default selected
+                        },
+                    ],
                 })
-              );
-          
-              setCurrentSkill("");
-            }
-          };
+            );
+
+            setCurrentSkill("");
+        }
+    };
 
 
-              const handleAddHobby = () => {
-                  if (!currentHobby.trim()) {
-                      toast.error("Please enter a hobby", {
-                          position: "top-right",
-                          autoClose: 3000,
-                          hideProgressBar: false,
-                          closeOnClick: false,
-                          pauseOnHover: true,
-                          draggable: true,
-                          progress: undefined,
-                          theme: "light",
-                          transition: Bounce,
-                      });
-                      return;
-                  }
-          
-                  dispatch(updateField({path:"hobbies", value: [...(parsedResume.hobbies || []), currentHobby.trim()]}));
-                  setCurrentHobby('');
-              };
+    const handleAddHobby = () => {
+        if (!currentHobby.trim()) {
+            toast.error("Please enter a hobby", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
 
-              
-              const handleAddLanguage = () => {
-                  if (!currentLanguage.trim()) {
-                      toast.error("Please enter a language", {
-                          position: "top-right",
-                          autoClose: 3000,
-                          hideProgressBar: false,
-                          closeOnClick: false,
-                          pauseOnHover: true,
-                          draggable: true,
-                          progress: undefined,
-                          theme: "light",
-                          transition: Bounce,
-                      });
-                      return;
-                  }
-          
-                  const newLanguage = {
-                      name: currentLanguage.trim(),
-                      level: languageLevel,
-                      fluency: languageLevel
-                  };
-          
-                  dispatch(updateField({path:"languages", value: [...(parsedResume.languages || []), newLanguage]}));
-                  setCurrentLanguage('');
-              };
-          
+        dispatch(updateField({ path: "hobbies", value: [...(parsedResume.hobbies || []), currentHobby.trim()] }));
+        setCurrentHobby('');
+    };
 
 
-//     const updateField = (path, value) => {
-//         dispatch(setParsedResume((prev) => {
-//             const newResume = { ...prev };
-//             const pathParts = path.match(/(\w+)(?:\[(\d+)\])?\.?(\w+)?/);
-//             if (!pathParts) {
-//                 newResume[path] = value;
-//                 return newResume;
-//             }
+    const handleAddLanguage = () => {
+        if (!currentLanguage.trim()) {
+            toast.error("Please enter a language", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
 
-//             const [_, key, index, subKey] = pathParts;
-//             if (index && subKey) {
-//                 if (!newResume[key]) newResume[key] = [];
-//                 if (!newResume[key][index]) newResume[key][index] = {};
-//                 newResume[key][index][subKey] = value;
-//             } else if (index) {
-//                 if (!newResume[key]) newResume[key] = [];
-//                 newResume[key][index] = value;
-//             } else {
-//                 newResume[key] = value;
-//             }
-//             return newResume;
-//         })
-//     );
-//    }
+        const newLanguage = {
+            name: currentLanguage.trim(),
+            level: languageLevel,
+            fluency: languageLevel
+        };
+
+        dispatch(updateField({ path: "languages", value: [...(parsedResume.languages || []), newLanguage] }));
+        setCurrentLanguage('');
+    };
+
+
+
+    //     const updateField = (path, value) => {
+    //         dispatch(setParsedResume((prev) => {
+    //             const newResume = { ...prev };
+    //             const pathParts = path.match(/(\w+)(?:\[(\d+)\])?\.?(\w+)?/);
+    //             if (!pathParts) {
+    //                 newResume[path] = value;
+    //                 return newResume;
+    //             }
+
+    //             const [_, key, index, subKey] = pathParts;
+    //             if (index && subKey) {
+    //                 if (!newResume[key]) newResume[key] = [];
+    //                 if (!newResume[key][index]) newResume[key][index] = {};
+    //                 newResume[key][index][subKey] = value;
+    //             } else if (index) {
+    //                 if (!newResume[key]) newResume[key] = [];
+    //                 newResume[key][index] = value;
+    //             } else {
+    //                 newResume[key] = value;
+    //             }
+    //             return newResume;
+    //         })
+    //     );
+    //    }
 
 
     const calculatePages = () => {
@@ -294,131 +294,131 @@ export default function CVBuilder() {
 
 
 
-        const handleDownloadPDF = async () => {
-            if (!cvRef.current) return;
-    
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const a4Width = 210; // A4 width in mm
-            const a4Height = 297; // A4 height in mm
-            const a4WidthPx = 794; // A4 width in pixels at 96 DPI
-            const a4HeightPx = 1123; // A4 height in pixels at 96 DPI
-            const padding = 0; // Padding in pixels
-            const bottomPaddingPx = 10; // Bottom padding in pixels
-            const topPaddingPx = 10; // Top padding in pixels
-    
-            // Create a temporary container for the entire content
-            const tempContainer = document.createElement('div');
-            tempContainer.style.position = 'absolute';
-            tempContainer.style.left = '-9999px';
-            tempContainer.style.width = `${a4WidthPx}px`;
-            tempContainer.style.backgroundColor = '#ffffff';
-            tempContainer.style.padding = `${padding}px`;
-            tempContainer.style.boxSizing = 'border-box';
-    
-            // Clone the CV content
-            const clonedContent = cvRef.current.cloneNode(true);
-    
-            // Apply PDF-specific styles to center the content
-            clonedContent.style.width = `${a4WidthPx - 2 * padding}px`; // Account for padding on both sides
-            clonedContent.style.margin = '0 auto'; // Center horizontally
-            clonedContent.style.padding = '0';
-            clonedContent.style.fontSize = '12px';
-            clonedContent.style.lineHeight = '1.4';
-    
-            // // Center all content elements
-            // const centerElements = clonedContent.querySelectorAll('*');
-            // centerElements.forEach(el => {
-            //   el.style.marginLeft = 'auto';
-            //   el.style.marginRight = 'auto';
-            //   el.style.maxWidth = '100%';
-            // });
-    
-            // Adjust heading sizes
-            const headings = clonedContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
-            headings.forEach(heading => {
-                const currentSize = window.getComputedStyle(heading).fontSize;
-                const newSize = parseFloat(currentSize) * 0.8;
-                heading.style.fontSize = `${newSize}px`;
-                heading.style.marginBottom = '8px';
-                heading.style.marginTop = '12px';
-            });
-    
-            // Center sections
-            const sections = clonedContent.querySelectorAll('section, .section');
-            sections.forEach(section => {
-                section.style.marginLeft = 'auto';
-                section.style.marginRight = 'auto';
-                section.style.maxWidth = '100%';
-            });
-    
-            tempContainer.appendChild(clonedContent);
-            document.body.appendChild(tempContainer);
-    
-            try {
-                const totalPages = calculatePages();
-    
-                for (let i = 0; i < totalPages; i++) {
-                    const canvas = await html2canvas(clonedContent, {
-                        scale: 2,
-                        logging: false,
-                        useCORS: true,
-                        backgroundColor: '#ffffff',
-                        width: a4WidthPx,
-                        height: a4HeightPx - bottomPaddingPx - topPaddingPx, // Reduce height to accommodate padding
-                        scrollY: i * a4HeightPx,
-                        windowHeight: a4HeightPx,
-                        y: i * a4HeightPx,
-                    });
-    
-                    const imgData = canvas.toDataURL('image/png', 1.0);
-    
-                    if (i > 0) {
-                        pdf.addPage();
-                    }
-    
-                    // Center the image on the PDF page
-                    const imgWidth = a4Width;
-                    const imgHeight = (canvas.height * a4Width) / canvas.width;
-    
-                    // Calculate vertical position to center content
-                    const yPos = (a4Height - imgHeight) / 2;
-    
-                    // Adjust height to account for padding
-                    const adjustedImgHeight = (a4HeightPx - bottomPaddingPx - topPaddingPx) * (imgHeight / a4HeightPx);
-                    const yPosition = (yPos > 0 ? yPos : 0) + (topPaddingPx * (a4Height / a4HeightPx));
-                    pdf.addImage(imgData, 'PNG', 0, yPosition, imgWidth, adjustedImgHeight);
-                }
-    
-                pdf.save(`${parsedResume?.candidateName?.[0]?.firstName||'CV'}.pdf`);
-            } catch (error) {
-                console.error('Error generating PDF:', error);
-            } finally {
-                document.body.removeChild(tempContainer);
-            }
-        };
+    const handleDownloadPDF = async () => {
+        if (!cvRef.current) return;
 
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const a4Width = 210; // A4 width in mm
+        const a4Height = 297; // A4 height in mm
+        const a4WidthPx = 794; // A4 width in pixels at 96 DPI
+        const a4HeightPx = 1123; // A4 height in pixels at 96 DPI
+        const padding = 0; // Padding in pixels
+        const bottomPaddingPx = 10; // Bottom padding in pixels
+        const topPaddingPx = 10; // Top padding in pixels
 
+        // Create a temporary container for the entire content
+        const tempContainer = document.createElement('div');
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
+        tempContainer.style.width = `${a4WidthPx}px`;
+        tempContainer.style.backgroundColor = '#ffffff';
+        tempContainer.style.padding = `${padding}px`;
+        tempContainer.style.boxSizing = 'border-box';
 
-            const previewContainerRef = useRef(null);
-        
-            const scrollToPage = useCallback((pageNumber) => {
-                if (!cvRef.current || !previewContainerRef.current || pageNumber < 1 || pageNumber > totalPages) return;
-        
-                const pageHeight = cvRef.current.scrollHeight / totalPages;
-                const scrollPosition = (pageNumber - 1) * pageHeight;
-        
-                previewContainerRef.current.scrollTo({
-                    top: scrollPosition,
-                    behavior: 'smooth'
+        // Clone the CV content
+        const clonedContent = cvRef.current.cloneNode(true);
+
+        // Apply PDF-specific styles to center the content
+        clonedContent.style.width = `${a4WidthPx - 2 * padding}px`; // Account for padding on both sides
+        clonedContent.style.margin = '0 auto'; // Center horizontally
+        clonedContent.style.padding = '0';
+        clonedContent.style.fontSize = '12px';
+        clonedContent.style.lineHeight = '1.4';
+
+        // // Center all content elements
+        // const centerElements = clonedContent.querySelectorAll('*');
+        // centerElements.forEach(el => {
+        //   el.style.marginLeft = 'auto';
+        //   el.style.marginRight = 'auto';
+        //   el.style.maxWidth = '100%';
+        // });
+
+        // Adjust heading sizes
+        const headings = clonedContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        headings.forEach(heading => {
+            const currentSize = window.getComputedStyle(heading).fontSize;
+            const newSize = parseFloat(currentSize) * 0.8;
+            heading.style.fontSize = `${newSize}px`;
+            heading.style.marginBottom = '8px';
+            heading.style.marginTop = '12px';
+        });
+
+        // Center sections
+        const sections = clonedContent.querySelectorAll('section, .section');
+        sections.forEach(section => {
+            section.style.marginLeft = 'auto';
+            section.style.marginRight = 'auto';
+            section.style.maxWidth = '100%';
+        });
+
+        tempContainer.appendChild(clonedContent);
+        document.body.appendChild(tempContainer);
+
+        try {
+            const totalPages = calculatePages();
+
+            for (let i = 0; i < totalPages; i++) {
+                const canvas = await html2canvas(clonedContent, {
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    width: a4WidthPx,
+                    height: a4HeightPx - bottomPaddingPx - topPaddingPx, // Reduce height to accommodate padding
+                    scrollY: i * a4HeightPx,
+                    windowHeight: a4HeightPx,
+                    y: i * a4HeightPx,
                 });
-        
-                setCurrentPage(pageNumber);
-            }, [totalPages]);
-        
-            // Handle page navigation
-            const goToPage = useCallback((page) => {
-                scrollToPage(page);
-            }, [scrollToPage]);
+
+                const imgData = canvas.toDataURL('image/png', 1.0);
+
+                if (i > 0) {
+                    pdf.addPage();
+                }
+
+                // Center the image on the PDF page
+                const imgWidth = a4Width;
+                const imgHeight = (canvas.height * a4Width) / canvas.width;
+
+                // Calculate vertical position to center content
+                const yPos = (a4Height - imgHeight) / 2;
+
+                // Adjust height to account for padding
+                const adjustedImgHeight = (a4HeightPx - bottomPaddingPx - topPaddingPx) * (imgHeight / a4HeightPx);
+                const yPosition = (yPos > 0 ? yPos : 0) + (topPaddingPx * (a4Height / a4HeightPx));
+                pdf.addImage(imgData, 'PNG', 0, yPosition, imgWidth, adjustedImgHeight);
+            }
+
+            pdf.save(`${parsedResume?.candidateName?.[0]?.firstName || 'CV'}.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+        } finally {
+            document.body.removeChild(tempContainer);
+        }
+    };
+
+
+
+    const previewContainerRef = useRef(null);
+
+    const scrollToPage = useCallback((pageNumber) => {
+        if (!cvRef.current || !previewContainerRef.current || pageNumber < 1 || pageNumber > totalPages) return;
+
+        const pageHeight = cvRef.current.scrollHeight / totalPages;
+        const scrollPosition = (pageNumber - 1) * pageHeight;
+
+        previewContainerRef.current.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth'
+        });
+
+        setCurrentPage(pageNumber);
+    }, [totalPages]);
+
+    // Handle page navigation
+    const goToPage = useCallback((page) => {
+        scrollToPage(page);
+    }, [scrollToPage]);
 
 
 
@@ -426,9 +426,9 @@ export default function CVBuilder() {
     const [activeTab, setActiveTab] = useState('tabPreview');
 
 
-    const handleAnalysis = () =>{
+    const handleAnalysis = () => {
         setActiveTab('tabAnalysis');
-        if(!(SummaryIssues.length > 0 && SummarySuggestions != "")){
+        if (!(SummaryIssues.length > 0 && SummarySuggestions != "")) {
             handleAnalyzeSummary();
         }
     }
@@ -469,7 +469,7 @@ export default function CVBuilder() {
     };
 
     const handleApplySummary = () => {
-        dispatch(updateField({path:"summary", value:SummarySuggestions}));
+        dispatch(updateField({ path: "summary", value: SummarySuggestions }));
     };
 
     // Handle avatar upload
@@ -485,15 +485,15 @@ export default function CVBuilder() {
         //     };
         //     reader.readAsDataURL(file);
         // }
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    setProfilePic(reader.result);
-                    dispatch(updateField({path:"profilePic", value:reader.result}));
-                };
-                reader.readAsDataURL(file);
-            }
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfilePic(reader.result);
+                dispatch(updateField({ path: "profilePic", value: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     // Toggle accordion sections
@@ -505,277 +505,279 @@ export default function CVBuilder() {
     };
 
 
-      // State with consistent prefix
-  const [eduList, setEduList] = useState([]);
-  const [eduListdispatch, setEduListdispatch] = useState([]);
-  const [eduCurrentForm, setEduCurrentForm] = useState(null);
-  const [eduFormData, setEduFormData] = useState({
-    eduDegree: '',
-    eduInstitution: '',
-    eduStartDate: '',
-    eduEndDate: ''
-  });
-
-  const eduHandleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEduFormData({
-      ...eduFormData,
-      [name]: value
-    });
-  };
-
-  const eduHandleAddEducation = () => {
-    // Check if there's already an empty form
-    if (eduCurrentForm) {
-      // Check if the current form has any data
-      const eduHasData = Object.values(eduFormData).some(eduValue => eduValue.trim() !== '');
-      
-      if (eduHasData) {
-        // Check if all required fields are filled
-        const eduAllFieldsFilled = eduFormData.eduDegree.trim() !== '' && 
-                                  eduFormData.eduInstitution.trim() !== '' && 
-                                  eduFormData.eduStartDate.trim() !== '' && 
-                                  eduFormData.eduEndDate.trim() !== '';
-        
-        if (!eduAllFieldsFilled) {
-          alert('Please complete the current education form before adding a new one');
-          return;
-        }
-        
-        // If form is complete, save it
-        eduHandleSaveEducation();
-      }
-    }
-    
-    // Create a new form
-    setEduCurrentForm({
-      eduId: Date.now(),
-      eduDegree: '',
-      eduInstitution: '',
-      eduStartDate: '',
-      eduEndDate: ''
-    });
-    
-    // Reset form data
-    setEduFormData({
-      eduDegree: '',
-      eduInstitution: '',
-      eduStartDate: '',
-      eduEndDate: ''
-    });
-  };
-
-  const eduHandleSaveEducation = () => {
-    // Validate form data
-    if (!eduFormData.eduDegree || !eduFormData.eduInstitution || !eduFormData.eduStartDate || !eduFormData.eduEndDate) {
-      alert('Please fill all fields');
-      return;
-    }
-    
-    // Add to educations list
-    // const eduNewEducation = {
-    //   eduId: eduCurrentForm.eduId,
-    //   eduDegree: eduFormData.eduDegree,
-    //   eduInstitution: eduFormData.eduInstitution,
-    //   eduStartDate: eduFormData.eduStartDate,
-    //   eduEndDate: eduFormData.eduEndDate
-    // };
-
-
-    const dispatcheducationList = {
-        educationOrganization:eduFormData.eduInstitution,
-        educationAccreditation:eduFormData.eduDegree,
-        educationDates:{
-            start:{
-                date:eduFormData.eduStartDate
-            },
-            end:{
-                date:eduFormData.eduEndDate
-            }
-        }
-    }
-
-
-    dispatch(updateField({path:"education", value:[...parsedResume.education, dispatcheducationList]}));
-    
-    // setEduList([...eduList, eduNewEducation]);
-    setEduCurrentForm(null);
-    setEduFormData({
+    // State with consistent prefix
+    const [eduList, setEduList] = useState([]);
+    const [eduListdispatch, setEduListdispatch] = useState([]);
+    const [eduCurrentForm, setEduCurrentForm] = useState(null);
+    const [eduFormData, setEduFormData] = useState({
         eduDegree: '',
         eduInstitution: '',
         eduStartDate: '',
         eduEndDate: ''
     });
 
-
-    alert('Education added successfully');
-  };
-
-  const eduHandleEditEducation = (eduIndex) => {
-    const eduToEdit = parsedResume.education.filter((_, index) => index === eduIndex)[0];
-    if (eduToEdit) {
-      setEduCurrentForm(eduToEdit);
-      setEduFormData({
-        eduDegree: eduToEdit.educationAccreditation,
-        eduInstitution: eduToEdit.educationOrganization,
-        eduStartDate: eduToEdit.educationDates.start.date,
-        eduEndDate: eduToEdit.educationDates.end.date
-      });
-      
-      // Remove from displayed list while editing
-      dispatch(updateField({path:"education", value:parsedResume.education.filter((_, index) => index !== eduIndex)}));
-    }
-  };
-
-  const eduHandleCancelEdit = () => {
-    if (eduFormData.eduDegree || eduFormData.eduInstitution || eduFormData.eduStartDate || eduFormData.eduEndDate) {
-      // If there's data, add it back to the list
-      const eduNewEducation = {
-        eduId: eduCurrentForm.eduId,
-        educationAccreditation:eduFormData.eduDegree,
-        educationOrganization:eduFormData.eduInstitution,
-        educationDates:{
-            start:{
-                date:eduFormData.eduStartDate
-            },
-            end:{
-                date:eduFormData.eduEndDate
-            }
-        }
-      };
-      
-      dispatch(updateField({path:"education", value:[...parsedResume.education, eduNewEducation]}));
-    }
-    
-    setEduCurrentForm(null);
-    setEduFormData({
-      eduDegree: '',
-      eduInstitution: '',
-      eduStartDate: '',
-      eduEndDate: ''
-    });
-  };
-
-    const eduHandleDeleteEducation = (index) => {
-    if (window.confirm('Are you sure you want to delete this education entry?')) {
-      dispatch(updateField({
-        path: "education",
-        value: parsedResume.education.filter((_, i) => i !== index)
-      }));
-      alert('Education entry deleted successfully');
-    }
-  };
-  
-// =================================================================================
-
-const [expItems, setExpItems] = useState([]);
-
-  // Function to add a new incomplete experience item
-  const expHandleAddExperience = () => {
-    // Check if there's already an incomplete form
-    const hasIncomplete = expItems.some(item => !item.expIsComplete);
-    
-    if (hasIncomplete) {
-      alert('Please complete the current experience form before adding a new one');
-      return;
-    }
-    
-    // Create a new incomplete experience item
-    const expNewItem = {
-      expId: Date.now(),
-      expJobTitle: '',
-      expCompany: '',
-      expStartDate: '',
-      expEndDate: '',
-      expDescription: '',
-      expIsComplete: false
+    const eduHandleInputChange = (e) => {
+        const { name, value } = e.target;
+        setEduFormData({
+            ...eduFormData,
+            [name]: value
+        });
     };
 
+    const eduHandleAddEducation = () => {
+        // Check if there's already an empty form
+        if (eduCurrentForm) {
+            // Check if the current form has any data
+            const eduHasData = Object.values(eduFormData).some(eduValue => eduValue.trim() !== '');
 
-    const dispatchExperienceList = {
-        workExperienceDescription:expNewItem.expDescription,
-        workExperienceDates:{
-            start:{
-                date:expNewItem.expStartDate
-            },
-            end:{
-                date:expNewItem.expEndDate
+            if (eduHasData) {
+                // Check if all required fields are filled
+                const eduAllFieldsFilled = eduFormData.eduDegree.trim() !== '' &&
+                    eduFormData.eduInstitution.trim() !== '' &&
+                    eduFormData.eduStartDate.trim() !== '' &&
+                    eduFormData.eduEndDate.trim() !== '';
+
+                if (!eduAllFieldsFilled) {
+                    alert('Please complete the current education form before adding a new one');
+                    return;
+                }
+
+                // If form is complete, save it
+                eduHandleSaveEducation();
             }
-        },
-        workExperienceOrganization:expNewItem.expCompany,
-        workExperienceJobTitle:expNewItem.expJobTitle
-    }
-    
-    dispatch(updateField({path:"workExperience", value:[...parsedResume.workExperience, dispatchExperienceList]}));
-    
-    // setExpItems([...expItems, expNewItem]);
-  };
+        }
 
-  // Handle input changes for incomplete items
-  const expHandleInputChange = (expIndex, field, value) => {
-    dispatch(updateField({path:"workExperience", value:[...parsedResume.workExperience, parsedResume.workExperience.map((item,index) => 
-      index === expIndex ? { ...item, [field]: value } : item
-    )]}));
-  };
+        // Create a new form
+        setEduCurrentForm({
+            eduId: Date.now(),
+            eduDegree: '',
+            eduInstitution: '',
+            eduStartDate: '',
+            eduEndDate: ''
+        });
 
-  // Mark an item as complete
-  const expHandleSaveExperience = (expIndex) => {
-    const item = parsedResume.workExperience[expIndex];
-    
-    // Validate required fields
-    if (!item.workExperienceJobTitle || !item.workExperienceOrganization || !item.workExperienceDates?.start?.date || !item.workExperienceDates?.end?.date) {
-      alert('Please fill all required fields');
-      return;
-    }
-    
-    // Mark as complete by updating the specific item
-    const updatedExperience = parsedResume.workExperience.map((item, index) => 
-      index === expIndex ? { ...item, expIsComplete: true } : item
-    );
-    
-    dispatch(updateField({
-      path: "workExperience",
-      value: updatedExperience
-    }));
-    
-    alert('Experience saved successfully');
-  };
+        // Reset form data
+        setEduFormData({
+            eduDegree: '',
+            eduInstitution: '',
+            eduStartDate: '',
+            eduEndDate: ''
+        });
+    };
 
-  // Edit an existing complete item
-  const expHandleEditExperience = (expIndex) => {
-    const updatedExperience = parsedResume.workExperience.map((item, index) => 
-      index === expIndex ? { ...item, expIsComplete: false } : item
-    );
-    
-    dispatch(updateField({
-      path: "workExperience",
-      value: updatedExperience
-    }));
-  };
+    const eduHandleSaveEducation = () => {
+        // Validate form data
+        if (!eduFormData.eduDegree || !eduFormData.eduInstitution || !eduFormData.eduStartDate || !eduFormData.eduEndDate) {
+            alert('Please fill all fields');
+            return;
+        }
 
-  // Delete an experience item
-  const expHandleDeleteExperience = (expIndex) => {
-    if (window.confirm('Are you sure you want to delete this experience entry?')) {
-      const updatedExperience = parsedResume.workExperience.filter((_, index) => index !== expIndex);
-      
-      dispatch(updateField({
-        path: "workExperience",
-        value: updatedExperience
-      }));
-      
-      alert('Experience entry deleted successfully');
-    }
-  };
+        // Add to educations list
+        // const eduNewEducation = {
+        //   eduId: eduCurrentForm.eduId,
+        //   eduDegree: eduFormData.eduDegree,
+        //   eduInstitution: eduFormData.eduInstitution,
+        //   eduStartDate: eduFormData.eduStartDate,
+        //   eduEndDate: eduFormData.eduEndDate
+        // };
 
-  // Cancel editing and remove incomplete items
-  const expHandleCancelEdit = (expIndex) => {
-    const updatedExperience = parsedResume.workExperience.filter((_, index) => index !== expIndex);
-    
-    dispatch(updateField({
-      path: "workExperience",
-      value: updatedExperience
-    }));
-  };
+
+        const dispatcheducationList = {
+            educationOrganization: eduFormData.eduInstitution,
+            educationAccreditation: eduFormData.eduDegree,
+            educationDates: {
+                start: {
+                    date: eduFormData.eduStartDate
+                },
+                end: {
+                    date: eduFormData.eduEndDate
+                }
+            }
+        }
+
+
+        dispatch(updateField({ path: "education", value: [...parsedResume.education, dispatcheducationList] }));
+
+        // setEduList([...eduList, eduNewEducation]);
+        setEduCurrentForm(null);
+        setEduFormData({
+            eduDegree: '',
+            eduInstitution: '',
+            eduStartDate: '',
+            eduEndDate: ''
+        });
+
+
+        alert('Education added successfully');
+    };
+
+    const eduHandleEditEducation = (eduIndex) => {
+        const eduToEdit = parsedResume.education.filter((_, index) => index === eduIndex)[0];
+        if (eduToEdit) {
+            setEduCurrentForm(eduToEdit);
+            setEduFormData({
+                eduDegree: eduToEdit.educationAccreditation,
+                eduInstitution: eduToEdit.educationOrganization,
+                eduStartDate: eduToEdit.educationDates.start.date,
+                eduEndDate: eduToEdit.educationDates.end.date
+            });
+
+            // Remove from displayed list while editing
+            dispatch(updateField({ path: "education", value: parsedResume.education.filter((_, index) => index !== eduIndex) }));
+        }
+    };
+
+    const eduHandleCancelEdit = () => {
+        if (eduFormData.eduDegree || eduFormData.eduInstitution || eduFormData.eduStartDate || eduFormData.eduEndDate) {
+            // If there's data, add it back to the list
+            const eduNewEducation = {
+                eduId: eduCurrentForm.eduId,
+                educationAccreditation: eduFormData.eduDegree,
+                educationOrganization: eduFormData.eduInstitution,
+                educationDates: {
+                    start: {
+                        date: eduFormData.eduStartDate
+                    },
+                    end: {
+                        date: eduFormData.eduEndDate
+                    }
+                }
+            };
+
+            dispatch(updateField({ path: "education", value: [...parsedResume.education, eduNewEducation] }));
+        }
+
+        setEduCurrentForm(null);
+        setEduFormData({
+            eduDegree: '',
+            eduInstitution: '',
+            eduStartDate: '',
+            eduEndDate: ''
+        });
+    };
+
+    const eduHandleDeleteEducation = (index) => {
+        if (window.confirm('Are you sure you want to delete this education entry?')) {
+            dispatch(updateField({
+                path: "education",
+                value: parsedResume.education.filter((_, i) => i !== index)
+            }));
+            alert('Education entry deleted successfully');
+        }
+    };
+
+    // =================================================================================
+
+    const [expItems, setExpItems] = useState([]);
+
+    // Function to add a new incomplete experience item
+    const expHandleAddExperience = () => {
+        // Check if there's already an incomplete form
+        const hasIncomplete = expItems.some(item => !item.expIsComplete);
+
+        if (hasIncomplete) {
+            alert('Please complete the current experience form before adding a new one');
+            return;
+        }
+
+        // Create a new incomplete experience item
+        const expNewItem = {
+            expId: Date.now(),
+            expJobTitle: '',
+            expCompany: '',
+            expStartDate: '',
+            expEndDate: '',
+            expDescription: '',
+            expIsComplete: false
+        };
+
+
+        const dispatchExperienceList = {
+            workExperienceDescription: expNewItem.expDescription,
+            workExperienceDates: {
+                start: {
+                    date: expNewItem.expStartDate
+                },
+                end: {
+                    date: expNewItem.expEndDate
+                }
+            },
+            workExperienceOrganization: expNewItem.expCompany,
+            workExperienceJobTitle: expNewItem.expJobTitle
+        }
+
+        dispatch(updateField({ path: "workExperience", value: [...parsedResume.workExperience, dispatchExperienceList] }));
+
+        // setExpItems([...expItems, expNewItem]);
+    };
+
+    // Handle input changes for incomplete items
+    const expHandleInputChange = (expIndex, field, value) => {
+        dispatch(updateField({
+            path: "workExperience", value: [...parsedResume.workExperience, parsedResume.workExperience.map((item, index) =>
+                index === expIndex ? { ...item, [field]: value } : item
+            )]
+        }));
+    };
+
+    // Mark an item as complete
+    const expHandleSaveExperience = (expIndex) => {
+        const item = parsedResume.workExperience[expIndex];
+
+        // Validate required fields
+        if (!item.workExperienceJobTitle || !item.workExperienceOrganization || !item.workExperienceDates?.start?.date || !item.workExperienceDates?.end?.date) {
+            alert('Please fill all required fields');
+            return;
+        }
+
+        // Mark as complete by updating the specific item
+        const updatedExperience = parsedResume.workExperience.map((item, index) =>
+            index === expIndex ? { ...item, expIsComplete: true } : item
+        );
+
+        dispatch(updateField({
+            path: "workExperience",
+            value: updatedExperience
+        }));
+
+        alert('Experience saved successfully');
+    };
+
+    // Edit an existing complete item
+    const expHandleEditExperience = (expIndex) => {
+        const updatedExperience = parsedResume.workExperience.map((item, index) =>
+            index === expIndex ? { ...item, expIsComplete: false } : item
+        );
+
+        dispatch(updateField({
+            path: "workExperience",
+            value: updatedExperience
+        }));
+    };
+
+    // Delete an experience item
+    const expHandleDeleteExperience = (expIndex) => {
+        if (window.confirm('Are you sure you want to delete this experience entry?')) {
+            const updatedExperience = parsedResume.workExperience.filter((_, index) => index !== expIndex);
+
+            dispatch(updateField({
+                path: "workExperience",
+                value: updatedExperience
+            }));
+
+            alert('Experience entry deleted successfully');
+        }
+    };
+
+    // Cancel editing and remove incomplete items
+    const expHandleCancelEdit = (expIndex) => {
+        const updatedExperience = parsedResume.workExperience.filter((_, index) => index !== expIndex);
+
+        dispatch(updateField({
+            path: "workExperience",
+            value: updatedExperience
+        }));
+    };
 
     // Render the component
     return (
@@ -853,10 +855,10 @@ const [expItems, setExpItems] = useState([]);
                                 {/* TAB: Preview (main form) */}
                                 {activeTab === 'tabPreview' && (
                                     <div className="tab-pane fade active show" id="tabPreview" role="tabpanel" aria-labelledby="tabPreview-tab" tabIndex="0">
-                            <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h4 className="mb-0">Basic Information</h4>
-                                <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume}>{saveChangesLoader? "Saving" : "Save Changes"}</button>
-                            </div>
+                                        <div className="d-flex justify-content-between align-items-center mb-3">
+                                            <h4 className="mb-0">Basic Information</h4>
+                                            <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume}>{saveChangesLoader ? "Saving" : "Save Changes"}</button>
+                                        </div>
                                         <div className="accordion" id="cvAccordion">
                                             {/* Personal details */}
                                             <div className="accordion-item">
@@ -880,22 +882,22 @@ const [expItems, setExpItems] = useState([]);
                                                             <div className="row g-3 mb-3">
                                                                 <div className="col-md-3 col-4">
                                                                     <div className="border rounded d-flex flex-column justify-content-center align-items-center overflow-hidden" style={{ height: '120px' }}>
-                                                                    {profilePic || (parsedResume?.profilePic) ? (
-                                                    <img
-                                                        src={profilePic || parsedResume.profilePic}
-                                                        alt="Profile"
-                                                        style={{
-                                                            width: '100%',
-                                                            height: '100%',
-                                                            objectFit: 'cover'
-                                                        }}
-                                                    />
-                                                ) : (
-                                                    <div className="text-muted">
-                                                        <i className="bi bi-person-circle" style={{ fontSize: '3rem' }}></i>
-                                                        <div className="small mt-1">Upload Photo</div>
-                                                    </div>
-                                                )}
+                                                                        {profilePic || (parsedResume?.profilePic) ? (
+                                                                            <img
+                                                                                src={profilePic || parsedResume.profilePic}
+                                                                                alt="Profile"
+                                                                                style={{
+                                                                                    width: '100%',
+                                                                                    height: '100%',
+                                                                                    objectFit: 'cover'
+                                                                                }}
+                                                                            />
+                                                                        ) : (
+                                                                            <div className="text-muted">
+                                                                                <i className="bi bi-person-circle" style={{ fontSize: '3rem' }}></i>
+                                                                                <div className="small mt-1">Upload Photo</div>
+                                                                            </div>
+                                                                        )}
                                                                         <input
                                                                             id="avatarInput"
                                                                             ref={fileInputRef}
@@ -928,12 +930,12 @@ const [expItems, setExpItems] = useState([]);
                                                                                 name="firstName"
                                                                                 value={parsedResume?.candidateName?.[0]?.firstName || ""}
                                                                                 onChange={(e) =>
-                                                                                  dispatch(
-                                                                                    updateField({
-                                                                                      path: "candidateName[0].firstName",
-                                                                                      value: e.target.value
-                                                                                    })
-                                                                                  )
+                                                                                    dispatch(
+                                                                                        updateField({
+                                                                                            path: "candidateName[0].firstName",
+                                                                                            value: e.target.value
+                                                                                        })
+                                                                                    )
                                                                                 }
                                                                             />
                                                                         </div>
@@ -946,12 +948,12 @@ const [expItems, setExpItems] = useState([]);
                                                                                 value={`${parsedResume?.candidateName?.[0]?.familyName || ''}`}
                                                                                 onChange={(e) =>
                                                                                     dispatch(
-                                                                                      updateField({
-                                                                                        path: "candidateName[0].familyName",
-                                                                                        value: e.target.value
-                                                                                      })
+                                                                                        updateField({
+                                                                                            path: "candidateName[0].familyName",
+                                                                                            value: e.target.value
+                                                                                        })
                                                                                     )
-                                                                                  }
+                                                                                }
                                                                             />
                                                                         </div>
                                                                         <div className="col-12">
@@ -963,12 +965,12 @@ const [expItems, setExpItems] = useState([]);
                                                                                 value={parsedResume?.headline || ''}
                                                                                 onChange={(e) =>
                                                                                     dispatch(
-                                                                                      updateField({
-                                                                                        path: "headline",
-                                                                                        value: e.target.value
-                                                                                      })
+                                                                                        updateField({
+                                                                                            path: "headline",
+                                                                                            value: e.target.value
+                                                                                        })
                                                                                     )
-                                                                                  }
+                                                                                }
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -986,10 +988,10 @@ const [expItems, setExpItems] = useState([]);
                                                                         value={parsedResume?.email?.[0] || ''}
                                                                         onChange={(e) =>
                                                                             dispatch(
-                                                                              updateField({
-                                                                                path: "email",
-                                                                                value: [e.target.value]
-                                                                              })
+                                                                                updateField({
+                                                                                    path: "email",
+                                                                                    value: [e.target.value]
+                                                                                })
                                                                             )
                                                                         }
                                                                     />
@@ -1003,10 +1005,10 @@ const [expItems, setExpItems] = useState([]);
                                                                         value={parsedResume?.phoneNumber?.[0]?.formattedNumber || ''}
                                                                         onChange={(e) =>
                                                                             dispatch(
-                                                                              updateField({
-                                                                                path: "phoneNumber[0].formattedNumber",
-                                                                                value: e.target.value
-                                                                              })
+                                                                                updateField({
+                                                                                    path: "phoneNumber[0].formattedNumber",
+                                                                                    value: e.target.value
+                                                                                })
                                                                             )
                                                                         }
                                                                     />
@@ -1024,12 +1026,12 @@ const [expItems, setExpItems] = useState([]);
                                                                         value={parsedResume?.location?.formatted || ''}
                                                                         onChange={(e) =>
                                                                             dispatch(
-                                                                              updateField({
-                                                                                path: "location.formatted",
-                                                                                value: e.target.value
-                                                                              })
+                                                                                updateField({
+                                                                                    path: "location.formatted",
+                                                                                    value: e.target.value
+                                                                                })
                                                                             )
-                                                                          }
+                                                                        }
                                                                     />
                                                                 </div>
                                                             </div>
@@ -1045,12 +1047,12 @@ const [expItems, setExpItems] = useState([]);
                                                                         value={parsedResume?.location?.postCode || ''}
                                                                         onChange={(e) =>
                                                                             dispatch(
-                                                                              updateField({
-                                                                                path: "location.postCode",
-                                                                                value: e.target.value
-                                                                              })
+                                                                                updateField({
+                                                                                    path: "location.postCode",
+                                                                                    value: e.target.value
+                                                                                })
                                                                             )
-                                                                          }
+                                                                        }
                                                                     />
                                                                 </div>
                                                                 <div className="col-md-6">
@@ -1062,12 +1064,12 @@ const [expItems, setExpItems] = useState([]);
                                                                         value={parsedResume?.location?.city || ''}
                                                                         onChange={(e) =>
                                                                             dispatch(
-                                                                              updateField({
-                                                                                path: "location.city",
-                                                                                value: e.target.value
-                                                                              })
+                                                                                updateField({
+                                                                                    path: "location.city",
+                                                                                    value: e.target.value
+                                                                                })
                                                                             )
-                                                                          }
+                                                                        }
                                                                     />
                                                                 </div>
                                                             </div>
@@ -1084,12 +1086,12 @@ const [expItems, setExpItems] = useState([]);
                                                                         value={parsedResume?.summary || ''}
                                                                         onChange={(e) =>
                                                                             dispatch(
-                                                                              updateField({
-                                                                                path: "summary",
-                                                                                value: e.target.value
-                                                                              })
+                                                                                updateField({
+                                                                                    path: "summary",
+                                                                                    value: e.target.value
+                                                                                })
                                                                             )
-                                                                          }
+                                                                        }
                                                                     ></textarea>
                                                                 </div>
                                                             </div>
@@ -1117,140 +1119,140 @@ const [expItems, setExpItems] = useState([]);
                                                     <div className="accordion-body">
                                                         <div className="card border-0">
                                                             {parsedResume.education.map((eduItem, eduIndex) => (
-                <div key={eduIndex} className="mb-3 p-3 border rounded">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <small className="fw-bold text-muted">Education #{eduIndex + 1}</small>
-                    <button 
-                      type="button" 
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => eduHandleDeleteEducation(eduIndex)}
-                      title="Delete education entry"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                        <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="d-flex gap-2 align-items-start">
-                    <div className="icon-span text-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"></path>
-                        <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"></path>
-                      </svg>
-                    </div>
-                    <div className="content-d">
-                      <h6 className="edu-degree mb-1">{eduItem.educationAccreditation}</h6>
-                      <h6 className="edu-institute text-muted">{eduItem.educationOrganization}</h6>
-                    </div>
-                  </div>
-                  <small className="edu-time text-muted">
-                    <em>{eduItem.educationDates.start.date} / {eduItem.educationDates.end.date}</em>
-                  </small>
-                  <div className="d-flex justify-content-end align-items-center gap-2 mt-2">
-                    <button 
-                      type="button" 
-                      className="content-confirm-btn btn btn-outline-secondary btn-sm"
-                      onClick={() => eduHandleEditEducation(eduIndex)}
-                    >
-                      <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                      </svg>
-                      Edit
-                    </button>
-                  </div>
-                </div>
-              ))}
+                                                                <div key={eduIndex} className="mb-3 p-3 border rounded">
+                                                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                        <small className="fw-bold text-muted">Education #{eduIndex + 1}</small>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm btn-outline-danger"
+                                                                            onClick={() => eduHandleDeleteEducation(eduIndex)}
+                                                                            title="Delete education entry"
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                                                <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                                            </svg>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="d-flex gap-2 align-items-start">
+                                                                        <div className="icon-span text-primary">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                                <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"></path>
+                                                                                <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"></path>
+                                                                            </svg>
+                                                                        </div>
+                                                                        <div className="content-d">
+                                                                            <h6 className="edu-degree mb-1">{eduItem.educationAccreditation}</h6>
+                                                                            <h6 className="edu-institute text-muted">{eduItem.educationOrganization}</h6>
+                                                                        </div>
+                                                                    </div>
+                                                                    <small className="edu-time text-muted">
+                                                                        <em>{eduItem.educationDates.start.date} / {eduItem.educationDates.end.date}</em>
+                                                                    </small>
+                                                                    <div className="d-flex justify-content-end align-items-center gap-2 mt-2">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="content-confirm-btn btn btn-outline-secondary btn-sm"
+                                                                            onClick={() => eduHandleEditEducation(eduIndex)}
+                                                                        >
+                                                                            <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                                                            </svg>
+                                                                            Edit
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
 
-                                                            
+
                                                             {/* Current form for adding/editing */}
                                                             {eduCurrentForm && (
                                                                 <div className="mb-3 p-3 border rounded">
-                                                                <div className="d-flex justify-content-between align-items-center mb-2">
-                                                                    <small className="fw-bold text-muted">
-                                                                    {eduList.length > 0 ? `Education #${eduList.length + 1}` : 'Education #1'}
-                                                                    </small>
-                                                                </div>
-                                                                <div className="mb-2">
-                                                                    <label className="form-label">Degree/Qualification</label>
-                                                                    <input 
-                                                                    className="form-control" 
-                                                                    name="eduDegree"
-                                                                    value={eduFormData.eduDegree}
-                                                                    onChange={eduHandleInputChange}
-                                                                    />
-                                                                </div>
-                                                                <div className="mb-2">
-                                                                    <label className="form-label">Institution</label>
-                                                                    <input 
-                                                                    className="form-control" 
-                                                                    name="eduInstitution"
-                                                                    value={eduFormData.eduInstitution}
-                                                                    onChange={eduHandleInputChange}
-                                                                    />
-                                                                </div>
-                                                                <div className="row">
-                                                                    <div className="col-md-6">
+                                                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                        <small className="fw-bold text-muted">
+                                                                            {eduList.length > 0 ? `Education #${eduList.length + 1}` : 'Education #1'}
+                                                                        </small>
+                                                                    </div>
                                                                     <div className="mb-2">
-                                                                        <label className="form-label">Start Date</label>
-                                                                        <input 
-                                                                        placeholder="2017" 
-                                                                        className="form-control" 
-                                                                        type="text" 
-                                                                        name="eduStartDate"
-                                                                        value={eduFormData.eduStartDate}
-                                                                        onChange={eduHandleInputChange}
+                                                                        <label className="form-label">Degree/Qualification</label>
+                                                                        <input
+                                                                            className="form-control"
+                                                                            name="eduDegree"
+                                                                            value={eduFormData.eduDegree}
+                                                                            onChange={eduHandleInputChange}
                                                                         />
                                                                     </div>
-                                                                    </div>
-                                                                    <div className="col-md-6">
                                                                     <div className="mb-2">
-                                                                        <label className="form-label">End Date</label>
-                                                                        <input 
-                                                                        placeholder="2018" 
-                                                                        className="form-control" 
-                                                                        type="text" 
-                                                                        name="eduEndDate"
-                                                                        value={eduFormData.eduEndDate}
-                                                                        onChange={eduHandleInputChange}
+                                                                        <label className="form-label">Institution</label>
+                                                                        <input
+                                                                            className="form-control"
+                                                                            name="eduInstitution"
+                                                                            value={eduFormData.eduInstitution}
+                                                                            onChange={eduHandleInputChange}
                                                                         />
                                                                     </div>
+                                                                    <div className="row">
+                                                                        <div className="col-md-6">
+                                                                            <div className="mb-2">
+                                                                                <label className="form-label">Start Date</label>
+                                                                                <input
+                                                                                    placeholder="2017"
+                                                                                    className="form-control"
+                                                                                    type="text"
+                                                                                    name="eduStartDate"
+                                                                                    value={eduFormData.eduStartDate}
+                                                                                    onChange={eduHandleInputChange}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="col-md-6">
+                                                                            <div className="mb-2">
+                                                                                <label className="form-label">End Date</label>
+                                                                                <input
+                                                                                    placeholder="2018"
+                                                                                    className="form-control"
+                                                                                    type="text"
+                                                                                    name="eduEndDate"
+                                                                                    value={eduFormData.eduEndDate}
+                                                                                    onChange={eduHandleInputChange}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                                <div className="d-flex align-items-center justify-content-end gap-2 mt-2">
-                                                                    <button 
-                                                                    type="button" 
-                                                                    className="btn btn-outline-danger"
-                                                                    onClick={eduHandleCancelEdit}
-                                                                    >
-                                                                    Cancel
-                                                                    </button>
-                                                                    <button 
-                                                                    type="button" 
-                                                                    className="content-confirm-btn btn btn-outline-primary"
-                                                                    onClick={eduHandleSaveEducation}
-                                                                    >
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                                        <path d="M5 12l5 5l10 -10"></path>
-                                                                    </svg>
-                                                                    Done
-                                                                    </button>
-                                                                </div>
+                                                                    <div className="d-flex align-items-center justify-content-end gap-2 mt-2">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-outline-danger"
+                                                                            onClick={eduHandleCancelEdit}
+                                                                        >
+                                                                            Cancel
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="content-confirm-btn btn btn-outline-primary"
+                                                                            onClick={eduHandleSaveEducation}
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                                <path d="M5 12l5 5l10 -10"></path>
+                                                                            </svg>
+                                                                            Done
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             )}
-                                                            
+
                                                             {/* Add Education Button */}
-                                                            <button 
-                                                                type="button" 
-                                                                className="btn btn-outline-secondary btn-sm mt-2" 
-                                                                style={{maxWidth: 'fit-content'}}
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-outline-secondary btn-sm mt-2"
+                                                                style={{ maxWidth: 'fit-content' }}
                                                                 onClick={eduHandleAddEducation}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
-                                                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
                                                                 </svg>
                                                                 Add Education
                                                             </button>
@@ -1280,167 +1282,167 @@ const [expItems, setExpItems] = useState([]);
                                                         <div className="card border-0">
 
                                                             {parsedResume.workExperience.map((expItem, expIndex) => (
-                <div key={expIndex} className="mb-3 p-3 border rounded">
-                  
-                  {expItem?.expIsComplete ? (
-                    // Display completed experience item
-                    <>
-                      <div className="d-flex justify-content-between align-items-center mb-2">
-                        <small className="fw-bold text-muted">Experience #{expIndex + 1}</small>
-                        <button 
-                          type="button" 
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => expHandleDeleteExperience(expIndex)}
-                          title="Delete experience entry"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                            <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                          </svg>
-                        </button>
-                      </div>
-                      <div className="d-flex gap-2 align-items-start">
-                        <div className="icon-span text-info">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-briefcase">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M3 7m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
-                            <path d="M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2"></path>
-                            <path d="M12 12l0 .01"></path>
-                            <path d="M3 13a20 20 0 0 0 18 0"></path>
-                          </svg>
-                        </div>
-                        <div className="content-d">
-                          <h6 className="exp-title mb-1">{expItem.workExperienceJobTitle}</h6>
-                          <h6 className="exp-company text-muted">{expItem.workExperienceOrganization}</h6>
-                          {expItem.workExperienceDescription && (
-                            <p className="exp-description mt-2">{expItem.workExperienceDescription}</p>
-                          )}
-                        </div>
-                      </div>
-                      <small className="exp-time text-muted">
-                        <em>{expItem.workExperienceDates?.start?.date} - {expItem.workExperienceDates?.end?.date}</em>
-                      </small>
-                      <div className="d-flex justify-content-end align-items-center gap-2 mt-2">
-                        <button 
-                          type="button" 
-                          className="content-confirm-btn btn btn-outline-secondary btn-sm"
-                          onClick={() => expHandleEditExperience(expIndex)}
-                        >
-                          <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                          </svg>
-                          Edit
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    // Display incomplete experience form
-                    <>
-                      <div className="d-flex justify-content-between align-items-center mb-2">
-                        <small className="fw-bold text-muted">
-                          Experience #{expIndex + 1}
-                        </small>
-                        <button 
-                          type="button" 
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => expHandleCancelEdit(expIndex)}
-                          title="Cancel editing"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                          </svg>
-                        </button>
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">Job Title</label>
-                        <input 
-                          className="form-control" 
-                          value={expItem.workExperienceJobTitle}
-                          onChange={(e) => dispatch(updateField({path:'workExperience.'+expIndex+'.workExperienceJobTitle', value:e.target.value}))}
-                        />
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">Company</label>
-                        <input 
-                          className="form-control" 
-                          value={expItem.workExperienceOrganization}
-                          onChange={(e) => dispatch(updateField({path:'workExperience.'+expIndex+'.workExperienceOrganization', value:e.target.value}))}
-                        />
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="mb-2">
-                            <label className="form-label">Start Date</label>
-                            <input 
-                              placeholder="2020" 
-                              className="form-control" 
-                              type="text" 
-                              value={expItem.workExperienceDates?.start?.date}
-                              onChange={(e) => dispatch(updateField({path:'workExperience.'+expIndex+'.workExperienceDates.start.date', value:e.target.value}))}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-2">
-                            <label className="form-label">End Date</label>
-                            <input 
-                              placeholder="2021 or Present" 
-                              className="form-control" 
-                              type="text" 
-                              value={expItem.workExperienceDates?.end?.date}
-                              onChange={(e) => dispatch(updateField({path:'workExperience.'+expIndex+'.workExperienceDates.end.date', value:e.target.value}))}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">Description (Optional)</label>
-                        <textarea 
-                          rows="5" 
-                          className="form-control"
-                          value={expItem.workExperienceDescription}
-                          onChange={(e) => dispatch(updateField({path:'workExperience.'+expIndex+'.workExperienceDescription', value:e.target.value}))}
-                        ></textarea>
-                      </div>
-                      <div className="d-flex align-items-center justify-content-end gap-2 mt-3">
-                        <button 
-                          type="button" 
-                          className="btn btn-outline-danger"
-                          onClick={() => expHandleCancelEdit(expIndex)}
-                        >
-                          Cancel
-                        </button>
-                        <button 
-                          type="button" 
-                          className="content-confirm-btn btn btn-outline-primary"
-                          onClick={() => expHandleSaveExperience(expIndex)}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M5 12l5 5l10 -10"></path>
-                          </svg>
-                          Done
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))}
-              
-              {/* Add Experience Button */}
-              <button 
-                type="button" 
-                className="btn btn-outline-secondary btn-sm mt-2" 
-                style={{maxWidth: 'fit-content'}}
-                onClick={expHandleAddExperience}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Add Experience
-              </button>
-              
+                                                                <div key={expIndex} className="mb-3 p-3 border rounded">
+
+                                                                    {expItem?.expIsComplete ? (
+                                                                        // Display completed experience item
+                                                                        <>
+                                                                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                                <small className="fw-bold text-muted">Experience #{expIndex + 1}</small>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-sm btn-outline-danger"
+                                                                                    onClick={() => expHandleDeleteExperience(expIndex)}
+                                                                                    title="Delete experience entry"
+                                                                                >
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                                                        <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                                                    </svg>
+                                                                                </button>
+                                                                            </div>
+                                                                            <div className="d-flex gap-2 align-items-start">
+                                                                                <div className="icon-span text-info">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-briefcase">
+                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                                        <path d="M3 7m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
+                                                                                        <path d="M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2"></path>
+                                                                                        <path d="M12 12l0 .01"></path>
+                                                                                        <path d="M3 13a20 20 0 0 0 18 0"></path>
+                                                                                    </svg>
+                                                                                </div>
+                                                                                <div className="content-d">
+                                                                                    <h6 className="exp-title mb-1">{expItem.workExperienceJobTitle}</h6>
+                                                                                    <h6 className="exp-company text-muted">{expItem.workExperienceOrganization}</h6>
+                                                                                    {expItem.workExperienceDescription && (
+                                                                                        <p className="exp-description mt-2">{expItem.workExperienceDescription}</p>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+                                                                            <small className="exp-time text-muted">
+                                                                                <em>{expItem.workExperienceDates?.start?.date} - {expItem.workExperienceDates?.end?.date}</em>
+                                                                            </small>
+                                                                            <div className="d-flex justify-content-end align-items-center gap-2 mt-2">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="content-confirm-btn btn btn-outline-secondary btn-sm"
+                                                                                    onClick={() => expHandleEditExperience(expIndex)}
+                                                                                >
+                                                                                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                                                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                                                                    </svg>
+                                                                                    Edit
+                                                                                </button>
+                                                                            </div>
+                                                                        </>
+                                                                    ) : (
+                                                                        // Display incomplete experience form
+                                                                        <>
+                                                                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                                <small className="fw-bold text-muted">
+                                                                                    Experience #{expIndex + 1}
+                                                                                </small>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-sm btn-outline-danger"
+                                                                                    onClick={() => expHandleCancelEdit(expIndex)}
+                                                                                    title="Cancel editing"
+                                                                                >
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                                                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                                                                    </svg>
+                                                                                </button>
+                                                                            </div>
+                                                                            <div className="mb-2">
+                                                                                <label className="form-label">Job Title</label>
+                                                                                <input
+                                                                                    className="form-control"
+                                                                                    value={expItem.workExperienceJobTitle}
+                                                                                    onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceJobTitle', value: e.target.value }))}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="mb-2">
+                                                                                <label className="form-label">Company</label>
+                                                                                <input
+                                                                                    className="form-control"
+                                                                                    value={expItem.workExperienceOrganization}
+                                                                                    onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceOrganization', value: e.target.value }))}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="row">
+                                                                                <div className="col-md-6">
+                                                                                    <div className="mb-2">
+                                                                                        <label className="form-label">Start Date</label>
+                                                                                        <input
+                                                                                            placeholder="2020"
+                                                                                            className="form-control"
+                                                                                            type="text"
+                                                                                            value={expItem.workExperienceDates?.start?.date}
+                                                                                            onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceDates.start.date', value: e.target.value }))}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6">
+                                                                                    <div className="mb-2">
+                                                                                        <label className="form-label">End Date</label>
+                                                                                        <input
+                                                                                            placeholder="2021 or Present"
+                                                                                            className="form-control"
+                                                                                            type="text"
+                                                                                            value={expItem.workExperienceDates?.end?.date}
+                                                                                            onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceDates.end.date', value: e.target.value }))}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="mb-2">
+                                                                                <label className="form-label">Description (Optional)</label>
+                                                                                <textarea
+                                                                                    rows="5"
+                                                                                    className="form-control"
+                                                                                    value={expItem.workExperienceDescription}
+                                                                                    onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceDescription', value: e.target.value }))}
+                                                                                ></textarea>
+                                                                            </div>
+                                                                            <div className="d-flex align-items-center justify-content-end gap-2 mt-3">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-outline-danger"
+                                                                                    onClick={() => expHandleCancelEdit(expIndex)}
+                                                                                >
+                                                                                    Cancel
+                                                                                </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="content-confirm-btn btn btn-outline-primary"
+                                                                                    onClick={() => expHandleSaveExperience(expIndex)}
+                                                                                >
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                                        <path d="M5 12l5 5l10 -10"></path>
+                                                                                    </svg>
+                                                                                    Done
+                                                                                </button>
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+
+                                                            {/* Add Experience Button */}
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-outline-secondary btn-sm mt-2"
+                                                                style={{ maxWidth: 'fit-content' }}
+                                                                onClick={expHandleAddExperience}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
+                                                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                                </svg>
+                                                                Add Experience
+                                                            </button>
+
 
                                                         </div>
                                                     </div>
@@ -1468,14 +1470,14 @@ const [expItems, setExpItems] = useState([]);
                                                             <div className="border rounded p-3">
                                                                 <label className="form-label">Add Skills (one per line)</label>
                                                                 <input type="text" className="form-control me-2" placeholder="Type a skill and press Enter to add it"
-                                                                value={currentSkill}
-                                                                onChange={(e) => setCurrentSkill(e.target.value)}
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                                                        e.preventDefault();
-                                                                        handleAddSkill();
-                                                                    }
-                                                                }}
+                                                                    value={currentSkill}
+                                                                    onChange={(e) => setCurrentSkill(e.target.value)}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                                            e.preventDefault();
+                                                                            handleAddSkill();
+                                                                        }
+                                                                    }}
                                                                 />
                                                                 <div className="d-flex justify-content-end">
                                                                     <button type="button" className="btn btn-outline-secondary btn-sm mt-3"
@@ -1500,60 +1502,60 @@ const [expItems, setExpItems] = useState([]);
                                                                 <div className="mb-3">
                                                                     <h6>Selected Skills</h6>
                                                                     <div className="d-flex flex-wrap gap-2">
-                                                                    {parsedResume?.skill
-                                                    ?.filter(skill => skill.selected)
-                                                    .map((skill, index) => (
-                                                        <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
-                                                            {skill.name}
-                                                            <button
-                                                                type="button"
-                                                                className="ms-1 bg-transparent border-0"
-                                                                aria-label="Remove"
-                                                                onClick={() => {
-                                                                    const updatedSkills = [...parsedResume.skill];
-                                                                    updatedSkills.splice(updatedSkills.findIndex(s => s.name === skill.name), 1);
-                                                                    dispatch(updateField({path:"skill", value: updatedSkills}));
-                                                                }}
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
-                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                                    <path d="M18 6l-12 12" />
-                                                                    <path d="M6 6l12 12" />
-                                                                </svg>
-                                                            </button>
-                                                        </span>
-                                                    ))}
+                                                                        {parsedResume?.skill
+                                                                            ?.filter(skill => skill.selected)
+                                                                            .map((skill, index) => (
+                                                                                <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
+                                                                                    {skill.name}
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        className="ms-1 bg-transparent border-0"
+                                                                                        aria-label="Remove"
+                                                                                        onClick={() => {
+                                                                                            const updatedSkills = [...parsedResume.skill];
+                                                                                            updatedSkills.splice(updatedSkills.findIndex(s => s.name === skill.name), 1);
+                                                                                            dispatch(updateField({ path: "skill", value: updatedSkills }));
+                                                                                        }}
+                                                                                    >
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
+                                                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                                            <path d="M18 6l-12 12" />
+                                                                                            <path d="M6 6l12 12" />
+                                                                                        </svg>
+                                                                                    </button>
+                                                                                </span>
+                                                                            ))}
                                                                     </div>
                                                                 </div>
                                                                 <div>
                                                                     <h6>Suggested Skills</h6>
                                                                     <div className="d-flex flex-wrap gap-2">
-                                                                    {parsedResume?.skill
-                                                    ?.filter(skill => !skill.selected)
-                                                    .map((skill, index) => (
-                                                        <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
-                                                            {skill.name}
-                                                            <button
-                                                                type="button"
-                                                                className="ms-1 bg-transparent border-0"
-                                                                aria-label="Select"
-                                                                onClick={() => {
-                                                                    const updatedSkills = [...parsedResume.skill];
-                                                                    const skillIndex = updatedSkills.findIndex(s => s.name === skill.name);
-                                                                    updatedSkills[skillIndex] = {
-                                                                        ...updatedSkills[skillIndex],
-                                                                        selected: true
-                                                                    };
-                                                                    dispatch(updateField({ path:"skill", value: updatedSkills}));
-                                                                }}
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
-                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                                    <path d="M5 12l5 5l10 -10" />
-                                                                </svg>
-                                                            </button>
-                                                        </span>
-                                                    ))}
+                                                                        {parsedResume?.skill
+                                                                            ?.filter(skill => !skill.selected)
+                                                                            .map((skill, index) => (
+                                                                                <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
+                                                                                    {skill.name}
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        className="ms-1 bg-transparent border-0"
+                                                                                        aria-label="Select"
+                                                                                        onClick={() => {
+                                                                                            const updatedSkills = [...parsedResume.skill];
+                                                                                            const skillIndex = updatedSkills.findIndex(s => s.name === skill.name);
+                                                                                            updatedSkills[skillIndex] = {
+                                                                                                ...updatedSkills[skillIndex],
+                                                                                                selected: true
+                                                                                            };
+                                                                                            dispatch(updateField({ path: "skill", value: updatedSkills }));
+                                                                                        }}
+                                                                                    >
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                                            <path d="M5 12l5 5l10 -10" />
+                                                                                        </svg>
+                                                                                    </button>
+                                                                                </span>
+                                                                            ))}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1587,20 +1589,20 @@ const [expItems, setExpItems] = useState([]);
                                                                 <div className="row g-2">
                                                                     <div className="col-md-8">
                                                                         <input type="text" className="form-control" placeholder="Language name"
-                                                                         value={currentLanguage}
-                                                                         onChange={(e) => setCurrentLanguage(e.target.value)}
-                                                                         onKeyDown={(e) => {
-                                                                             if (e.key === 'Enter' && !e.shiftKey) {
-                                                                                 e.preventDefault();
-                                                                                 handleAddLanguage();
-                                                                             }
-                                                                         }}
+                                                                            value={currentLanguage}
+                                                                            onChange={(e) => setCurrentLanguage(e.target.value)}
+                                                                            onKeyDown={(e) => {
+                                                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                                                    e.preventDefault();
+                                                                                    handleAddLanguage();
+                                                                                }
+                                                                            }}
                                                                         />
                                                                     </div>
                                                                     <div className="col-md-4">
                                                                         <select className="form-select"
-                                                                        value={languageLevel}
-                                                                        onChange={(e) => setLanguageLevel(e.target.value)}
+                                                                            value={languageLevel}
+                                                                            onChange={(e) => setLanguageLevel(e.target.value)}
                                                                         >
                                                                             <option value="Beginner">Beginner</option>
                                                                             <option value="Intermediate">Intermediate</option>
@@ -1611,7 +1613,7 @@ const [expItems, setExpItems] = useState([]);
                                                                 </div>
                                                                 <div className="d-flex justify-content-end">
                                                                     <button type="button" className="btn btn-outline-secondary btn-sm mt-3"
-                                                                      onClick={handleAddLanguage}
+                                                                        onClick={handleAddLanguage}
                                                                     >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
                                                                             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -1623,23 +1625,23 @@ const [expItems, setExpItems] = useState([]);
                                                             </div>
                                                             <div className="mt-3 d-flex flex-wrap gap-2">
 
-                                                            {parsedResume?.languages?.map((lang, index) => (
-                                            <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
-                                                {lang.name} ({lang.level})
-                                                <button
-                                                    type="button"
-                                                    className="bg-transparent border-0"
-                                                    aria-label="Remove"
-                                                    onClick={() => {
-                                                        const updatedLangs = [...parsedResume.languages];
-                                                        updatedLangs.splice(index, 1);
-                                                        dispatch(updateField({ path:"languages", value:updatedLangs}));
-                                                    }}
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-                                                </button>
-                                            </span>
-                                        ))}
+                                                                {parsedResume?.languages?.map((lang, index) => (
+                                                                    <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
+                                                                        {lang.name} ({lang.level})
+                                                                        <button
+                                                                            type="button"
+                                                                            className="bg-transparent border-0"
+                                                                            aria-label="Remove"
+                                                                            onClick={() => {
+                                                                                const updatedLangs = [...parsedResume.languages];
+                                                                                updatedLangs.splice(index, 1);
+                                                                                dispatch(updateField({ path: "languages", value: updatedLangs }));
+                                                                            }}
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                                                        </button>
+                                                                    </span>
+                                                                ))}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1666,7 +1668,7 @@ const [expItems, setExpItems] = useState([]);
                                                         <div className="card border-0">
                                                             <div className="border rounded p-3">
                                                                 <label className="form-label">Add Hobby</label>
-                                                                <input type="text" className="form-control" placeholder="Hobby name"  
+                                                                <input type="text" className="form-control" placeholder="Hobby name"
                                                                     value={currentHobby}
                                                                     onChange={(e) => setCurrentHobby(e.target.value)}
                                                                     onKeyDown={(e) => {
@@ -1677,8 +1679,8 @@ const [expItems, setExpItems] = useState([]);
                                                                     }}
                                                                 />
                                                                 <div className="d-flex justify-content-end">
-                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3" 
-                                                                       onClick={handleAddHobby}
+                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3"
+                                                                        onClick={handleAddHobby}
                                                                     >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
                                                                             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -1690,23 +1692,23 @@ const [expItems, setExpItems] = useState([]);
                                                             </div>
                                                             <div className="mt-3 d-flex flex-wrap gap-2">
 
-                                                            {parsedResume?.hobbies?.map((hobby, index) => (
-                                            <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
-                                                {hobby}
-                                                <button
-                                                    type="button"
-                                                    className="ms-2 bg-transparent border-0"
-                                                    aria-label="Remove"
-                                                    onClick={() => {
-                                                        const updatedHobbies = [...parsedResume.hobbies];
-                                                        updatedHobbies.splice(index, 1);
-                                                        dispatch(updateField({path:"hobbies", value:updatedHobbies}));
-                                                    }}
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-                                                </button>
-                                            </span>
-                                        ))}
+                                                                {parsedResume?.hobbies?.map((hobby, index) => (
+                                                                    <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
+                                                                        {hobby}
+                                                                        <button
+                                                                            type="button"
+                                                                            className="ms-2 bg-transparent border-0"
+                                                                            aria-label="Remove"
+                                                                            onClick={() => {
+                                                                                const updatedHobbies = [...parsedResume.hobbies];
+                                                                                updatedHobbies.splice(index, 1);
+                                                                                dispatch(updateField({ path: "hobbies", value: updatedHobbies }));
+                                                                            }}
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                                                        </button>
+                                                                    </span>
+                                                                ))}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1731,63 +1733,85 @@ const [expItems, setExpItems] = useState([]);
                                 {/* TAB placeholders */}
                                 {activeTab === 'tabDesign' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabDesign' ? 'show active' : ''}`} id="tabDesign" role="tabpanel" aria-labelledby="tabDesign-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-sm"><div className="card-body">          
+                                        <div className="card border-0 shadow-sm"><div className="card-body">
                                             <Row className="g-4">
-                                {cardTemplate.map((template) => (
-                                    <Col key={template.name} xs={6} sm={6} md={4} lg={3} xl={4}>
-                                        <div 
-                                            className={`template-card p-3 text-center cursor-pointer ${selectedTemplate === template.name ? 'border border-primary rounded-3' : 'border border-light-subtle rounded-3'}`}
-                                            onClick={() => handleTemplateChange(template.name)}
-                                            style={{
-                                                transition: 'all 0.2s ease-in-out',
-                                                height: '100%',
-                                                backgroundColor: selectedTemplate === template.name ? 'rgba(13, 110, 253, 0.05)' : 'white'
-                                            }}
-                                        >
-                                            <div className="position-relative mb-3" style={{ paddingTop: '141.4%' }}>
-                                                <img
-                                                    src={`/assets/images/${template.image}`}
-                                                    alt={template.name}
-                                                    className="img-fluid position-absolute top-0 start-0 w-100 h-100 object-fit-cover rounded-2 border"
-                                                    style={{
-                                                        objectFit: 'cover',
-                                                        transition: 'transform 0.3s ease-in-out',
-                                                    }}
-                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                                />
-                                                {selectedTemplate === template.name && (
-                                                    <div className="position-absolute top-0 end-0 m-2">
-                                                        <span className="badge bg-primary rounded-pill">
-                                                            <i className="fas fa-check"></i> Selected
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <h6 className="mb-0 fw-medium">{template.name}</h6>
-                                        </div>
-                                    </Col>
-                                ))}
-                            </Row>
-                                </div></div>
+                                                {cardTemplate.map((template) => (
+                                                    <Col key={template.name} xs={6} sm={6} md={4} lg={3} xl={4}>
+                                                        <div
+                                                            className={`template-card p-3 text-center cursor-pointer ${selectedTemplate === template.name ? 'border border-primary rounded-3' : 'border border-light-subtle rounded-3'}`}
+                                                            onClick={() => handleTemplateChange(template.name)}
+                                                            style={{
+                                                                transition: 'all 0.2s ease-in-out',
+                                                                height: '100%',
+                                                                backgroundColor: selectedTemplate === template.name ? 'rgba(13, 110, 253, 0.05)' : 'white'
+                                                            }}
+                                                        >
+                                                            <div className="position-relative mb-3" style={{ paddingTop: '141.4%' }}>
+                                                                <img
+                                                                    src={`/assets/images/${template.image}`}
+                                                                    alt={template.name}
+                                                                    className="img-fluid position-absolute top-0 start-0 w-100 h-100 object-fit-cover rounded-2 border"
+                                                                    style={{
+                                                                        objectFit: 'cover',
+                                                                        transition: 'transform 0.3s ease-in-out',
+                                                                    }}
+                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                                />
+                                                                {selectedTemplate === template.name && (
+                                                                    <div className="position-absolute top-0 end-0 m-2">
+                                                                        <span className="badge bg-primary rounded-pill">
+                                                                            <i className="fas fa-check"></i> Selected
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <h6 className="mb-0 fw-medium">{template.name}</h6>
+                                                        </div>
+                                                    </Col>
+                                                ))}
+                                            </Row>
+                                        </div></div>
                                     </div>
                                 )}
                                 {activeTab === 'tabAnalysis' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabAnalysis' ? 'show active' : ''}`} id="tabAnalysis" role="tabpanel" aria-labelledby="tabAnalysis-tab" tabIndex="0">
                                         <div className="card border-0 shadow-sm"><div className="card-body">
-                                            <div>
-                                            <h3>Orignal paragraph :</h3>
-                                            <button className='btn btn-primary' onClick={handleAnalyzeSummary} disabled={AiSummaryLoader}>{AiSummaryLoader ? "Analyzing..." : "Analyze"}</button>
+                                            <div className='d-flex justify-content-between'>
+                                                <div>
+                                                    <h4>Orignal paragraph :</h4>
+                                                </div>
+                                                <div>
+                                                    <button className='btn btn-primary' onClick={handleAnalyzeSummary} disabled={AiSummaryLoader}>{AiSummaryLoader ? "Analyzing..." : "Analyze"}</button>
+
+                                                </div>
                                             </div>
                                             {parsedResume?.summary}
-                                            <h3>Issues</h3>
-                                            <div>{SummaryIssues?.map((item,index) => <div key={index}><p>{item.issue}</p><p>{item.description}</p></div>)}</div>
+                                            {SummaryIssues.length > 0 ?
                                             <div>
-                                            <h3>Suggested Paragraph</h3>
-                                            <button className='btn btn-primary' onClick={handleApplySummary} disabled={AiSummaryLoader}>Apply</button>
+                                            <h3>Issues</h3>
+                                            <div>{SummaryIssues?.map((item, index) => <div key={index}><p>{item.issue}</p><p>{item.description}</p></div>)}</div>
+                                            </div>
+                                            :
+                                            <></>
+                                            }
+
+                                            {SummarySuggestions != "" ? 
+                                            <div>
+                                            <div className='d-flex justify-content-between'>
+                                                <div>
+                                                    <h4>Suggested Paragraph</h4>
+                                                </div>
+                                                <div style={{width:'100px'}}>
+                                                    <button className='btn btn-primary w-100' onClick={handleApplySummary} disabled={AiSummaryLoader}>Apply</button>
+
+                                                </div>
                                             </div>
                                             <div>{SummarySuggestions}</div>
-                                            </div></div>
+                                            </div>
+                                            :<></>}
+                                            
+                                        </div></div>
 
                                     </div>
                                 )}
@@ -1799,9 +1823,9 @@ const [expItems, setExpItems] = useState([]);
                                 {activeTab === 'tabCover' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabCover' ? 'show active' : ''}`} id="tabCover" role="tabpanel" aria-labelledby="tabCover-tab" tabIndex="0">
                                         <div className="card border-0 shadow-sm"><div className="card-body">
-                                        <CoverLetter/>
-                                            
-                                            </div></div>
+                                            <CoverLetter />
+
+                                        </div></div>
                                     </div>
                                 )}
                             </div>
@@ -1810,19 +1834,19 @@ const [expItems, setExpItems] = useState([]);
                 </div>
 
                 <Col lg={5} xxl={6} className='right-section'>
-                                    <Card className="border-0 shadow-custom mb-3">
-                                        <Card.Header className="bg-white border-bottom p-3">
-                                            <div className="d-flex justify-content-between align-items-center">
-                                                <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>CV Preview</h5>
-                                                <div className="d-flex align-items-center gap-3">
-                                                    <div className="d-flex align-items-center gap-1">
-                                                        <Button variant="outline-primary" size="sm" onClick={zoomOut}>
-                                                            <FiMinus />
-                                                        </Button>
-                                                        <Button variant="outline-primary" size="sm" onClick={zoomIn}>
-                                                            <FiPlus />
-                                                        </Button>
-                                                        {/* <Button
+                    <Card className="border-0 shadow-custom mb-3">
+                        <Card.Header className="bg-white border-bottom p-3">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>CV Preview</h5>
+                                <div className="d-flex align-items-center gap-3">
+                                    <div className="d-flex align-items-center gap-1">
+                                        <Button variant="outline-primary" size="sm" onClick={zoomOut}>
+                                            <FiMinus />
+                                        </Button>
+                                        <Button variant="outline-primary" size="sm" onClick={zoomIn}>
+                                            <FiPlus />
+                                        </Button>
+                                        {/* <Button
                                                             variant="outline-primary"
                                                             size="sm"
                                                             onClick={handleUploadNew}
@@ -1831,88 +1855,88 @@ const [expItems, setExpItems] = useState([]);
                                                             <FiUpload size={14} /> 
                                                             <span className="d-none d-xl-inline ms-1">New Upload</span>
                                                         </Button> */}
-                                                        <Button
-                                                            variant="outline-primary"
-                                                            size="sm"
-                                                            onClick={handleDownloadPDF}
-                                                            className="btn btn-outline-primary"
-                                                        >
-                                                            {/* <FiDownload size={14} />  */}
-                                                            <span className="d-none d-xl-inline ms-1">Download PDF</span>
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                                
-                                            </div>
-                                        </Card.Header>
-                                        <div
-                                            ref={previewContainerRef}
-                                            className="cv-template-div"
+                                        <Button
+                                            variant="outline-primary"
+                                            size="sm"
+                                            onClick={handleDownloadPDF}
+                                            className="btn btn-outline-primary"
                                         >
-                                            <div
-                                                ref={cvRef}
-                                                style={{
-                                                    background: 'white',
-                                                    padding: '16px',
-                                                    minHeight: `${Math.max(1, totalPages) * 1080}px`,
-                                                    transform: `scale(${zoom})`,
-                                                    transformOrigin: 'top center',
-                                                    transition: 'transform 0.2s ease-in-out',
-                                                }}
-                                            >
-                                                {(() => {
-                                                    const selectedTemplateData = cardTemplate.find(t => t.name === selectedTemplate);
-                                                    if (!selectedTemplateData) {
-                                                        return <div className="alert alert-warning">Please select a template</div>;
-                                                    }
+                                            {/* <FiDownload size={14} />  */}
+                                            <span className="d-none d-xl-inline ms-1">Download PDF</span>
+                                        </Button>
+                                    </div>
+                                </div>
 
-                                                    const TemplateComponent = selectedTemplateData.template;
-                                                    return (
-                                                        <TemplateComponent
-                                                            resumeData={{
-                                                                ...(parsedResume || {
-                                                                    candidateName: [{ firstName: '', familyName: '' }],
-                                                                    headline: '',
-                                                                    summary: '',
-                                                                    phoneNumber: [{ formattedNumber: '' }],
-                                                                    email: [''],
-                                                                    location: { formatted: '' },
-                                                                    workExperience: [],
-                                                                    education: [],
-                                                                    skill: [],
-                                                                    profilePic: null,
-                                                                    website: [''],
-                                                                    certifications: [],
-                                                                    languages: [],
-                                                                    hobbies: []
-                                                                }),
-                                                                customSections
-                                                            }}
-                                                        />
-                                                    );
-                                                })()}
-                                            </div>
+                            </div>
+                        </Card.Header>
+                        <div
+                            ref={previewContainerRef}
+                            className="cv-template-div"
+                        >
+                            <div
+                                ref={cvRef}
+                                style={{
+                                    background: 'white',
+                                    padding: '16px',
+                                    minHeight: `${Math.max(1, totalPages) * 1080}px`,
+                                    transform: `scale(${zoom})`,
+                                    transformOrigin: 'top center',
+                                    transition: 'transform 0.2s ease-in-out',
+                                }}
+                            >
+                                {(() => {
+                                    const selectedTemplateData = cardTemplate.find(t => t.name === selectedTemplate);
+                                    if (!selectedTemplateData) {
+                                        return <div className="alert alert-warning">Please select a template</div>;
+                                    }
 
-                                            {/* Only show page dividers if we have multiple pages with content */}
-                                            {totalPages > 1 && Array.from({ length: totalPages - 1 }).map((_, index) => (
-                                                <div
-                                                    key={index}
-                                                    style={{
-                                                        position: 'absolute',
-                                                        left: 0,
-                                                        right: 0,
-                                                        top: `${(index + 1) * 1123}px`,
-                                                        borderTop: '2px dashed #ccc',
-                                                        pointerEvents: 'none'
-                                                    }}
-                                                />
-                                            ))}
-                                        </div>
-                                    </Card>
-                                    <Card className="border-0 shadow-custom">
-                                        <Card.Body className="p-3">
-                                            <div className="d-flex justify-content-between align-items-center">
-                                                {/* <Button
+                                    const TemplateComponent = selectedTemplateData.template;
+                                    return (
+                                        <TemplateComponent
+                                            resumeData={{
+                                                ...(parsedResume || {
+                                                    candidateName: [{ firstName: '', familyName: '' }],
+                                                    headline: '',
+                                                    summary: '',
+                                                    phoneNumber: [{ formattedNumber: '' }],
+                                                    email: [''],
+                                                    location: { formatted: '' },
+                                                    workExperience: [],
+                                                    education: [],
+                                                    skill: [],
+                                                    profilePic: null,
+                                                    website: [''],
+                                                    certifications: [],
+                                                    languages: [],
+                                                    hobbies: []
+                                                }),
+                                                customSections
+                                            }}
+                                        />
+                                    );
+                                })()}
+                            </div>
+
+                            {/* Only show page dividers if we have multiple pages with content */}
+                            {totalPages > 1 && Array.from({ length: totalPages - 1 }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    style={{
+                                        position: 'absolute',
+                                        left: 0,
+                                        right: 0,
+                                        top: `${(index + 1) * 1123}px`,
+                                        borderTop: '2px dashed #ccc',
+                                        pointerEvents: 'none'
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </Card>
+                    <Card className="border-0 shadow-custom">
+                        <Card.Body className="p-3">
+                            <div className="d-flex justify-content-between align-items-center">
+                                {/* <Button
                                                     variant="outline-primary"
                                                     onClick={handlePreviousStep}
                                                     disabled={activeTab === "Preview"}
@@ -1928,10 +1952,10 @@ const [expItems, setExpItems] = useState([]);
                                                 >
                                                     Next <FiChevronRight />
                                                 </Button> */}
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                </Col>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
             </div>
         </div>
     );
