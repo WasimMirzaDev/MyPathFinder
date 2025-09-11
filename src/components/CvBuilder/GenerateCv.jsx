@@ -1507,7 +1507,7 @@ const [expItems, setExpItems] = useState([]);
                                                             {skill.name}
                                                             <button
                                                                 type="button"
-                                                                className="ms-1"
+                                                                className="ms-1 bg-transparent border-0"
                                                                 aria-label="Remove"
                                                                 onClick={() => {
                                                                     const updatedSkills = [...parsedResume.skill];
@@ -1531,11 +1531,11 @@ const [expItems, setExpItems] = useState([]);
                                                                     {parsedResume?.skill
                                                     ?.filter(skill => !skill.selected)
                                                     .map((skill, index) => (
-                                                        <span key={index} className="badge bg-secondary d-inline-flex align-items-center skill-badge">
+                                                        <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
                                                             {skill.name}
                                                             <button
                                                                 type="button"
-                                                                className="ms-1"
+                                                                className="ms-1 bg-transparent border-0"
                                                                 aria-label="Select"
                                                                 onClick={() => {
                                                                     const updatedSkills = [...parsedResume.skill];
@@ -1624,11 +1624,11 @@ const [expItems, setExpItems] = useState([]);
                                                             <div className="mt-3 d-flex flex-wrap gap-2">
 
                                                             {parsedResume?.languages?.map((lang, index) => (
-                                            <span key={index} className="badge bg-secondary d-inline-flex align-items-center skill-badge">
+                                            <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
                                                 {lang.name} ({lang.level})
                                                 <button
                                                     type="button"
-                                                    className=""
+                                                    className="bg-transparent border-0"
                                                     aria-label="Remove"
                                                     onClick={() => {
                                                         const updatedLangs = [...parsedResume.languages];
@@ -1691,11 +1691,11 @@ const [expItems, setExpItems] = useState([]);
                                                             <div className="mt-3 d-flex flex-wrap gap-2">
 
                                                             {parsedResume?.hobbies?.map((hobby, index) => (
-                                            <span key={index} className="badge bg-secondary d-inline-flex align-items-center skill-badge">
+                                            <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
                                                 {hobby}
                                                 <button
                                                     type="button"
-                                                    className="ms-2"
+                                                    className="ms-2 bg-transparent border-0"
                                                     aria-label="Remove"
                                                     onClick={() => {
                                                         const updatedHobbies = [...parsedResume.hobbies];
@@ -1734,7 +1734,7 @@ const [expItems, setExpItems] = useState([]);
                                         <div className="card border-0 shadow-sm"><div className="card-body">          
                                             <Row className="g-4">
                                 {cardTemplate.map((template) => (
-                                    <Col key={template.name} xs={6} sm={6} md={4} lg={3} xl={2}>
+                                    <Col key={template.name} xs={6} sm={6} md={4} lg={3} xl={4}>
                                         <div 
                                             className={`template-card p-3 text-center cursor-pointer ${selectedTemplate === template.name ? 'border border-primary rounded-3' : 'border border-light-subtle rounded-3'}`}
                                             onClick={() => handleTemplateChange(template.name)}
