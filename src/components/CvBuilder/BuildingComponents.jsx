@@ -16,11 +16,6 @@ export default function BuildingComponents() {
 
 
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        address: "",
         jobTitle: "",
         description: "",
       });
@@ -277,7 +272,7 @@ export default function BuildingComponents() {
                 <Form id="aiGenerateForm" >
                     <Modal.Body>
                         {/* Professional Title */}
-                        <Form.Group className="mb-3 text-start" controlId="firstName">
+                        {/* <Form.Group className="mb-3 text-start" controlId="firstName">
                             <Form.Label>First Name</Form.Label>
                             <div className="form-icon-container">
                                 <Form.Control
@@ -342,7 +337,7 @@ export default function BuildingComponents() {
                                 />
                                 <span className="fas fa-briefcase text-body fs-9 form-icon" />
                             </div>
-                        </Form.Group>
+                        </Form.Group> */}
                         <Form.Group className="mb-3 text-start" controlId="profTitle">
                             <Form.Label>Professional Title</Form.Label>
                             <div className="form-icon-container">

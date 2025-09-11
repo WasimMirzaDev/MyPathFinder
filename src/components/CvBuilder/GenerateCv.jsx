@@ -24,6 +24,8 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from 'react-toastify';
 import { useParams } from "react-router-dom";
+import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
+import CoverLetter from "./components/coverLetter";
 
 
 const cardTemplate = [
@@ -41,6 +43,32 @@ const cardTemplate = [
     { name: 'Elegant', template: Template7, image: 'elegant.jpg' },
     { name: 'Modern', template: Template8, image: 'modern.jpg' },
 ];
+
+const coverLetterjson = {
+    header: {
+      applicant_name: "John Doe",
+      applicant_address: "123 Main Street, Faisalabad, Pakistan",
+      applicant_email: "johndoe@email.com",
+      applicant_phone: "+92 300 1234567",
+      date: "September 5, 2025"
+    },
+    recipient: {
+      hiring_manager_name: "Jane Smith",
+      company_name: "Tech Solutions Ltd.",
+      company_address: "456 Business Road, London, UK"
+    },
+    body: {
+      greeting: "Dear Hiring Manager,",
+      opening_paragraph: "I am excited to apply for the Frontend Developer position at Tech Solutions Ltd...",
+      middle_paragraphs: [
+        "At Techtrack Software Solutions, I contributed to multiple Laravel and React projects...",
+        "I am also proficient in Flutter/Dart and exploring Machine Learning..."
+      ],
+      closing_paragraph: "I would be delighted to discuss how my skills can contribute to your company’s success.",
+      signature: "Sincerely, John Doe"
+    }
+  };
+  
 
 
 export default function CVBuilder() {
@@ -63,6 +91,12 @@ export default function CVBuilder() {
 
     // State for active tab
     // const [selectedTemplate, setSelectedTemplate] = useState("Default");
+
+
+
+
+
+
 
     const handleTemplateChange = (templateName) => {
         dispatch(setParsedResume({
@@ -1764,7 +1798,10 @@ const [expItems, setExpItems] = useState([]);
                                 )}
                                 {activeTab === 'tabCover' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabCover' ? 'show active' : ''}`} id="tabCover" role="tabpanel" aria-labelledby="tabCover-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-sm"><div className="card-body">Cover letter tools go here.</div></div>
+                                        <div className="card border-0 shadow-sm"><div className="card-body">
+                                        <CoverLetter/>
+                                            
+                                            </div></div>
                                     </div>
                                 )}
                             </div>

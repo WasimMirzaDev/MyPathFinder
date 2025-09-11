@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserSummaryAi } from "./resumeAPI";
+import { createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserSummaryAi , generateUserCoverLetter } from "./resumeAPI";
 
 
 export const createEmptyResume = createAsyncThunk("resume/create-empty", 
@@ -69,6 +69,18 @@ export const analyzeSummaryAi = createAsyncThunk("resume/analyze-summary-ai",
 );
 
 
+export const generateCoverLetter = createAsyncThunk("coverletter/generate-cover-letter", 
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await generateUserCoverLetter(formData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
 const resumeSlice = createSlice({
     name: "resume",
     initialState: {
@@ -77,6 +89,8 @@ const resumeSlice = createSlice({
       AiCvLoader: false,
       AiSummaryLoader: false,
       selectedTemplate:"Default",
+      coverletterjson:{},
+      coverletterLoader:false,
       prevParsedResume:{},
       SummaryIssues: [],
       SummarySuggestions: "",
@@ -236,6 +250,19 @@ const resumeSlice = createSlice({
         })
         .addCase(analyzeSummaryAi.rejected, (state, action) => {
           state.AiSummaryLoader = false;
+          state.error = action.payload || 'Failed to generate CV';
+        })
+        .addCase(generateCoverLetter.pending, (state) => {
+          state.coverletterLoader = true;
+          state.error = null;
+        })
+        .addCase(generateCoverLetter.fulfilled, (state, action) => {
+          state.coverletterLoader = false;
+          console.log("action.payload analyze summary AI",action.payload);
+          state.coverletterjson = action.payload.data;
+        })
+        .addCase(generateCoverLetter.rejected, (state, action) => {
+          state.coverletterLoader = false;
           state.error = action.payload || 'Failed to generate CV';
         });
     }

@@ -38,3 +38,8 @@ export const analyzeUserSummaryAi = async (formData) => {
   const response = await axios.post("/analyze-paragraph", formData);
   return response.data;
 }
+
+export const generateUserCoverLetter = async (formData) =>{
+  const response = await axios.post("/generate-cover-letter", formData);
+  return response.data;
+}
