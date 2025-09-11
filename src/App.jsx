@@ -40,53 +40,14 @@ const Loader = () => (
 const PageWrapper = ({ children }) => {
 
   const dispatch = useDispatch();
-  const { data, loading, error } = useSelector((state) => state.user);
+  const { data, bootstrapping, error } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(getUser());
   }, [dispatch]);
 
-
-
-  return loading ? <Loader /> : children;
+  return bootstrapping ? <Loader /> : children;
 };
-
-// Route configuration
-// const routeConfig = [
-//   // Public routes
-//   { path: '/', element: <Dashboard />, public: true },
-//   { path: '/application-tracker', element: <ApplicationTracker />, public: true },
-
-//   { path: '/cv-builder', element: <CvBuilder />, public: true },
-//   { path: '/cv-generate', element: <CvGenerate />, public: true },
-
-//   { path: '/interview', element: <Interview />, public: true },
-//   { path: '/prepration', element: <Prepration />, public: true },
-  
-//   { path: '/job-search', element: <JobSearch />, public: true },
-//   { path: '/get-started', element: <GetStarted />, public: true },
-//   { path: '/payment-plans', element: <PaymentPlans />, public: true },
-//   { path: '/support', element: <Support />, public: true },
-
-
-//   { path: '/sign-in', element: <SignIn />, public: true },
-//   { path: '/sign-up', element: <SignUp />, public: true },
-//   { path: '/verification', element: <Verification />, public: true },
-//   { path: '/2f-verification', element: <F2Verification />, public: true },
-//   { path: '/upload-profile', element: <UploadProfile />, public: true },
-
-//   { path: '/welcome', element: <Welcome />, public: true },
-
-//   // Protected routes with role requirements
-//   // { 
-//   //   path: '/dashboard', 
-//   //   element: <Dashboard />, 
-//   //   roles: ['Admin', 'HOD', 'Teacher', 'Data Operator'] 
-//   // },
-
-//   // Catch-all route
-//   { path: '*', element: <ErrorPage />, public: true }
-// ];
 
 const publicRoutes = [
   { path: '/sign-in', element: <SignIn /> },

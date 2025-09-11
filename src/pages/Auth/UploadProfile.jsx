@@ -1,10 +1,50 @@
-import React from 'react'
-import { Link } from "react-router-dom";
+import React, { useEffect, useState , useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from "react-router-dom";
+import { getIndustries, getRoles, getEducationLevels , updateUserPro } from '../../features/user/userSlice';
 
+import Select from 'react-select';
 
 import logo from '../../assets/images/MPF-logo.svg'
 
 export default function UploadProfile() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { industries, roles, educationLevels, success, loading } = useSelector((state) => state.user);
+
+    const linkedinUrlRef = useRef(null);
+
+    useEffect(() => {
+        dispatch(getIndustries());
+        dispatch(getRoles());
+        dispatch(getEducationLevels());
+    }, []);
+
+    const [formData, setFormData] = useState({
+        linkedin_profile_url: "",
+        industry_id: "",
+        role_id: "",
+        education_level_id: "",
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const result = await dispatch(updateUserPro(formData)).unwrap();
+        console.log(result);
+        if(result.status){
+            navigate('/');
+        }
+    };
+
+    const industryOptions = industries.map(industry => ({ value: industry.id, label: industry.name }));
+    const roleOptions = roles.map(role => ({ value: role.id, label: role.name }));
+    const educationOptions = educationLevels.map(edu => ({ value: edu.id, label: edu.name }));
+
     return (
         <main className="main" id="top">
             <div className="container-fluid bg-body-tertiary">
@@ -40,10 +80,13 @@ export default function UploadProfile() {
                                                         <i className="fab fa-linkedin-in" aria-hidden="true"></i>
                                                     </span>
                                                     <input type="url" className="form-control form-control-lg border-primary shadow-sm" id="linkedinUrl"
-                                                        name="linkedin_url" placeholder="https://www.linkedin.com/in/your-name" inputMode="url"
+                                                        name="linkedin_profile_url" placeholder="https://www.linkedin.com/in/your-name" inputMode="url"
                                                         autoComplete="url" autoCapitalize="off" spellCheck="false"
                                                         pattern="https?://(www\.)?linkedin\.com/(in|pub)/[A-Za-z0-9\-\._%]+/?"
-                                                        aria-describedby="linkedinHelp" required />
+                                                        aria-describedby="linkedinHelp" required
+                                                        value={formData.linkedin_profile_url}
+                                                        onChange={handleChange}
+                                                    />
                                                 </div>
 
                                                 <div id="linkedinHelp" className="form-text">
@@ -62,21 +105,20 @@ export default function UploadProfile() {
                                             </div>
 
 
-                                            <form action="welcome.html" method="post" noValidate="noValidate">
+                                            <form onSubmit={handleSubmit} noValidate="noValidate">
 
                                                 <div className="mb-3 text-start">
                                                     <label className="form-label" htmlFor="industry">Industry I am looking to work in:</label>
                                                     <div className="input-group">
                                                         <span className="input-group-text"><i className="fas fa-briefcase" aria-hidden="true"></i></span>
-                                                        <select className="form-select" id="industry" name="industry" required>
+                                                        <select className="form-select" id="industry" name="industry_id" required
+                                                            value={formData.industry_id}
+                                                            onChange={handleChange}
+                                                        >
                                                             <option value=""  disabled>Select an industry</option>
-                                                            <option>Technology</option>
-                                                            <option>Finance</option>
-                                                            <option>Marketing</option>
-                                                            <option>Healthcare</option>
-                                                            <option>Education</option>
-                                                            <option>Retail &amp; E-commerce</option>
-                                                            <option>Other</option>
+                                                            {industryOptions.map(option => (
+                                                                <option key={option.value} value={option.value}>{option.label}</option>
+                                                            ))}
                                                         </select>
                                                     </div>
                                                 </div>
@@ -85,16 +127,14 @@ export default function UploadProfile() {
                                                     <label className="form-label" htmlFor="jobRole">Job role I am looking to work in:</label>
                                                     <div className="input-group">
                                                         <span className="input-group-text"><i className="fas fa-user-tie" aria-hidden="true"></i></span>
-                                                        <select className="form-select" id="jobRole" name="jobRole" required>
+                                                        <select className="form-select" id="jobRole" name="role_id" required
+                                                            value={formData.role_id}
+                                                            onChange={handleChange}
+                                                        >
                                                             <option value=""  disabled>Select a role</option>
-                                                            <option>Software Developer</option>
-                                                            <option>Product Manager</option>
-                                                            <option>Data Analyst</option>
-                                                            <option>Designer (UI/UX)</option>
-                                                            <option>Project Manager</option>
-                                                            <option>Sales / Business Dev</option>
-                                                            <option>Customer Support</option>
-                                                            <option>Other</option>
+                                                            {roleOptions.map(option => (
+                                                                <option key={option.value} value={option.value}>{option.label}</option>
+                                                            ))}
                                                         </select>
                                                     </div>
                                                 </div>
@@ -104,19 +144,14 @@ export default function UploadProfile() {
                                                         <span className="input-group-text">
                                                             <i className="fas fa-user-graduate" aria-hidden="true"></i>
                                                         </span>
-                                                        <select className="form-select" id="educationLevel" name="education_level" required>
+                                                        <select className="form-select" id="educationLevel" name="education_level_id" required
+                                                            value={formData.education_level_id}
+                                                            onChange={handleChange}
+                                                        >
                                                             <option value=""  disabled>Select education level</option>
-                                                            <option value="no-qualifications">No formal qualifications</option>
-                                                            <option value="gcse">GCSEs / O-Levels</option>
-                                                            <option value="alevel">A-Levels / Equivalent</option>
-                                                            <option value="apprenticeship">Apprenticeship</option>
-                                                            <option value="foundation">Foundation / HND / HNC</option>
-                                                            <option value="bachelors">Bachelor’s degree</option>
-                                                            <option value="masters">Master’s degree</option>
-                                                            <option value="mba">MBA</option>
-                                                            <option value="phd">PhD / Doctorate</option>
-                                                            <option value="certificate">Professional certificate / Bootcamp</option>
-                                                            <option value="other">Other</option>
+                                                            {educationOptions.map(option => (
+                                                                <option key={option.value} value={option.value}>{option.label}</option>
+                                                            ))}
                                                         </select>
                                                     </div>
                                                 </div>
@@ -124,7 +159,10 @@ export default function UploadProfile() {
 
                                                 <div className="visually-hidden" aria-live="polite"></div>
 
-                                                <button type="submit" className="btn btn-primary w-100 mt-2 mb-4">Continue</button>
+                                                <button type="submit" className="btn btn-primary w-100 mt-2 mb-4" disabled={loading}>
+                                                    {loading ? 'Saving...' : 'Continue'}
+                                                </button>
+                                                {success && <div className="alert alert-success" role="alert">{success}</div>}
                                             </form>
                                         </div>
                                     </div>
