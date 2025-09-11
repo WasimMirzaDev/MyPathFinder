@@ -8,7 +8,7 @@ import html2canvas from "html2canvas";
 
 const CoverLetter = () =>{
   const dispatch = useDispatch();
-  const { parsedResume , coverletterjson } = useSelector((state) => state.resume);
+  const { parsedResume , coverletterjson , coverletterLoader } = useSelector((state) => state.resume);
   const coverRef = useRef(null);
     
   const handleGenerateCoverLetter = () => {
@@ -71,16 +71,58 @@ const CoverLetter = () =>{
     }
   }
 
+  const handleCopyToClipboard = () => {
+    const cl = coverletterjson || {};
+    const header = cl.header || {};
+    const recipient = cl.recipient || {};
+    const body = cl.body || {};
+
+    const lines = [];
+
+    if (header.applicant_name) lines.push(header.applicant_name);
+    if (header.applicant_address) lines.push(header.applicant_address);
+    if (header.applicant_email) lines.push(header.applicant_email);
+    if (header.applicant_phone) lines.push(header.applicant_phone);
+    if (header.date) lines.push(header.date);
+
+    lines.push("");
+
+    if (recipient.hiring_manager_name) lines.push(recipient.hiring_manager_name);
+    if (recipient.company_name) lines.push(recipient.company_name);
+    if (recipient.company_address) lines.push(recipient.company_address);
+
+    lines.push("");
+
+    lines.push(body.greeting || "Dear Hiring Manager,");
+    lines.push("");
+    if (body.opening_paragraph) lines.push(body.opening_paragraph);
+    if (Array.isArray(body.middle_paragraphs)) {
+      body.middle_paragraphs.forEach(p => { if (p) lines.push(p); });
+    }
+    if (body.closing_paragraph) {
+      lines.push("");
+      lines.push(body.closing_paragraph);
+    }
+    lines.push("");
+
+    const signature = (body.signature || "Sincerely, {applicant_name}")
+      .replace('{applicant_name}', header.applicant_name || "");
+    lines.push(signature);
+
+    const plainText = lines.join('\n');
+    navigator.clipboard.writeText(plainText);
+  }
 
   return (
     <>
      <div>
-        <button className='btn btn-primary' onClick={handleGenerateCoverLetter}>Generate Cover Letter</button>
+        <button className='btn btn-primary' onClick={handleGenerateCoverLetter} disabled={coverletterLoader}>{coverletterLoader ? "Generating Cover Letter..." : "Generate Cover Letter"}</button>
         <button className='btn btn-primary' onClick={handleDownloadCoverLetter}>Download Cover Letter</button>
         <h3>Classic Cover Letter</h3>
         <div ref={coverRef}>
           <ClassicCoverLetterTemplate coverLetter={coverletterjson} />
         </div>
+        <button onClick={handleCopyToClipboard}>Copy to clipboard</button>
       </div>
     </>
   )
