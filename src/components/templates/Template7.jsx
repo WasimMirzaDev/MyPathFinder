@@ -47,7 +47,8 @@ const Template7 = ({ resumeData }) => {
     },
     name: {
       margin: 0,
-      fontSize: '22px'
+      fontSize: '22px',
+      color:"#fff"
     },
     contactInfo: {
       margin: '5px 0',
@@ -82,6 +83,7 @@ const Template7 = ({ resumeData }) => {
       marginTop: '5px'
     },
     sidebarTitle: {
+      color:"#fff",
       marginTop: 0,
       fontSize: '16px',
       borderBottom: '1px solid #888',

@@ -23,6 +23,7 @@ const Template8 = ({ resumeData }) => {
       marginBottom: '30px'
     },
     profileName: {
+      color:"#fff",
       margin: '0 0 20px 0',
       fontSize: '18px',
       fontWeight: 'bold'

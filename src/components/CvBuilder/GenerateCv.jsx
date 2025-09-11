@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus, FiLoader,FiDownload  } from "react-icons/fi";
 import avatar from '../../assets/images/team/150x150/57.webp'
 import {
     ModernTemplate,
@@ -292,10 +292,14 @@ export default function CVBuilder() {
         }
     }, [parsedResume, currentPage]);
 
-
+const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
 
     const handleDownloadPDF = async () => {
-        if (!cvRef.current) return;
+        setDownloadPDFLoader(true);
+        if (!cvRef.current) {
+            setDownloadPDFLoader(false);
+            return;
+        }
 
         const pdf = new jsPDF('p', 'mm', 'a4');
         const a4Width = 210; // A4 width in mm
@@ -394,6 +398,7 @@ export default function CVBuilder() {
             console.error('Error generating PDF:', error);
         } finally {
             document.body.removeChild(tempContainer);
+            setDownloadPDFLoader(false);
         }
     };
 
@@ -1625,23 +1630,30 @@ export default function CVBuilder() {
                                                             </div>
                                                             <div className="mt-3 d-flex flex-wrap gap-2">
 
-                                                                {parsedResume?.languages?.map((lang, index) => (
-                                                                    <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
-                                                                        {lang.name} ({lang.level})
-                                                                        <button
-                                                                            type="button"
-                                                                            className="bg-transparent border-0"
-                                                                            aria-label="Remove"
-                                                                            onClick={() => {
-                                                                                const updatedLangs = [...parsedResume.languages];
-                                                                                updatedLangs.splice(index, 1);
-                                                                                dispatch(updateField({ path: "languages", value: updatedLangs }));
-                                                                            }}
-                                                                        >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-                                                                        </button>
-                                                                    </span>
-                                                                ))}
+                                                                {(parsedResume?.languages ?? [])
+                                                                    .filter((l) => {
+                                                                        if (!l) return false;
+                                                                        if (typeof l === 'object' && Object.keys(l).length === 0) return false;
+                                                                        return Boolean(l.name || l.level || l.language);
+                                                                    })
+                                                                    .map((lang, index) => (
+                                                                        <span key={index} className="badge bg-primary d-inline-flex align-items-center skill-badge">
+                                                                            {lang.name || lang.language}
+                                                                            {lang.level ? ` (${lang.level})` : ''}
+                                                                            <button
+                                                                                type="button"
+                                                                                className="bg-transparent border-0"
+                                                                                aria-label="Remove"
+                                                                                onClick={() => {
+                                                                                    const updatedLangs = [...parsedResume.languages];
+                                                                                    updatedLangs.splice(index, 1);
+                                                                                    dispatch(updateField({ path: "languages", value: updatedLangs }));
+                                                                                }}
+                                                                            >
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                                                            </button>
+                                                                        </span>
+                                                                    ))}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1865,8 +1877,8 @@ export default function CVBuilder() {
                                             onClick={handleDownloadPDF}
                                             className="btn btn-outline-primary"
                                         >
-                                            {/* <FiDownload size={14} />  */}
-                                            <span className="d-none d-xl-inline ms-1">Download PDF</span>
+                                            {downloadPDFLoader ? <FiLoader size={14} className="animate-spin" /> : <FiDownload size={14} />}
+                                            <span className="ms-1">{downloadPDFLoader ? "Generating..." : "Download PDF"}</span>
                                         </Button>
                                     </div>
                                 </div>

@@ -21,7 +21,7 @@ const ClassicTemplate = ({ resumeData }) => {
       <h1 style={{
         fontSize: '36px',
         marginBottom: '5px',
-        color: '#000',
+        color: '#000 !important',
         fontWeight: '500'
       }}>
         {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}

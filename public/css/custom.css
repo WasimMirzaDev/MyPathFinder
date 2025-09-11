@@ -6,7 +6,7 @@ body {
 
 p,
 .text-body {
-    color: #161c52 !important;
+    color: #161c52;
 }
 
 
@@ -17,7 +17,7 @@ h4,
 h5,
 h6 {
     font-family: figtree !important;
-    color: #161c52 !important;
+    color: #161c52 ;
 }
 
 h4 {

@@ -31,11 +31,11 @@ import { login, getUser, logout } from "./features/user/userSlice";
 
 
 
-const Loader = () => (
-  <div id="preloader">
-    <div id="loader"></div>
-  </div>
-);
+// const Loader = () => (
+//   <div id="preloader">
+//     <div id="loader"></div>
+//   </div>
+// );
 
 const PageWrapper = ({ children }) => {
 
@@ -46,7 +46,7 @@ const PageWrapper = ({ children }) => {
     dispatch(getUser());
   }, [dispatch]);
 
-  return bootstrapping ? <Loader /> : children;
+return children;
 };
 
 const publicRoutes = [

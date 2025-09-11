@@ -37,7 +37,7 @@ const Template5 = ({ resumeData }) => {
         contact: {
           margin: '6px 0',
           fontSize: '14px',
-          color: '#898686'
+          color: '#fff'
         },
         pageContainer: {
           border: '1px solid #e0e0e0',
