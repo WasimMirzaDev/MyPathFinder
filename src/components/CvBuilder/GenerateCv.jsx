@@ -1777,7 +1777,7 @@ export default function CVBuilder() {
                                 {activeTab === 'tabAnalysis' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabAnalysis' ? 'show active' : ''}`} id="tabAnalysis" role="tabpanel" aria-labelledby="tabAnalysis-tab" tabIndex="0">
                                         <div className="card border-0 shadow-sm"><div className="card-body">
-                                            <div className='d-flex justify-content-between'>
+                                            <div className='d-flex justify-content-between align-items-center my-2'>
                                                 <div>
                                                     <h4>Orignal paragraph :</h4>
                                                 </div>
@@ -1786,11 +1786,15 @@ export default function CVBuilder() {
 
                                                 </div>
                                             </div>
-                                            {parsedResume?.summary}
+                                            <div className='my-2'>
+                                                {parsedResume?.summary}
+                                            </div>
                                             {SummaryIssues.length > 0 ?
                                             <div>
-                                            <h3>Issues</h3>
-                                            <div>{SummaryIssues?.map((item, index) => <div key={index}><p>{item.issue}</p><p>{item.description}</p></div>)}</div>
+                                            <h4>Issues :</h4>
+                                            <div>
+                                                
+                                                <ul>{SummaryIssues?.map((item, index) => <div key={index} className='mb-2 d-flex'><li>{item.issue} : {item.description}</li></div>)}</ul></div>
                                             </div>
                                             :
                                             <></>
@@ -1798,9 +1802,9 @@ export default function CVBuilder() {
 
                                             {SummarySuggestions != "" ? 
                                             <div>
-                                            <div className='d-flex justify-content-between'>
+                                            <div className='d-flex justify-content-between align-items-center my-2'>
                                                 <div>
-                                                    <h4>Suggested Paragraph</h4>
+                                                    <h4>Suggested Paragraph :</h4>
                                                 </div>
                                                 <div style={{width:'100px'}}>
                                                     <button className='btn btn-primary w-100' onClick={handleApplySummary} disabled={AiSummaryLoader}>Apply</button>

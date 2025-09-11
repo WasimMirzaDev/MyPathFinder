@@ -138,6 +138,7 @@ const resumeSlice = createSlice({
         .addCase(createEmptyResume.pending, (state) => {
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
+          state.coverletterjson = {};
           state.loading = true;
           state.error = null;
         })
@@ -145,6 +146,7 @@ const resumeSlice = createSlice({
           state.loading = false;
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
+          state.coverletterjson = {};
           if (action.payload?.data?.id) {
             state.parsedResume = {
               ...action.meta.arg, // The emptyResume we passed
@@ -157,6 +159,7 @@ const resumeSlice = createSlice({
           state.loading = false;
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
+          state.coverletterjson = {};
           state.error = action.payload || 'Failed to create empty resume';
         })
         
@@ -198,12 +201,14 @@ const resumeSlice = createSlice({
         .addCase(uploadExistingResume.pending, (state) => {
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
+          state.coverletterjson = {};
           state.loading = true;
           state.error = null;
         })
         .addCase(uploadExistingResume.fulfilled, (state, action) => {
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
+          state.coverletterjson = {};
           state.loading = false;
           if (action.payload?.data) {
             state.parsedResume = action.payload.data;
@@ -212,6 +217,7 @@ const resumeSlice = createSlice({
         .addCase(uploadExistingResume.rejected, (state, action) => {
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
+          state.coverletterjson = {};
           state.loading = false;
           state.error = action.payload || 'Failed to upload resume';
         })
@@ -220,11 +226,13 @@ const resumeSlice = createSlice({
         .addCase(generateCvAi.pending, (state) => {
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
+          state.coverletterjson = {};
           state.AiCvLoader = true;
           state.error = null;
         })
         .addCase(generateCvAi.fulfilled, (state, action) => {
           state.AiCvLoader = false;
+          state.coverletterjson = {};
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
           console.log("action.payload CV AI",action.payload);
@@ -234,6 +242,7 @@ const resumeSlice = createSlice({
         })
         .addCase(generateCvAi.rejected, (state, action) => {
           state.AiCvLoader = false;
+          state.coverletterjson = {};
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
           state.error = action.payload || 'Failed to generate CV';
