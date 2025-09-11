@@ -27,35 +27,35 @@ const ClassicCoverLetterTemplate = ({ coverLetter }) => {
         {/* Header */}
         <div style={{ marginBottom: "20px" }}>
           <h2 style={{ margin: "0", fontSize: "20px", fontWeight: "600" }}>
-            {header.applicant_name}
+            {header?.applicant_name}
           </h2>
-          <p style={{ margin: "3px 0" }}>{header.applicant_address}</p>
-          <p style={{ margin: "3px 0" }}>{header.applicant_email}</p>
-          <p style={{ margin: "3px 0" }}>{header.applicant_phone}</p>
+          <p style={{ margin: "3px 0" }}>{header?.applicant_address}</p>
+          <p style={{ margin: "3px 0" }}>{header?.applicant_email}</p>
+          <p style={{ margin: "3px 0" }}>{header?.applicant_phone}</p>
           <p style={{ margin: "10px 0 0 0", fontStyle: "italic" }}>
-            {header.date}
+            {header?.date}
           </p>
         </div>
 
         {/* Recipient */}
         <div style={{ marginBottom: "20px" }}>
-          <p style={{ margin: "3px 0" }}>{recipient.hiring_manager_name}</p>
-          <p style={{ margin: "3px 0" }}>{recipient.company_name}</p>
-          <p style={{ margin: "3px 0" }}>{recipient.company_address}</p>
+          <p style={{ margin: "3px 0" }}>{recipient?.hiring_manager_name}</p>
+          <p style={{ margin: "3px 0" }}>{recipient?.company_name}</p>
+          <p style={{ margin: "3px 0" }}>{recipient?.company_address}</p>
         </div>
 
         {/* Body */}
         <div style={{ marginBottom: "20px" }}>
-          <p>{body.greeting}</p>
-          <p>{body.opening_paragraph}</p>
+          <p>{body?.greeting}</p>
+          <p>{body?.opening_paragraph}</p>
 
-          {body.middle_paragraphs &&
-            body.middle_paragraphs.map((para, idx) => (
+          {body?.middle_paragraphs &&
+            body?.middle_paragraphs.map((para, idx) => (
               <p key={idx}>{para}</p>
             ))}
 
-          <p>{body.closing_paragraph}</p>
-          <p style={{ marginTop: "30px" }}>{body.signature}</p>
+          <p>{body?.closing_paragraph}</p>
+          <p style={{ marginTop: "30px" }}>{body?.signature}</p>
         </div>
       </div>
     </div>

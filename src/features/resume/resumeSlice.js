@@ -259,7 +259,7 @@ const resumeSlice = createSlice({
         .addCase(generateCoverLetter.fulfilled, (state, action) => {
           state.coverletterLoader = false;
           console.log("action.payload analyze summary AI",action.payload);
-          state.coverletterjson = action.payload.data;
+          state.coverletterjson = action.payload;
         })
         .addCase(generateCoverLetter.rejected, (state, action) => {
           state.coverletterLoader = false;
