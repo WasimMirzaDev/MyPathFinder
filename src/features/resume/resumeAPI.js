@@ -1,13 +1,5 @@
 import axios from "../../api/axios";
 
-export const fetchInterviewUserHistory = async () => {
-  const response = await axios.get("/interview/history"); // e.g. /me endpoint
-  console.log("request hit",response.data);
-  return response.data;
-};
-
-
-
 export const createEmptyUserResume = async (emptyResume) => {
   const response = await axios.post("/v1/resume/create-empty", { newEmptyResume : emptyResume});
   return response.data;

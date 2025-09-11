@@ -269,6 +269,8 @@ export default function CVBuilder() {
             const a4WidthPx = 794; // A4 width in pixels at 96 DPI
             const a4HeightPx = 1123; // A4 height in pixels at 96 DPI
             const padding = 0; // Padding in pixels
+            const bottomPaddingPx = 10; // Bottom padding in pixels
+            const topPaddingPx = 10; // Top padding in pixels
     
             // Create a temporary container for the entire content
             const tempContainer = document.createElement('div');
@@ -328,7 +330,7 @@ export default function CVBuilder() {
                         useCORS: true,
                         backgroundColor: '#ffffff',
                         width: a4WidthPx,
-                        height: a4HeightPx,
+                        height: a4HeightPx - bottomPaddingPx - topPaddingPx, // Reduce height to accommodate padding
                         scrollY: i * a4HeightPx,
                         windowHeight: a4HeightPx,
                         y: i * a4HeightPx,
@@ -347,7 +349,10 @@ export default function CVBuilder() {
                     // Calculate vertical position to center content
                     const yPos = (a4Height - imgHeight) / 2;
     
-                    pdf.addImage(imgData, 'PNG', 0, yPos > 0 ? yPos : 0, imgWidth, imgHeight);
+                    // Adjust height to account for padding
+                    const adjustedImgHeight = (a4HeightPx - bottomPaddingPx - topPaddingPx) * (imgHeight / a4HeightPx);
+                    const yPosition = (yPos > 0 ? yPos : 0) + (topPaddingPx * (a4Height / a4HeightPx));
+                    pdf.addImage(imgData, 'PNG', 0, yPosition, imgWidth, adjustedImgHeight);
                 }
     
                 pdf.save(`${parsedResume?.candidateName?.[0]?.firstName||'CV'}.pdf`);
@@ -386,6 +391,13 @@ export default function CVBuilder() {
 
     const [activeTab, setActiveTab] = useState('tabPreview');
 
+
+    const handleAnalysis = () =>{
+        setActiveTab('tabAnalysis');
+        if(!(SummaryIssues.length > 0 && SummarySuggestions != "")){
+            handleAnalyzeSummary();
+        }
+    }
     // State for form fields
     const [formData, setFormData] = useState({
         firstName: '',
@@ -766,7 +778,7 @@ const [expItems, setExpItems] = useState([]);
                                 <li className="nav-item" role="presentation">
                                     <button
                                         className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabAnalysis' ? 'active' : ''}`}
-                                        onClick={() => setActiveTab('tabAnalysis')}
+                                        onClick={() => handleAnalysis()}
                                     >
                                         <svg width={14} className="svg-inline--fa fa-chart-line" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chart-line" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                             <path fill="currentColor" d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64L0 400c0 44.2 35.8 80 80 80l400 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 416c-8.8 0-16-7.2-16-16L64 64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z"></path>

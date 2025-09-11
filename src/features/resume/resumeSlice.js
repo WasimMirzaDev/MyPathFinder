@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchInterviewUserHistory , createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserSummaryAi } from "./resumeAPI";
+import { createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserSummaryAi } from "./resumeAPI";
 
-export const fetchInterviewHistory = createAsyncThunk("interview/history", async () => {
-  return await fetchInterviewUserHistory();
-});
 
 export const createEmptyResume = createAsyncThunk("resume/create-empty", 
   async (emptyResume, { rejectWithValue }) => {
@@ -76,7 +73,6 @@ const resumeSlice = createSlice({
     name: "resume",
     initialState: {
       parsedResume: {},
-      history: null,
       saveChangesLoader: false,
       AiCvLoader: false,
       AiSummaryLoader: false,
@@ -124,26 +120,17 @@ const resumeSlice = createSlice({
     extraReducers: (builder) => {
       // Fetch Interview History
       builder
-        .addCase(fetchInterviewHistory.pending, (state) => {
-          state.loading = true;
-          state.error = null;
-        })
-        .addCase(fetchInterviewHistory.fulfilled, (state, action) => {
-          state.loading = false;
-          state.history = action.payload;
-        })
-        .addCase(fetchInterviewHistory.rejected, (state, action) => {
-          state.loading = false;
-          state.error = action.error.message;
-        })
-        
         // Create Empty Resume
         .addCase(createEmptyResume.pending, (state) => {
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           state.loading = true;
           state.error = null;
         })
         .addCase(createEmptyResume.fulfilled, (state, action) => {
           state.loading = false;
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           if (action.payload?.data?.id) {
             state.parsedResume = {
               ...action.meta.arg, // The emptyResume we passed
@@ -154,6 +141,8 @@ const resumeSlice = createSlice({
         })
         .addCase(createEmptyResume.rejected, (state, action) => {
           state.loading = false;
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           state.error = action.payload || 'Failed to create empty resume';
         })
         
@@ -193,27 +182,37 @@ const resumeSlice = createSlice({
         
         // Upload Existing Resume
         .addCase(uploadExistingResume.pending, (state) => {
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           state.loading = true;
           state.error = null;
         })
         .addCase(uploadExistingResume.fulfilled, (state, action) => {
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           state.loading = false;
           if (action.payload?.data) {
             state.parsedResume = action.payload.data;
           }
         })
         .addCase(uploadExistingResume.rejected, (state, action) => {
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           state.loading = false;
           state.error = action.payload || 'Failed to upload resume';
         })
 
         // Generate CV AI
         .addCase(generateCvAi.pending, (state) => {
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           state.AiCvLoader = true;
           state.error = null;
         })
         .addCase(generateCvAi.fulfilled, (state, action) => {
           state.AiCvLoader = false;
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           console.log("action.payload CV AI",action.payload);
           if (action.payload?.data) {
             state.parsedResume = action.payload.data;
@@ -221,6 +220,8 @@ const resumeSlice = createSlice({
         })
         .addCase(generateCvAi.rejected, (state, action) => {
           state.AiCvLoader = false;
+          state.SummarySuggestions = "";
+          state.SummaryIssues = [];
           state.error = action.payload || 'Failed to generate CV';
         })
         .addCase(analyzeSummaryAi.pending, (state) => {
