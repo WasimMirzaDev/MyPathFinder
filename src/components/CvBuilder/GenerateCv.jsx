@@ -294,115 +294,67 @@ export default function CVBuilder() {
 
 const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
 
-    const handleDownloadPDF = async () => {
-        setDownloadPDFLoader(true);
-        if (!cvRef.current) {
-            setDownloadPDFLoader(false);
-            return;
-        }
-
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const a4Width = 210; // A4 width in mm
-        const a4Height = 297; // A4 height in mm
-        const a4WidthPx = 794; // A4 width in pixels at 96 DPI
-        const a4HeightPx = 1123; // A4 height in pixels at 96 DPI
-        const padding = 0; // Padding in pixels
-        const bottomPaddingPx = 10; // Bottom padding in pixels
-        const topPaddingPx = 10; // Top padding in pixels
-
-        // Create a temporary container for the entire content
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'absolute';
-        tempContainer.style.left = '-9999px';
-        tempContainer.style.width = `${a4WidthPx}px`;
-        tempContainer.style.backgroundColor = '#ffffff';
-        tempContainer.style.padding = `${padding}px`;
-        tempContainer.style.boxSizing = 'border-box';
-
-        // Clone the CV content
-        const clonedContent = cvRef.current.cloneNode(true);
-
-        // Apply PDF-specific styles to center the content
-        clonedContent.style.width = `${a4WidthPx - 2 * padding}px`; // Account for padding on both sides
-        clonedContent.style.margin = '0 auto'; // Center horizontally
-        clonedContent.style.padding = '0';
-        clonedContent.style.fontSize = '12px';
-        clonedContent.style.lineHeight = '1.4';
-
-        // // Center all content elements
-        // const centerElements = clonedContent.querySelectorAll('*');
-        // centerElements.forEach(el => {
-        //   el.style.marginLeft = 'auto';
-        //   el.style.marginRight = 'auto';
-        //   el.style.maxWidth = '100%';
-        // });
-
-        // Adjust heading sizes
-        const headings = clonedContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        headings.forEach(heading => {
-            const currentSize = window.getComputedStyle(heading).fontSize;
-            const newSize = parseFloat(currentSize) * 0.8;
-            heading.style.fontSize = `${newSize}px`;
-            heading.style.marginBottom = '8px';
-            heading.style.marginTop = '12px';
+const handleDownloadPDF = async () => {
+    setDownloadPDFLoader(true);
+    if (!cvRef.current) {
+      setDownloadPDFLoader(false);
+      return;
+    }
+ 
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const a4Width = 210; // A4 width in mm
+    const a4Height = 297; // A4 height in mm
+    const a4WidthPx = 794; // A4 width in pixels
+    const a4HeightPx = 1123; // A4 height in pixels
+    const paddingTopBottom = 5; // 5mm padding for top and bottom
+ 
+    // Create and clone content
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.width = `${a4WidthPx}px`;
+    tempContainer.style.backgroundColor = '#ffffff';
+    const clonedContent = cvRef.current.cloneNode(true);
+    tempContainer.appendChild(clonedContent);
+    document.body.appendChild(tempContainer);
+ 
+    // Calculate pages based on visible content
+    const contentHeight = clonedContent.scrollHeight;
+    let totalPages = Math.ceil(contentHeight / a4HeightPx);
+    // Adjust if last page has minimal content
+    if (contentHeight % a4HeightPx < a4HeightPx * 0.2) {
+      totalPages--;
+    }
+ 
+    try {
+      for (let i = 0; i < totalPages; i++) {
+        const canvas = await html2canvas(clonedContent, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          width: a4WidthPx,
+          height: a4HeightPx,
+          scrollY: i * a4HeightPx,
+          windowHeight: a4HeightPx,
+          y: i * a4HeightPx,
         });
-
-        // Center sections
-        const sections = clonedContent.querySelectorAll('section, .section');
-        sections.forEach(section => {
-            section.style.marginLeft = 'auto';
-            section.style.marginRight = 'auto';
-            section.style.maxWidth = '100%';
-        });
-
-        tempContainer.appendChild(clonedContent);
-        document.body.appendChild(tempContainer);
-
-        try {
-            const totalPages = calculatePages();
-
-            for (let i = 0; i < totalPages; i++) {
-                const canvas = await html2canvas(clonedContent, {
-                    scale: 2,
-                    logging: false,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    width: a4WidthPx,
-                    height: a4HeightPx - bottomPaddingPx - topPaddingPx, // Reduce height to accommodate padding
-                    scrollY: i * a4HeightPx,
-                    windowHeight: a4HeightPx,
-                    y: i * a4HeightPx,
-                });
-
-                const imgData = canvas.toDataURL('image/png', 1.0);
-
-                if (i > 0) {
-                    pdf.addPage();
-                }
-
-                // Center the image on the PDF page
-                const imgWidth = a4Width;
-                const imgHeight = (canvas.height * a4Width) / canvas.width;
-
-                // Calculate vertical position to center content
-                const yPos = (a4Height - imgHeight) / 2;
-
-                // Adjust height to account for padding
-                const adjustedImgHeight = (a4HeightPx - bottomPaddingPx - topPaddingPx) * (imgHeight / a4HeightPx);
-                const yPosition = (yPos > 0 ? yPos : 0) + (topPaddingPx * (a4Height / a4HeightPx));
-                pdf.addImage(imgData, 'PNG', 0, yPosition, imgWidth, adjustedImgHeight);
-            }
-
-            pdf.save(`${parsedResume?.candidateName?.[0]?.firstName || 'CV'}.pdf`);
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-        } finally {
-            document.body.removeChild(tempContainer);
-            setDownloadPDFLoader(false);
-        }
-    };
-
-
+ 
+        const imgData = canvas.toDataURL('image/png', 1.0);
+        if (i > 0) pdf.addPage();
+ 
+        const imgWidth = a4Width; // Full width, no side padding
+        const imgHeight = ((canvas.height * a4Width) / canvas.width) * (a4Height - 2 * paddingTopBottom) / a4Height;
+        pdf.addImage(imgData, 'PNG', 0, paddingTopBottom, imgWidth, imgHeight);
+      }
+ 
+      pdf.save(`${parsedResume?.candidateName?.[0]?.firstName || 'CV'}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      document.body.removeChild(tempContainer);
+      setDownloadPDFLoader(false);
+    }
+};
 
     const previewContainerRef = useRef(null);
 
