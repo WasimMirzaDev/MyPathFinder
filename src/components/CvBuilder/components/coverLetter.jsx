@@ -220,7 +220,7 @@ const CoverLetter = () =>{
         </div>
       </div>
         <div className="row g-4">
-          <div className="col-12 col-lg-6">
+          <div className="col-12 col-lg-12">
             <h4 className="mb-3">Edit Cover Letter</h4>
             <div className="card p-3">
               <h6 className="mt-2">Header</h6>
@@ -290,7 +290,7 @@ const CoverLetter = () =>{
               </div>
             </div>
           </div>
-          <div className="col-12 col-lg-6">
+          <div className="col-12 col-lg-12">
             <h3>Classic Cover Letter</h3>
             <div ref={coverRef}>
               <ClassicCoverLetterTemplate coverLetter={coverletterjson} />
