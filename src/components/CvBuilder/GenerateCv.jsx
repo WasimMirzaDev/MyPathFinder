@@ -1875,6 +1875,7 @@ const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
                                             variant="outline-primary"
                                             size="sm"
                                             onClick={handleDownloadPDF}
+                                            disabled={downloadPDFLoader}
                                             className="btn btn-outline-primary"
                                         >
                                             {downloadPDFLoader ? <FiLoader size={14} className="animate-spin" /> : <FiDownload size={14} />}
