@@ -1,8 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels } from "./userAPI";
 
-export const register = createAsyncThunk("user/register", async (userData) => {
-  return await registerUser(userData);
+export const register = createAsyncThunk("user/register", async (userData, { rejectWithValue }) => {
+  try {
+    return await registerUser(userData);
+  } catch (err) {
+    const data = err?.response?.data;
+    return rejectWithValue(data || { message: err?.message || "Request failed" });
+  }
 });
 
 export const login = createAsyncThunk("user/login", async (userData) => {
@@ -60,7 +65,7 @@ const userSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload?.message || action.error.message;
       })
       .addCase(login.pending, (state) => { state.loading = true; })
       .addCase(login.fulfilled, (state, action) => {

@@ -4,11 +4,12 @@ import { Modal, Button, Card, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from 'react-redux';
 import { createEmptyResume , uploadExistingResume , updateResumeById , generateCvAi } from '../../features/resume/resumeSlice';
 import { toast } from 'react-toastify';
+import { FiLoader  } from "react-icons/fi";
 
 export default function BuildingComponents() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error ,AiCvLoader } = useSelector((state) => state.resume);
+  const { loading, error ,AiCvLoader , emptyResumeLoader} = useSelector((state) => state.resume);
 
     const [show, setShow] = useState(false);
     const [profTitle, setProfTitle] = useState("");
@@ -203,7 +204,9 @@ export default function BuildingComponents() {
                                 id="cvUpload"
                                 type="file"
                                 className="visually-hidden"
+                                disabled={loading}
                                 onChange={(e) => {
+                                    if (loading) return;
                                     const file = e.target.files[0];
                                     if (file) {
                                         handleExistingCvUpload(file);
@@ -212,7 +215,14 @@ export default function BuildingComponents() {
                                     e.target.value = null;
                                 }}
                                 accept=".pdf,.doc,.docx,.rtf,.odt" />
-                            <label htmlFor="cvUpload" className="btn btn-primary w-100 stretched-link"> {loading ? "Uploading..." : "Upload Now"}</label>
+                            <label
+                                htmlFor="cvUpload"
+                                className={`btn btn-primary w-100 stretched-link ${loading ? 'disabled' : ''}`}
+                                aria-disabled={loading}
+                                style={{ pointerEvents: loading ? 'none' : 'auto', opacity: loading ? 0.65 : 1 }}
+                            >
+                                {loading ? "Uploading..." : "Upload Now"}
+                            </label>
                             <small id="cvUploadName" className="d-block mt-2 text-body-secondary"></small>
                         </div>
                     </div>
@@ -230,8 +240,8 @@ export default function BuildingComponents() {
                             <p className="fs-8">
                                 Build your CV from scratch, using clean, modern templates designed for recruiters.
                             </p>
-                            <Link className="stretched-link btn btn-primary w-100" onClick={handleManualCV}
-                            >Launch CV Builder</Link>
+                            <Button className="stretched-link btn btn-primary w-100" onClick={handleManualCV} disabled={emptyResumeLoader}
+                            >{emptyResumeLoader ?  (<><FiLoader size={14} className="me-2 animate-spin" />Launching...</>)  : 'Launch CV Builder'}</Button>
                         </div>
                     </div>
                 </div>
@@ -374,7 +384,7 @@ export default function BuildingComponents() {
                         <Button variant="link" onClick={handleClose}>
                             Close
                         </Button>
-                        <Button type="button" variant="primary" onClick={handleCvAiUpload}>
+                        <Button type="button" variant="primary" onClick={handleCvAiUpload} disabled={AiCvLoader}>
                             {AiCvLoader ? "Generating..." : "Generate"}
                         </Button>
                     </Modal.Footer>

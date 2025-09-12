@@ -95,9 +95,14 @@ const resumeSlice = createSlice({
       SummaryIssues: [],
       SummarySuggestions: "",
       loading: false,
+      emptyResumeLoader:false,
+      emptyResumeLoader:false,
       error: null,
     },
     reducers: {
+      setCoverLetterJson: (state,action) => {
+        state.coverletterjson = action.payload
+      },
       setSelectedTemplate: (state, action) => {
         state.selectedTemplate = action.payload;
       },
@@ -139,11 +144,11 @@ const resumeSlice = createSlice({
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
           state.coverletterjson = {};
-          state.loading = true;
+          state.emptyResumeLoader = true;
           state.error = null;
         })
         .addCase(createEmptyResume.fulfilled, (state, action) => {
-          state.loading = false;
+          state.emptyResumeLoader = false;
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
           state.coverletterjson = {};
@@ -156,7 +161,7 @@ const resumeSlice = createSlice({
           }
         })
         .addCase(createEmptyResume.rejected, (state, action) => {
-          state.loading = false;
+          state.emptyResumeLoader = false;
           state.SummarySuggestions = "";
           state.SummaryIssues = [];
           state.coverletterjson = {};
@@ -278,5 +283,5 @@ const resumeSlice = createSlice({
   });
   
 
-export const { setParsedResume , updateField , setSelectedTemplate } = resumeSlice.actions;
+export const { setParsedResume , updateField , setSelectedTemplate , setCoverLetterJson } = resumeSlice.actions;
 export default resumeSlice.reducer;

@@ -1,6 +1,6 @@
 import React , {useEffect, useState, useCallback, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { generateCoverLetter } from "../../../features/resume/resumeSlice";
+import { generateCoverLetter , setCoverLetterJson} from "../../../features/resume/resumeSlice";
 import { ClassicCoverLetterTemplate } from "../../cover-letter-templates";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -10,6 +10,100 @@ const CoverLetter = () =>{
   const dispatch = useDispatch();
   const { parsedResume , coverletterjson , coverletterLoader } = useSelector((state) => state.resume);
   const coverRef = useRef(null);
+  
+  const ensureDefaultCoverLetter = useCallback(() => {
+    const defaults = {
+      header: {
+        applicant_name: "",
+        applicant_address: "",
+        applicant_email: "",
+        applicant_phone: "",
+        date: ""
+      },
+      recipient: {
+        hiring_manager_name: "",
+        company_name: "",
+        company_address: ""
+      },
+      body: {
+        greeting: "Dear Hiring Manager,",
+        opening_paragraph: "",
+        middle_paragraphs: [""],
+        closing_paragraph: "",
+        signature: "Sincerely, {applicant_name}"
+      }
+    };
+    return defaults;
+  }, []);
+
+  useEffect(() => {
+    if (!coverletterjson || typeof coverletterjson !== 'object') {
+      dispatch(setCoverLetterJson(ensureDefaultCoverLetter()));
+      return;
+    }
+    const next = { ...ensureDefaultCoverLetter(), ...coverletterjson };
+    next.header = { ...ensureDefaultCoverLetter().header, ...(coverletterjson.header || {}) };
+    next.recipient = { ...ensureDefaultCoverLetter().recipient, ...(coverletterjson.recipient || {}) };
+    const bodyDefaults = ensureDefaultCoverLetter().body;
+    const incomingBody = coverletterjson.body || {};
+    next.body = {
+      ...bodyDefaults,
+      ...incomingBody,
+      middle_paragraphs: Array.isArray(incomingBody.middle_paragraphs) && incomingBody.middle_paragraphs.length > 0 ? incomingBody.middle_paragraphs : bodyDefaults.middle_paragraphs
+    };
+    if (JSON.stringify(next) !== JSON.stringify(coverletterjson)) {
+      dispatch(setCoverLetterJson(next));
+    }
+  }, [coverletterjson, dispatch, ensureDefaultCoverLetter]);
+
+  const updateHeader = (field, value) => {
+    const next = {
+      ...(coverletterjson || ensureDefaultCoverLetter()),
+      header: { ...(coverletterjson?.header || {}), [field]: value }
+    };
+    dispatch(setCoverLetterJson(next));
+  };
+
+  const updateRecipient = (field, value) => {
+    const next = {
+      ...(coverletterjson || ensureDefaultCoverLetter()),
+      recipient: { ...(coverletterjson?.recipient || {}), [field]: value }
+    };
+    dispatch(setCoverLetterJson(next));
+  };
+
+  const updateBody = (field, value) => {
+    const next = {
+      ...(coverletterjson || ensureDefaultCoverLetter()),
+      body: { ...(coverletterjson?.body || {}), [field]: value }
+    };
+    dispatch(setCoverLetterJson(next));
+  };
+
+  const updateBodyParagraph = (index, value) => {
+    const paragraphs = Array.isArray(coverletterjson?.body?.middle_paragraphs)
+      ? [...coverletterjson.body.middle_paragraphs]
+      : [""];
+    paragraphs[index] = value;
+    updateBody('middle_paragraphs', paragraphs);
+  };
+
+  const addParagraph = () => {
+    const paragraphs = Array.isArray(coverletterjson?.body?.middle_paragraphs)
+      ? [...coverletterjson.body.middle_paragraphs]
+      : [];
+    paragraphs.push("");
+    updateBody('middle_paragraphs', paragraphs);
+  };
+
+  const removeParagraph = (index) => {
+    const paragraphs = Array.isArray(coverletterjson?.body?.middle_paragraphs)
+      ? [...coverletterjson.body.middle_paragraphs]
+      : [];
+    if (paragraphs.length <= 1) return;
+    paragraphs.splice(index, 1);
+    updateBody('middle_paragraphs', paragraphs);
+  };
     
   const handleGenerateCoverLetter = () => {
     const formData = new FormData();
@@ -125,11 +219,85 @@ const CoverLetter = () =>{
         
         </div>
       </div>
-        <h3>Classic Cover Letter</h3>
-        <div ref={coverRef}>
-          <ClassicCoverLetterTemplate coverLetter={coverletterjson} />
+        <div className="row g-4">
+          <div className="col-12 col-lg-6">
+            <h4 className="mb-3">Edit Cover Letter</h4>
+            <div className="card p-3">
+              <h6 className="mt-2">Header</h6>
+              <div className="mb-2">
+                <label className="form-label">Applicant Name</label>
+                <input className="form-control" value={coverletterjson?.header?.applicant_name || ''} onChange={(e) => updateHeader('applicant_name', e.target.value)} />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Applicant Address</label>
+                <input className="form-control" value={coverletterjson?.header?.applicant_address || ''} onChange={(e) => updateHeader('applicant_address', e.target.value)} />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Applicant Email</label>
+                <input className="form-control" value={coverletterjson?.header?.applicant_email || ''} onChange={(e) => updateHeader('applicant_email', e.target.value)} />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Applicant Phone</label>
+                <input className="form-control" value={coverletterjson?.header?.applicant_phone || ''} onChange={(e) => updateHeader('applicant_phone', e.target.value)} />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Date</label>
+                <input className="form-control" value={coverletterjson?.header?.date || ''} onChange={(e) => updateHeader('date', e.target.value)} />
+              </div>
+
+              <h6 className="mt-3">Recipient</h6>
+              <div className="mb-2">
+                <label className="form-label">Hiring Manager Name</label>
+                <input className="form-control" value={coverletterjson?.recipient?.hiring_manager_name || ''} onChange={(e) => updateRecipient('hiring_manager_name', e.target.value)} />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Company Name</label>
+                <input className="form-control" value={coverletterjson?.recipient?.company_name || ''} onChange={(e) => updateRecipient('company_name', e.target.value)} />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Company Address</label>
+                <input className="form-control" value={coverletterjson?.recipient?.company_address || ''} onChange={(e) => updateRecipient('company_address', e.target.value)} />
+              </div>
+
+              <h6 className="mt-3">Body</h6>
+              <div className="mb-2">
+                <label className="form-label">Greeting</label>
+                <input className="form-control" value={coverletterjson?.body?.greeting || ''} onChange={(e) => updateBody('greeting', e.target.value)} />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Opening Paragraph</label>
+                <textarea className="form-control" rows="3" value={coverletterjson?.body?.opening_paragraph || ''} onChange={(e) => updateBody('opening_paragraph', e.target.value)} />
+              </div>
+              <div className="mb-2">
+                <div className="d-flex align-items-center justify-content-between">
+                  <label className="form-label mb-0">Middle Paragraphs</label>
+                  <button type="button" className="btn btn-sm btn-outline-primary" onClick={addParagraph}>Add paragraph</button>
+                </div>
+                {Array.isArray(coverletterjson?.body?.middle_paragraphs) && coverletterjson.body.middle_paragraphs.map((p, idx) => (
+                  <div key={idx} className="d-flex gap-2 align-items-start mt-2">
+                    <textarea className="form-control" rows="3" value={p || ''} onChange={(e) => updateBodyParagraph(idx, e.target.value)} />
+                    <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => removeParagraph(idx)} disabled={(coverletterjson?.body?.middle_paragraphs?.length || 0) <= 1}>Remove</button>
+                  </div>
+                ))}
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Closing Paragraph</label>
+                <textarea className="form-control" rows="3" value={coverletterjson?.body?.closing_paragraph || ''} onChange={(e) => updateBody('closing_paragraph', e.target.value)} />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Signature</label>
+                <input className="form-control" value={coverletterjson?.body?.signature || ''} onChange={(e) => updateBody('signature', e.target.value)} />
+              </div>
+            </div>
+          </div>
+          <div className="col-12 col-lg-6">
+            <h3>Classic Cover Letter</h3>
+            <div ref={coverRef}>
+              <ClassicCoverLetterTemplate coverLetter={coverletterjson} />
+            </div>
+            <button className="btn btn-primary border-0 mt-2" onClick={handleCopyToClipboard}>Copy to clipboard</button>
+          </div>
         </div>
-        <button className="btn btn-primary border-0 mt-2" onClick={handleCopyToClipboard}>Copy to clipboard</button>
       </div>
     </>
   )

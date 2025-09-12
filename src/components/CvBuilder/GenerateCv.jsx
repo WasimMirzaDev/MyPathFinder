@@ -862,7 +862,7 @@ const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
                                     <div className="tab-pane fade active show" id="tabPreview" role="tabpanel" aria-labelledby="tabPreview-tab" tabIndex="0">
                                         <div className="d-flex justify-content-between align-items-center mb-3">
                                             <h4 className="mb-0">Basic Information</h4>
-                                            <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume}>{saveChangesLoader ? "Saving" : "Save Changes"}</button>
+                                            <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume || saveChangesLoader}>{saveChangesLoader ? (<><FiLoader size={14} className="me-2 animate-spin" />Launching...</>) : "Save Changes"}</button>
                                         </div>
                                         <div className="accordion" id="cvAccordion">
                                             {/* Personal details */}

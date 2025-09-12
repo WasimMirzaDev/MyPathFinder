@@ -9,7 +9,9 @@ import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { FaExclamationCircle } from 'react-icons/fa';
 import logo from '../../assets/images/MPF-logo.svg';
 import { Button, Form as BootstrapForm, Alert, Spinner } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
+import { useDispatch ,useSelector } from 'react-redux';
 import { register } from '../../features/user/userSlice';
 
 
@@ -31,9 +33,9 @@ const validationSchema = Yup.object().shape({
   password_confirmation: Yup.string()
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
     .required('Confirm Password is required'),
-  // phone: Yup.string()
-  //   .matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits')
-  //   .required('Phone number is required'),
+  phone: Yup.string()
+    .required('Phone number is required')
+    .test('is-valid-e164', 'Enter a valid phone number with country code', (value) => !!value && isValidPhoneNumber(value)),
   terms: Yup.boolean()
     .oneOf([true], 'You must accept the terms and conditions')
     .required('You must accept the terms and conditions')
@@ -49,6 +51,10 @@ export default function SignUp() {
   const [apiError, setApiError] = useState('');
   const dispatch = useDispatch();
 
+
+  
+  
+
   const {
     values,
     errors,
@@ -57,7 +63,9 @@ export default function SignUp() {
     handleBlur,
     handleSubmit,
     isSubmitting,
-    setFieldError
+    setFieldError,
+    setFieldTouched,
+    setFieldValue
   } = useFormik({
     initialValues: {
       name: '',
@@ -80,16 +88,24 @@ export default function SignUp() {
           // If we get here, the registration was successful
           toast.success('Registration successful! Redirecting...');
           navigate('/upload-profile');
-        } catch (error) {
-          // Handle any errors from the API
-          if (error?.errors) {
-            // Handle validation errors from the server
-            Object.entries(error.errors).forEach(([field, errorMessages]) => {
-              setFieldError(field.toLowerCase(), errorMessages[0]);
+        } catch (rejected) {
+          // Handle any errors from the API (rejectWithValue payload or axios error)
+          const data = rejected?.errors || rejected; // payload from rejectWithValue is the data object
+          const backendErrors = data?.errors || rejected?.response?.data?.errors;
+          const backendMessage = data?.message || rejected?.response?.data?.message;
+
+          if (backendErrors && typeof backendErrors === 'object') {
+            Object.entries(backendErrors).forEach(([field, errorMessages]) => {
+              const fieldName = String(field).toLowerCase();
+              const firstMessage = Array.isArray(errorMessages) ? errorMessages[0] : String(errorMessages);
+              setFieldError(fieldName, firstMessage);
+              setFieldTouched(fieldName, true, false);
             });
           }
-          setApiError(error?.message || 'Registration failed. Please try again.');
-          toast.error(error?.message || 'Registration failed. Please check the form for errors.');
+
+          const finalMessage = backendMessage || rejected?.message || 'Registration failed. Please try again.';
+          setApiError(finalMessage);
+          toast.error(finalMessage);
         }
       } catch (error) {
         console.error('Registration failed:', error);
@@ -192,18 +208,18 @@ export default function SignUp() {
 
                         <div className="mb-3 text-start">
                           <label className="form-label" htmlFor="phone">Phone number</label>
-                          <BootstrapForm.Control
-                            id="phone"
-                            name="phone"
-                            type="tel"
-                            placeholder="+92 3123456789"
-                            className={`${touched.phone && errors.phone ? 'is-invalid' : ''}`}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values.phone}
-                            autoComplete="phone"
-                            required
-                          />
+                          <div>
+                            <PhoneInput
+                              id="phone"
+                              name="phone"
+                              international
+                              defaultCountry="GB"
+                              placeholder="+44 3123456789"
+                              value={values.phone}
+                              onChange={(val) => setFieldValue('phone', val)}
+                              onBlur={handleBlur}
+                            />
+                          </div>
                           {touched.phone && errors.phone && (
                             <div className="invalid-feedback d-block">
                               {errors.phone}
