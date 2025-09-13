@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus, FiLoader,FiDownload  } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus, FiLoader, FiDownload } from "react-icons/fi";
 import avatar from '../../assets/images/team/150x150/57.webp'
 import {
     ModernTemplate,
@@ -35,10 +35,10 @@ const cardTemplate = [
     // { name: 'Template4', template: ProfessionalTemplate2, image: 'dummy.jpg' },
     { name: 'Luxe', template: Template13, image: 'Luxe.png' },
     { name: 'Default', template: Template9, image: 'default1.png' },
-    { name: 'Professional', template: Template5, image: 'professional.jpg' },
+    { name: 'Professional', template: Template5, image: 'professional.jpg', recommended: true },
     { name: 'Chrono', template: Template6, image: 'chrono.png' },
     { name: 'Elegant', template: Template7, image: 'elegant.jpg' },
-    { name: 'Modern', template: Template8, image: 'modern.jpg' },
+    { name: 'Modern', template: Template8, image: 'modern.jpg', recommended: true },
     { name: 'Classic', template: Template12, image: 'classic.png' },
     { name: 'Unique', template: Template11, image: 'unique.png' },
 ];
@@ -95,7 +95,9 @@ export default function CVBuilder() {
 
 
 
-
+    const handleTabClick = (tabName) => {
+        setActiveTab((prevTab) => (prevTab === tabName ? '' : tabName)); // toggle if same, else set new
+    };
 
 
     const handleTemplateChange = (templateName) => {
@@ -113,7 +115,7 @@ export default function CVBuilder() {
             const ActionReturn = await dispatch(fetchResumeById(id)).unwrap();
             if (!isMounted) return;
             console.log("Action return fetch resume by id", ActionReturn);
-            if(!(ActionReturn.success)){
+            if (!(ActionReturn.success)) {
                 window.location = '/cv-builder';
             }
         };
@@ -301,69 +303,69 @@ export default function CVBuilder() {
         }
     }, [parsedResume, currentPage]);
 
-const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
+    const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
 
-const handleDownloadPDF = async () => {
-    setDownloadPDFLoader(true);
-    if (!cvRef.current) {
-      setDownloadPDFLoader(false);
-      return;
-    }
- 
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const a4Width = 210; // A4 width in mm
-    const a4Height = 297; // A4 height in mm
-    const a4WidthPx = 794; // A4 width in pixels
-    const a4HeightPx = 1123; // A4 height in pixels
-    const paddingTopBottom = 5; // 5mm padding for top and bottom
- 
-    // Create and clone content
-    const tempContainer = document.createElement('div');
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.left = '-9999px';
-    tempContainer.style.width = `${a4WidthPx}px`;
-    tempContainer.style.backgroundColor = '#ffffff';
-    const clonedContent = cvRef.current.cloneNode(true);
-    tempContainer.appendChild(clonedContent);
-    document.body.appendChild(tempContainer);
- 
-    // Calculate pages based on visible content
-    const contentHeight = clonedContent.scrollHeight;
-    let totalPages = Math.ceil(contentHeight / a4HeightPx);
-    // Adjust if last page has minimal content
-    if (contentHeight % a4HeightPx < a4HeightPx * 0.2) {
-      totalPages--;
-    }
- 
-    try {
-      for (let i = 0; i < totalPages; i++) {
-        const canvas = await html2canvas(clonedContent, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          width: a4WidthPx,
-          height: a4HeightPx,
-          scrollY: i * a4HeightPx,
-          windowHeight: a4HeightPx,
-          y: i * a4HeightPx,
-        });
- 
-        const imgData = canvas.toDataURL('image/png', 1.0);
-        if (i > 0) pdf.addPage();
- 
-        const imgWidth = a4Width; // Full width, no side padding
-        const imgHeight = ((canvas.height * a4Width) / canvas.width) * (a4Height - 2 * paddingTopBottom) / a4Height;
-        pdf.addImage(imgData, 'PNG', 0, paddingTopBottom, imgWidth, imgHeight);
-      }
- 
-      pdf.save(`${parsedResume?.candidateName?.[0]?.firstName || 'CV'}.pdf`);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    } finally {
-      document.body.removeChild(tempContainer);
-      setDownloadPDFLoader(false);
-    }
-};
+    const handleDownloadPDF = async () => {
+        setDownloadPDFLoader(true);
+        if (!cvRef.current) {
+            setDownloadPDFLoader(false);
+            return;
+        }
+
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const a4Width = 210; // A4 width in mm
+        const a4Height = 297; // A4 height in mm
+        const a4WidthPx = 794; // A4 width in pixels
+        const a4HeightPx = 1123; // A4 height in pixels
+        const paddingTopBottom = 5; // 5mm padding for top and bottom
+
+        // Create and clone content
+        const tempContainer = document.createElement('div');
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
+        tempContainer.style.width = `${a4WidthPx}px`;
+        tempContainer.style.backgroundColor = '#ffffff';
+        const clonedContent = cvRef.current.cloneNode(true);
+        tempContainer.appendChild(clonedContent);
+        document.body.appendChild(tempContainer);
+
+        // Calculate pages based on visible content
+        const contentHeight = clonedContent.scrollHeight;
+        let totalPages = Math.ceil(contentHeight / a4HeightPx);
+        // Adjust if last page has minimal content
+        if (contentHeight % a4HeightPx < a4HeightPx * 0.2) {
+            totalPages--;
+        }
+
+        try {
+            for (let i = 0; i < totalPages; i++) {
+                const canvas = await html2canvas(clonedContent, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    width: a4WidthPx,
+                    height: a4HeightPx,
+                    scrollY: i * a4HeightPx,
+                    windowHeight: a4HeightPx,
+                    y: i * a4HeightPx,
+                });
+
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                if (i > 0) pdf.addPage();
+
+                const imgWidth = a4Width; // Full width, no side padding
+                const imgHeight = ((canvas.height * a4Width) / canvas.width) * (a4Height - 2 * paddingTopBottom) / a4Height;
+                pdf.addImage(imgData, 'PNG', 0, paddingTopBottom, imgWidth, imgHeight);
+            }
+
+            pdf.save(`${parsedResume?.candidateName?.[0]?.firstName || 'CV'}.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+        } finally {
+            document.body.removeChild(tempContainer);
+            setDownloadPDFLoader(false);
+        }
+    };
 
     const previewContainerRef = useRef(null);
 
@@ -463,12 +465,18 @@ const handleDownloadPDF = async () => {
     };
 
     // Toggle accordion sections
-    const toggleSection = (section) => {
-        setOpenSections(prev => ({
-            ...prev,
-            [section]: !prev[section]
-        }));
-    };
+   const toggleSection = (section) => {
+  setOpenSections((prev) => {
+    // If the clicked section is already open, close it
+    if (prev[section]) {
+      return { [section]: false };
+    }
+
+    // Otherwise, close all and open only the clicked one
+    return { [section]: true };
+  });
+};
+
 
 
     // State with consistent prefix
@@ -1716,9 +1724,32 @@ const handleDownloadPDF = async () => {
                                                             style={{
                                                                 transition: 'all 0.2s ease-in-out',
                                                                 height: '100%',
-                                                                backgroundColor: selectedTemplate === template.name ? 'rgba(13, 110, 253, 0.05)' : 'white'
+                                                                backgroundColor: selectedTemplate === template.name ? 'rgba(13, 110, 253, 0.05)' : 'white',
+                                                                position: 'relative', // Important for ribbon positioning
+                                                                overflow: 'hidden'
                                                             }}
                                                         >
+                                                            {/* Recommended Ribbon */}
+                                                            {template.recommended && (
+                                                                <div
+                                                                    style={{
+                                                                        position: 'absolute',
+                                                                        top: '12px',
+                                                                        right: '-40px',
+                                                                        backgroundColor: '#1D0948',
+                                                                        color: 'white',
+                                                                        padding: '5px 40px',
+                                                                        transform: 'rotate(45deg)',
+                                                                        fontSize: '7px',
+                                                                        fontWeight: '600',
+                                                                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                                                                        zIndex: '99999'
+                                                                    }}
+                                                                >
+                                                                    Recommended
+                                                                </div>
+                                                            )}
+
                                                             <div className="position-relative mb-3" style={{ paddingTop: '141.4%' }}>
                                                                 <img
                                                                     src={`/assets/images/${template.image}`}
@@ -1741,6 +1772,7 @@ const handleDownloadPDF = async () => {
                                                             </div>
                                                             <h6 className="mb-0 fw-medium">{template.name}</h6>
                                                         </div>
+
                                                     </Col>
                                                 ))}
                                             </Row>
@@ -1763,31 +1795,31 @@ const handleDownloadPDF = async () => {
                                                 {parsedResume?.summary}
                                             </div>
                                             {SummaryIssues.length > 0 ?
-                                            <div>
-                                            <h4>Issues :</h4>
-                                            <div>
-                                                
-                                                <ul>{SummaryIssues?.map((item, index) => <div key={index} className='mb-2 d-flex'><li>{item.issue} : {item.description}</li></div>)}</ul></div>
-                                            </div>
-                                            :
-                                            <></>
+                                                <div>
+                                                    <h4>Issues :</h4>
+                                                    <div>
+
+                                                        <ul>{SummaryIssues?.map((item, index) => <div key={index} className='mb-2 d-flex'><li>{item.issue} : {item.description}</li></div>)}</ul></div>
+                                                </div>
+                                                :
+                                                <></>
                                             }
 
-                                            {SummarySuggestions != "" ? 
-                                            <div>
-                                            <div className='d-flex justify-content-between align-items-center my-2'>
+                                            {SummarySuggestions != "" ?
                                                 <div>
-                                                    <h4>Suggested Paragraph :</h4>
-                                                </div>
-                                                <div style={{width:'100px'}}>
-                                                    <button className='btn btn-primary w-100' onClick={handleApplySummary} disabled={AiSummaryLoader}>Apply</button>
+                                                    <div className='d-flex justify-content-between align-items-center my-2'>
+                                                        <div>
+                                                            <h4>Suggested Paragraph :</h4>
+                                                        </div>
+                                                        <div style={{ width: '100px' }}>
+                                                            <button className='btn btn-primary w-100' onClick={handleApplySummary} disabled={AiSummaryLoader}>Apply</button>
 
+                                                        </div>
+                                                    </div>
+                                                    <div>{SummarySuggestions}</div>
                                                 </div>
-                                            </div>
-                                            <div>{SummarySuggestions}</div>
-                                            </div>
-                                            :<></>}
-                                            
+                                                : <></>}
+
                                         </div></div>
 
                                     </div>
