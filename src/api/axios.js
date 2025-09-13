@@ -4,13 +4,15 @@ import axios from 'axios';
 // Create axios instance with base URL
 
 // const baseURL = 'https://13.53.164.183';
-const baseURL = 'https://api.mypathfinder.uk/api';
+const baseURLAPI = 'https://api.mypathfinder.uk/api';
+
+const baseURL = 'https://api.mypathfinder.uk';
 
 // const baseURL = 'https://deepskyblue-donkey-692108.hostingersite.com';
 // const baseURL = 'http://localhost:8000';
 
 const instance = axios.create({
-    baseURL: baseURL,
+    baseURL: baseURLAPI,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'

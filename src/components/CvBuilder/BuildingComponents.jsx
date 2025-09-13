@@ -4,7 +4,7 @@ import { Modal, Button, Card, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from 'react-redux';
 import { createEmptyResume , uploadExistingResume , updateResumeById , generateCvAi } from '../../features/resume/resumeSlice';
 import { toast } from 'react-toastify';
-import { FiLoader  } from "react-icons/fi";
+import { FiLoader, FiInfo  } from "react-icons/fi";
 
 export default function BuildingComponents() {
   const dispatch = useDispatch();
@@ -24,13 +24,13 @@ export default function BuildingComponents() {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // You can send form data to backend or redirect here
-        console.log("Form Submitted:", { profTitle, profSummary });
-        // Example: redirect to cv-generate.html
-        window.location.href = "/cv-generate";
-    };
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     // You can send form data to backend or redirect here
+    //     console.log("Form Submitted:", { profTitle, profSummary });
+    //     // Example: redirect to cv-generate.html
+    //     window.location.href = "/cv-generate";
+    // };
 
 
     const handleAICV = async () => {
@@ -138,6 +138,9 @@ export default function BuildingComponents() {
     }
 
 
+
+    const [uploadinginfo , setuploadinginfo] = useState(false);
+
     const handleExistingCvUpload = async (file) => {
       if (!file) {
         toast.error('Please select a file to upload');
@@ -151,7 +154,13 @@ export default function BuildingComponents() {
       // Append the file with the correct field name that the server expects
       formData.append('file', file);
       
+      setTimeout(() => {
+        setuploadinginfo(true);
+      }, 4000); 
+
+
       try {
+
         // Dispatch the action and wait for it to complete
         const resultAction = await dispatch(uploadExistingResume(formData)).unwrap();
         
@@ -217,18 +226,20 @@ export default function BuildingComponents() {
                                 accept=".pdf,.doc,.docx,.rtf,.odt" />
                             <label
                                 htmlFor="cvUpload"
-                                className={`btn btn-primary w-100 stretched-link ${loading ? 'disabled' : ''}`}
-                                aria-disabled={loading}
-                                style={{ pointerEvents: loading ? 'none' : 'auto', opacity: loading ? 0.65 : 1 }}
+                                className={`btn btn-primary w-100 stretched-link ${emptyResumeLoader || loading || AiCvLoader ? 'disabled' : ''}`}
+                                aria-disabled={emptyResumeLoader || loading || AiCvLoader}
+                                style={{ pointerEvents: emptyResumeLoader || loading || AiCvLoader ? 'none' : 'auto', opacity: emptyResumeLoader || loading || AiCvLoader ? 0.65 : 1 }}
                             >
-                                {loading ? "Uploading..." : "Upload Now"}
+                                {loading ? (<><FiLoader size={14} className="me-2 animate-spin" />Launching...</>)  : "Upload Now"}
                             </label>
-                            <small id="cvUploadName" className="d-block mt-2 text-body-secondary"></small>
+                            <small id="cvUploadName" className={`mt-2 text-body-secondary ${uploadinginfo ? 'd-block' : 'd-none'}`}>
+                                <FiInfo className="me-1" /> Uploading your CV for analysis — this may take up to a minute.
+                            </small>
                         </div>
                     </div>
                 </div>
 
-                <div className="col-12 col-xl-4">
+                {/* <div className="col-12 col-xl-4">
                     <div className="card border h-100 w-100 overflow-hidden position-relative">
                         <div className="card-body px-6 py-6 position-relative text-center">
                             <div
@@ -240,11 +251,11 @@ export default function BuildingComponents() {
                             <p className="fs-8">
                                 Build your CV from scratch, using clean, modern templates designed for recruiters.
                             </p>
-                            <Button className="stretched-link btn btn-primary w-100" onClick={handleManualCV} disabled={emptyResumeLoader}
+                            <Button className="stretched-link btn btn-primary w-100" onClick={handleManualCV} disabled={emptyResumeLoader || loading || AiCvLoader}
                             >{emptyResumeLoader ?  (<><FiLoader size={14} className="me-2 animate-spin" />Launching...</>)  : 'Launch CV Builder'}</Button>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div className="col-12 col-xl-4">
                     <div className="card border h-100 w-100 overflow-hidden position-relative">
                         <div className="card-body px-6 py-6 position-relative text-center">
@@ -260,7 +271,9 @@ export default function BuildingComponents() {
                             <button
                                 type="button"
                                 className="stretched-link btn btn-primary w-100"
-                                onClick={handleAICV}>
+                                onClick={handleAICV}
+                                disabled={emptyResumeLoader || loading || AiCvLoader}
+                                >
                                 Get Started
                             </button>
                         </div>

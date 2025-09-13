@@ -5,7 +5,7 @@ const Template11 = ({ resumeData }) => {
   const styles = {
     resumeContainer: {
       fontFamily: 'Arial, sans-serif',
-      padding: '40px',
+      padding: '30px',
       backgroundColor: '#fff',
       color: '#000',
       lineHeight: 1.6,
@@ -30,7 +30,8 @@ const Template11 = ({ resumeData }) => {
       margin: '20px 0',
     },
     section: {
-      marginBottom: '25px',
+      padding:"0px",
+      marginBottom: '20px',
     },
     sectionTitle: {
       backgroundColor: '#000',

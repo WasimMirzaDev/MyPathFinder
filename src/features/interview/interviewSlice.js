@@ -1,9 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchInterviewUserHistory } from "./interviewAPI";
+import { fetchInterviewUserHistory , fetchUserInterviewQuestions , fetchUserInterviewQuestionById } from "./interviewAPI";
 
 
 export const fetchInterviewHistory = createAsyncThunk("interview/history", async () => {
   return await fetchInterviewUserHistory();
+});
+
+export const fetchInterviewQuestions = createAsyncThunk(
+  "interview/questions", 
+  async (_, { getState }) => {
+    const state = getState();
+    return await fetchUserInterviewQuestions(state.interview.filters);
+  }
+);
+
+
+export const fetchInterviewQuestionById = createAsyncThunk("interview/question-by-id", async (id) => {
+  return await fetchUserInterviewQuestionById(id);
 });
 
 const interviewSlice = createSlice({
@@ -16,7 +29,8 @@ const interviewSlice = createSlice({
         searchQuery: ""
       },
       history: null,
-      interviews: null,
+      interviewQuestions: null,
+      currentQuestion: null,
       loading: false,
       error: null,
     },
@@ -38,6 +52,28 @@ const interviewSlice = createSlice({
           state.history = action.payload;
         })
         .addCase(fetchInterviewHistory.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
+        })
+        .addCase(fetchInterviewQuestions.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(fetchInterviewQuestions.fulfilled, (state, action) => {
+          state.loading = false;
+          state.interviewQuestions = action.payload;
+        })
+        .addCase(fetchInterviewQuestions.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
+        })
+        .addCase(fetchInterviewQuestionById.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(fetchInterviewQuestionById.fulfilled, (state, action) => {
+          state.loading = false;
+          state.currentQuestion = action.payload;
+        })
+        .addCase(fetchInterviewQuestionById.rejected, (state, action) => {
           state.loading = false;
           state.error = action.error.message;
         });

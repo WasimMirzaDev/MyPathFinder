@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from "react-router-dom";
 
-export default function InterviewPractice() {
+export default function InterviewPractice({interviewQuestions}) {
 
     const cards = [
         {
@@ -76,13 +76,12 @@ export default function InterviewPractice() {
                                 data-bs-reference="parent">
                                 <svg width={13} height={16} className="svg-inline--fa fa-filter" data-fa-transform="down-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="filter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="" style={{transformOrigin: '0.5em 0.6875em'}}><g transform="translate(256 256)"><g transform="translate(0, 96)  scale(1, 1)  rotate(0 0 0)"><path fill="currentColor" d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" transform="translate(-256 -256)"></path></g></g></svg>
                             </button>
-
                         </div>
                     </div>
                 </div>
             </div>
             <div className="row g-3 list feature-cards">
-                {cards.map((card, index) => (
+                {interviewQuestions?.map((question, index) => (
                     <div className="col-12 col-xl-4" key={index}>
                         <div className="card h-100">
                             <div className="card-body">
@@ -91,19 +90,19 @@ export default function InterviewPractice() {
                                         <div className="d-sm-flex align-items-center">
                                             <Link
                                                 className="fw-bold fs-8 lh-sm title line-clamp-1"
-                                                to={card.path}
+                                                to={`/prepration/${question.id}`}
                                             >
-                                                {card.title}
+                                                {question.title}
                                             </Link>
                                         </div>
                                     </div>
                                     <p className="fs-9 fw-semibold text-body text mb-4">
-                                        {card.description}
+                                        {question.speech}
                                     </p>
                                 </div>
                                 <div className="row g-1 g-sm-3 mt-2 lh-1">
                                     <div className="col-12 col-sm-auto flex-1 text-truncate">
-                                        <Link className="fw-semibold fs-9" to={card.path}>
+                                        <Link className="fw-semibold fs-9" to={`/prepration/${question.id}`}>
                                             Practise Now
                                             <span className="fa-solid fa-arrow-right ms-2"></span>
                                         </Link>
@@ -112,7 +111,7 @@ export default function InterviewPractice() {
                                         <div className="d-flex align-items-center">
                                             <svg width={13} xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-grid me-2" strokeWidth={2}><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                                             <p className="mb-0 fs-9 fw-semibold text-body-tertiary reports">
-                                                {card.category}
+                                                {question.category}
                                             </p>
                                         </div>
                                     </div>
@@ -120,7 +119,7 @@ export default function InterviewPractice() {
                                         <div className="d-flex align-items-center">
                                             <svg width={13} xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-clock me-2" strokeWidth={2}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                             <p className="mb-0 fs-9 fw-semibold text-body-tertiary date">
-                                                {card.time}
+                                                {question.time}
                                             </p>
                                         </div>
                                     </div>

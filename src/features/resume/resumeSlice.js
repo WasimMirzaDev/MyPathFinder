@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserSummaryAi , generateUserCoverLetter } from "./resumeAPI";
+import { REHYDRATE } from 'redux-persist';
 
 
 export const createEmptyResume = createAsyncThunk("resume/create-empty", 
@@ -95,7 +96,6 @@ const resumeSlice = createSlice({
       SummaryIssues: [],
       SummarySuggestions: "",
       loading: false,
-      emptyResumeLoader:false,
       emptyResumeLoader:false,
       error: null,
     },
@@ -278,7 +278,14 @@ const resumeSlice = createSlice({
         .addCase(generateCoverLetter.rejected, (state, action) => {
           state.coverletterLoader = false;
           state.error = action.payload || 'Failed to generate CV';
-        });
+        })
+        .addCase(REHYDRATE, (state) => {
+          state.loading = false;
+          state.AiCvLoader = false;
+          state.emptyResumeLoader = false;
+          state.error = null;
+          state.success = "";
+        })
     }
   });
   

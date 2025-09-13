@@ -23,7 +23,7 @@ import { setParsedResume, updateField, analyzeSummaryAi, setSelectedTemplate, fe
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from 'react-toastify';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
 import CoverLetter from "./components/coverLetter";
 
@@ -33,15 +33,14 @@ const cardTemplate = [
     // { name: 'Template2', template: ClassicTemplate, image: 'dummy.jpg' },
     // { name: 'Template3', template: ProfessionalTemplate, image: 'dummy.jpg' },
     // { name: 'Template4', template: ProfessionalTemplate2, image: 'dummy.jpg' },
-    { name: 'Luxe', template: Template13, image: 'default.png' },
-    { name: 'Classic', template: Template12, image: 'default.png' },
-    { name: 'Unique', template: Template11, image: 'chrono.png' },
-    { name: 'Simple', template: Template10, image: 'default.png' },
-    { name: 'Default', template: Template9, image: 'default.png' },
+    { name: 'Luxe', template: Template13, image: 'Luxe.png' },
+    { name: 'Default', template: Template9, image: 'default1.png' },
     { name: 'Professional', template: Template5, image: 'professional.jpg' },
     { name: 'Chrono', template: Template6, image: 'chrono.png' },
     { name: 'Elegant', template: Template7, image: 'elegant.jpg' },
     { name: 'Modern', template: Template8, image: 'modern.jpg' },
+    { name: 'Classic', template: Template12, image: 'classic.png' },
+    { name: 'Unique', template: Template11, image: 'unique.png' },
 ];
 
 const coverLetterjson = {
@@ -74,6 +73,7 @@ const coverLetterjson = {
 export default function CVBuilder() {
     const { id } = useParams();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { parsedResume, SummaryIssues, SummarySuggestions, AiSummaryLoader, selectedTemplate, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -107,9 +107,18 @@ export default function CVBuilder() {
     };
 
     useEffect(() => {
-        if (id) {
-            dispatch(fetchResumeById(id));
-        }
+        let isMounted = true;
+        const load = async () => {
+            if (!id) return;
+            const ActionReturn = await dispatch(fetchResumeById(id)).unwrap();
+            if (!isMounted) return;
+            console.log("Action return fetch resume by id", ActionReturn);
+            if(!(ActionReturn.success)){
+                window.location = '/cv-builder';
+            }
+        };
+        load();
+        return () => { isMounted = false; };
     }, [id])
 
 
@@ -779,7 +788,7 @@ const handleDownloadPDF = async () => {
                                         Analysis
                                     </button>
                                 </li>
-                                <li className="nav-item" role="presentation">
+                                {/* <li className="nav-item" role="presentation">
                                     <button
                                         className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabMatching' ? 'active' : ''}`}
                                         onClick={() => setActiveTab('tabMatching')}
@@ -789,8 +798,8 @@ const handleDownloadPDF = async () => {
                                         </svg>
                                         Job Matching
                                     </button>
-                                </li>
-                                <li className="nav-item" role="presentation">
+                                </li> */}
+                                {/* <li className="nav-item" role="presentation">
                                     <button
                                         className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabCover' ? 'active' : ''}`}
                                         onClick={() => setActiveTab('tabCover')}
@@ -800,7 +809,7 @@ const handleDownloadPDF = async () => {
                                         </svg>
                                         Cover Letter
                                     </button>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
 
@@ -1075,7 +1084,7 @@ const handleDownloadPDF = async () => {
                                                 >
                                                     <div className="accordion-body">
                                                         <div className="card border-0">
-                                                            {parsedResume.education.map((eduItem, eduIndex) => (
+                                                            {parsedResume.education?.map((eduItem, eduIndex) => (
                                                                 <div key={eduIndex} className="mb-3 p-3 border rounded">
                                                                     <div className="d-flex justify-content-between align-items-center mb-2">
                                                                         <small className="fw-bold text-muted">Education #{eduIndex + 1}</small>
@@ -1238,7 +1247,7 @@ const handleDownloadPDF = async () => {
                                                     <div className="accordion-body">
                                                         <div className="card border-0">
 
-                                                            {parsedResume.workExperience.map((expItem, expIndex) => (
+                                                            {parsedResume.workExperience?.map((expItem, expIndex) => (
                                                                 <div key={expIndex} className="mb-3 p-3 border rounded">
 
                                                                     {expItem?.expIsComplete ? (

@@ -6,8 +6,9 @@ import resumeReducer from "../features/resume/resumeSlice";
 import interviewReducer from "../features/interview/interviewSlice";
 
 const persistConfig = {
-  key: "resume",
+  key: 'root',
   storage,
+  blacklist: ['loading', 'error', 'AiCvLoader', 'AiSummaryLoader', 'coverletterLoader', 'emptyResumeLoader']
 };
 
 const persistedResumeReducer = persistReducer(persistConfig, resumeReducer);

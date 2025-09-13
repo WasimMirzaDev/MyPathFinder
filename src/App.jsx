@@ -65,7 +65,7 @@ const protectedRoutes = [
   { path: '/cv-builder', element: <CvBuilder /> },
   { path: '/cv-generate/:id', element: <CvGenerate /> },
   { path: '/interview', element: <Interview /> },
-  { path: '/prepration', element: <Prepration /> },
+  { path: '/prepration/:id', element: <Prepration /> },
   { path: '/job-search', element: <JobSearch /> },
   { path: '/get-started', element: <GetStarted /> },
   { path: '/payment-plans', element: <PaymentPlans /> },

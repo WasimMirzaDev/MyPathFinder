@@ -41,6 +41,7 @@ const Template12 = ({ resumeData }) => {
       border: '2px solid #ccc',
     },
     section: {
+      padding:"0px",
       margin: 0,
       borderTop: '5px solid #666',
     },
