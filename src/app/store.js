@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 import userReducer from "../features/user/userSlice";
 import resumeReducer from "../features/resume/resumeSlice";
 import interviewReducer from "../features/interview/interviewSlice";
+import jobReducer from "../features/job/jobSlice"
 
 const persistConfig = {
   key: 'root',
@@ -12,12 +13,14 @@ const persistConfig = {
 };
 
 const persistedResumeReducer = persistReducer(persistConfig, resumeReducer);
+const persistedJobReducer = persistReducer(persistConfig, jobReducer);
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     resume: persistedResumeReducer,
     interview: interviewReducer,
+    job: persistedJobReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

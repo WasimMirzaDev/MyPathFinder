@@ -1,27 +1,123 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
 import Avatar from '../../assets/images/team/72x72/58.webp'
+import { Button } from "react-bootstrap";
+import { FiSearch } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import {fetchJobs , setfilteredJobs} from "../../features/job/jobSlice";
+import {PulseLoader } from "react-spinners";
 
 const VacanciesList = () => {
-    const [vacancies] = useState([
-        {
-            position: "Senior Software Developer",
-            location: "Manchester",
-            date: "01/08/2025",
-            salary: "£53,000+",
-            applyNow: "#",
-            applyWithMpf: "#"
-        },
-        {
-            position: "Team Leader",
-            location: "Stockport",
-            date: "01/08/2025",
-            salary: "£60,000+",
-            applyNow:
-                "https://uk.indeed.com/cmp/Clear-Business?from=mobviewjob&tk=1j31b3rm7l13m81f&fromjk=82f6edbbb857fc35&attributionid=mobvjcmp",
-            applyWithMpf: "#pdfModal"
+    const dispatch = useDispatch();
+
+    const [searchQuery, setSearchQuery] = useState("frontend developer");
+    const [location, setLocation] = useState("uk");
+    const [country, setCountry] = useState("uk");
+    const [salaryRange, setSalaryRange] = useState("");
+    const { filteredJobs , jobs , loading , error } = useSelector((state) => state.job);
+    
+    const ukCities = [
+        "All",
+        "London",
+        "Birmingham",
+        "Manchester",
+        "Leeds",
+        "Liverpool",
+        "Newcastle upon Tyne",
+        "Sheffield",
+        "Bristol",
+        "Nottingham",
+        "Leicester",
+        "Coventry",
+        "Cardiff",
+        "Glasgow",
+        "Edinburgh",
+        "Belfast",
+        "Southampton",
+        "Portsmouth",
+        "Stoke-on-Trent",
+        "Sunderland",
+        "Derby",
+    ];
+    
+    
+    const [salaryRanges, setSalaryRanges] = useState([
+        { label: "All Salaries", value: "0-0" },
+        { label: "£20,000 +", value: "20000-1000000" },
+        { label: "£25,000 +", value: "25000-1000000" },
+        { label: "£30,000 +", value: "30000-1000000" },
+        { label: "£35,000 +", value: "35000-1000000" },
+        { label: "£40,000 +", value: "40000-1000000" },
+        { label: "£50,000 +", value: "50000-1000000" },
+        { label: "£60,000 +", value: "60000-1000000" },
+        { label: "£70,000 +", value: "70000-1000000" },
+        { label: "£80,000 +", value: "80000-1000000" },
+        { label: "£100,000 +", value: "100000-1000000" },
+        { label: "£150,000+", value: "150000-1000000" }
+      ]);
+
+
+
+    const handleJobSearch = () =>{
+        dispatch(fetchJobs({searchQuery,location,country}))
+    }
+
+
+
+
+
+    // const [vacancies] = useState([
+    //     {
+    //         position: "Senior Software Developer",
+    //         location: "Manchester",
+    //         date: "01/08/2025",
+    //         salary: "£53,000+",
+    //         applyNow: "#",
+    //         applyWithMpf: "#"
+    //     },
+    //     {
+    //         position: "Team Leader",
+    //         location: "Stockport",
+    //         date: "01/08/2025",
+    //         salary: "£60,000+",
+    //         applyNow:
+    //             "https://uk.indeed.com/cmp/Clear-Business?from=mobviewjob&tk=1j31b3rm7l13m81f&fromjk=82f6edbbb857fc35&attributionid=mobvjcmp",
+    //         applyWithMpf: "#pdfModal"
+    //     }
+    // ]);
+
+    // Transform jobs data for DataTable
+    const vacancies = useMemo(() => {
+        if (!filteredJobs || filteredJobs.length === 0) {
+            return [
+                {
+                    position: "Senior Software Developer",
+                    location: "Manchester",
+                    date: "01/08/2025",
+                    salary: "£53,000+",
+                    applyNow: "#",
+                    applyWithMpf: "#"
+                },
+            ];
         }
-    ]);
+        
+        return filteredJobs.map(job => ({
+            position: job.job_title || "N/A",
+            company: job.employer_name || "N/A",
+            location: job.job_location || "N/A",
+            date: job.job_posted_at || (job.created_at ? new Date(job.created_at).toLocaleDateString() : "N/A"),
+            salary: job.job_min_salary || job.job_max_salary ? (
+                `${job.job_salary_currency || '£'} ${job.job_min_salary === job.job_max_salary
+                    ? job.job_min_salary.toLocaleString()
+                    : `${job.job_min_salary?.toLocaleString() || '0'} - ${job.job_max_salary?.toLocaleString()}`
+                }/year`
+            ) : "Not specified",
+            applyNow: job.job_url || "#",
+            applyWithMpf: "#",
+            job_id: job.job_id,
+            employer_logo: job.employer_logo
+        }));
+    }, [filteredJobs]);
 
     // ✅ Define DataTable columns
     const columns = useMemo(
@@ -30,8 +126,31 @@ const VacanciesList = () => {
                 name: ( <strong>Job Position</strong> ),
                 selector: (row) => row.position,
                 sortable: true,
-                cell: (row) => <span className="fw-bold text-primary">{row.position}</span>,
-                minWidth: '210px',
+                cell: (row) => (
+                    <div className="d-flex align-items-center">
+                        {row.employer_logo && (
+                            <img 
+                                src={row.employer_logo} 
+                                alt={row.company}
+                                className="me-2"
+                                style={{ 
+                                    width: '24px', 
+                                    height: '24px', 
+                                    objectFit: 'contain',
+                                    borderRadius: '4px'
+                                }}
+                            />
+                        )}
+                        <span className="fw-bold text-primary">{row.position}</span>
+                    </div>
+                ),
+                minWidth: '250px',
+            },
+            {
+                name: ( <strong>Company</strong> ),
+                selector: (row) => row.company,
+                sortable: true,
+                maxWidth: '150px'
             },
             {
                 name: ( <strong>Location</strong> ),
@@ -49,7 +168,7 @@ const VacanciesList = () => {
                 name: ( <strong>Salary</strong> ),
                 selector: (row) => row.salary,
                 sortable: true,
-                maxWidth: '140px'
+                maxWidth: '160px'
             },
             {
                 name: ( <strong>Actions</strong> ),
@@ -155,6 +274,12 @@ const VacanciesList = () => {
                                             <div className="d-flex flex-wrap justify-content-between mb-2">
                                                 <h5 className="mb-0 text-body-highlight me-2">Industry</h5>
                                             </div>
+                                            <input className="form-select mb-3"  value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
+                                        </div>
+                                        {/* <div className="mb-4">
+                                            <div className="d-flex flex-wrap justify-content-between mb-2">
+                                                <h5 className="mb-0 text-body-highlight me-2">Industry</h5>
+                                            </div>
                                             <select className="form-select mb-3" aria-label="category">
                                                 <option value="tech">Tech</option>
                                                 <option value="finance">Finance</option>
@@ -162,32 +287,86 @@ const VacanciesList = () => {
                                                 <option value="e-commerce">E-commerce</option>
                                                 <option value="catering">Catering</option>
                                             </select>
-                                        </div>
+                                        </div> */}
                                         <div className="mb-4">
                                             <h5 className="mb-0 text-body-highlight mb-2">Location</h5>
-                                            <select className="form-select mb-3" aria-label="priority">
-                                                <option value="manchester">
-                                                    Manchester, Greater Manchester
-                                                </option>
+                                             <select onChange={(e)=>{setLocation(e.target.value == "All" ? "uk": e.target.value )}} className="form-select mb-3" aria-label="priority">
+                                                 {ukCities.map((city, index)=>(
+                                                 <option key={index} value={city}>
+                                                     {city}
+                                                 </option>
+                                                 ))}
                                             </select>
                                         </div>
-                                        <div className="mb-4">
+                                        {/* <div className="mb-4">
                                             <h5 className="mb-0 text-body-highlight mb-2">Date Posted</h5>
                                             <select className="form-select mb-3" aria-label="stage">
                                                 <option value="any">Any time</option>
                                             </select>
-                                        </div>
+                                        </div> */}
                                         <div>
                                             <div className="d-flex flex-wrap justify-content-between mb-2">
                                                 <h5 className="mb-0 text-body-highlight me-2">
                                                     Salary Expectation
                                                 </h5>
                                             </div>
-                                            <select className="form-select mb-3" aria-label="lead-source">
-                                                <option value="50k">£50,000 - £60,000</option>
+                                            <select className="form-select mb-3" aria-label="lead-source"
+                                             value={salaryRange}
+                                             onChange={(e) => {
+                                               setSalaryRange(e.target.value);
+                                               if (e.target.value === "0-0") {
+                                                 // For "All Salaries" option, show all jobs with 0/null at bottom
+                                                 const sortedJobs = [...jobs].sort((a, b) => {
+                                                   const aSalary = a.job_max_salary ?? a.job_min_salary ?? 0;
+                                                   const bSalary = b.job_max_salary ?? b.job_min_salary ?? 0;
+                                                   if (aSalary === 0 && bSalary === 0) return 0;
+                                                   if (aSalary === 0) return 1;
+                                                   if (bSalary === 0) return -1;
+                                                   return bSalary - aSalary; // Sort by salary in descending order
+                                                 });
+                                                 dispatch(setfilteredJobs(sortedJobs));
+                                                 return;
+                                               }
+                                               
+                                               const [min, max] = e.target.value.split("-").map(Number);
+                                               // First filter, then sort
+                                               const filteredAndSorted = [...jobs]
+                                                 .filter(job => {
+                                                   const salary = job.job_max_salary ?? job.job_min_salary ?? 0;
+                                                   // Include jobs within range OR jobs with 0/null salary
+                                                   return (salary >= min && salary <= max) || salary === 0;
+                                                 })
+                                                 .sort((a, b) => {
+                                                   const aSalary = a.job_max_salary ?? a.job_min_salary ?? 0;
+                                                   const bSalary = b.job_max_salary ?? b.job_min_salary ?? 0;
+                                                   // Push 0/null salaries to bottom
+                                                   if (aSalary === 0 && bSalary === 0) return 0;
+                                                   if (aSalary === 0) return 1;
+                                                   if (bSalary === 0) return -1;
+                                                   // Sort by salary in descending order
+                                                   return bSalary - aSalary;
+                                                 });
+                                                 
+                                                dispatch(setfilteredJobs(filteredAndSorted));
+                                             }}
+                                            
+                                            >
+                                                {salaryRanges.map((range, index) => (
+                                                  <option key={index} value={range.value}>
+                                                    {range.label}
+                                                  </option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
+                                    <Button className="text-align-center d-flex justify-content-center" style={{height:"40px"}} disabled={loading} onClick={handleJobSearch}>
+                                        {loading ? <PulseLoader  color="#fff" size={13}/>  : (
+                                            <>
+                                                <FiSearch fontSize={14}/>
+                                                &nbsp; Search
+                                            </>
+                                        )}
+                                    </Button>
                                 </div>
                             </div>
                         </div>
