@@ -28,6 +28,7 @@ import UploadProfile from "./pages/Auth/UploadProfile";
 
 import { useDispatch, useSelector } from "react-redux";
 import { login, getUser, logout } from "./features/user/userSlice";
+import SubscribePlan from "./pages/Subscription/SubscribePlan";
 
 
 
@@ -60,6 +61,7 @@ const publicRoutes = [
 
 const protectedRoutes = [
   { path: '/', element: <Dashboard /> },
+  { path: '/subscription', element:<SubscribePlan/> },
   { path: '/upload-profile', element: <UploadProfile /> },
   { path: '/application-tracker', element: <ApplicationTracker /> },
   { path: '/cv-builder', element: <CvBuilder /> },

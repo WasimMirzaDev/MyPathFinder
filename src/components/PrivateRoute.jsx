@@ -1,18 +1,46 @@
 // src/components/PrivateRoute.jsx
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from "react-redux";
+import { Spinner } from 'react-bootstrap';
 
 const PrivateRoute = ({ children }) => {
-  const { accessToken } = useSelector((state) => state.user);
+  const location = useLocation();
+  const { data, accessToken, loading } = useSelector((state) => state.user);
 
-  // fallback: also check localStorage
+  // Check for token in both Redux and localStorage
   const token = accessToken || localStorage.getItem("access_token");
 
-  if (!token) {
-    return <Navigate to="/sign-in" replace />;
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <Spinner animation="border" />
+      </div>
+    );
   }
 
+  // If no token, redirect to sign-in
+  if (!token) {
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
+  }
+
+  // If user data is not loaded yet, wait
+  if (!data) {
+    return null; // or a loading spinner
+  }
+
+  // If on subscription page, allow access
+  if (location.pathname === '/subscription') {
+    return children;
+  }
+
+  // If no plan, redirect to subscription
+  if (!data.plan_id) {
+    return <Navigate to="/subscription" state={{ from: location }} replace />;
+  }
+
+  // If all checks pass, render the children
   return children;
 };
 
