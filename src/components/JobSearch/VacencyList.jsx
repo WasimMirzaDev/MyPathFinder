@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
 import Avatar from '../../assets/images/team/72x72/58.webp'
-import { Button } from "react-bootstrap";
+import { Button , Modal , Badge} from "react-bootstrap";
 import { FiSearch } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import {fetchJobs , setfilteredJobs} from "../../features/job/jobSlice";
@@ -13,8 +13,11 @@ const VacanciesList = () => {
     const [searchQuery, setSearchQuery] = useState("frontend developer");
     const [location, setLocation] = useState("uk");
     const [country, setCountry] = useState("uk");
+    const [showFullDescription, setShowFullDescription] = useState(false);
     const [salaryRange, setSalaryRange] = useState("");
     const { filteredJobs , jobs , loading , error } = useSelector((state) => state.job);
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [showModal, setShowModal] = useState(false);
     
     const ukCities = [
         "All",
@@ -61,6 +64,18 @@ const VacanciesList = () => {
     const handleJobSearch = () =>{
         dispatch(fetchJobs({searchQuery,location,country}))
     }
+
+
+    const handleJobClick = (job) => {
+        setSelectedJob(job);
+        setShowModal(true);
+      };
+    
+      const handleCloseModal = () => {
+        setShowFullDescription(false);
+        setShowModal(false);
+        setSelectedJob(null);
+      };
 
 
 
@@ -115,7 +130,8 @@ const VacanciesList = () => {
             applyNow: job.job_url || "#",
             applyWithMpf: "#",
             job_id: job.job_id,
-            employer_logo: job.employer_logo
+            employer_logo: job.employer_logo,
+            full_job:job
         }));
     }, [filteredJobs]);
 
@@ -127,7 +143,7 @@ const VacanciesList = () => {
                 selector: (row) => row.position,
                 sortable: true,
                 cell: (row) => (
-                    <div className="d-flex align-items-center">
+                    <div className="d-flex align-items-center" onClick={() => {handleJobClick(row.full_job)}}>
                         {row.employer_logo && (
                             <img 
                                 src={row.employer_logo} 
@@ -177,7 +193,7 @@ const VacanciesList = () => {
                         {/* Apply Now */}
                         <a
                             className="badge bg-secondary-subtle text-secondary-dark border"
-                            href={row.applyNow}
+                            onClick={() => {handleJobClick(row.full_job)}}
                             target="_blank"
                             rel="noreferrer"
                         >
@@ -413,6 +429,140 @@ const VacanciesList = () => {
                     </div>
                 </div>
             </div>
+            
+      {/* Job Details Modal */}
+      <Modal
+        show={showModal}
+        style={{ zIndex: 1050 }}
+        onHide={handleCloseModal}
+        size="lg"
+        centered
+      >
+        {selectedJob && (
+          <>
+            <Modal.Header closeButton>
+              <Modal.Title>{selectedJob.job_title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="mb-3">
+                <h5>{selectedJob.employer_name}</h5>
+                <div className="d-flex flex-wrap gap-2 mb-2">
+                  <Badge bg="primary">{selectedJob.job_employment_type}</Badge>
+                  {selectedJob.job_is_remote && (
+                    <Badge bg="success">Remote</Badge>
+                  )}
+                  <Badge bg="info">{selectedJob.job_location}</Badge>
+                </div>
+                {selectedJob.job_posted_at && (
+                  <p className="text-muted">
+                    Posted: {selectedJob.job_posted_at}
+                  </p>
+                )}
+{(selectedJob.job_min_salary || selectedJob.job_max_salary) ? (
+  <div className="mt-2">
+    <span className="fw-bold">
+      {selectedJob.job_salary_currency} {selectedJob.job_min_salary === selectedJob.job_max_salary
+        ? `${selectedJob.job_min_salary.toLocaleString()}/year`
+        : `${selectedJob.job_min_salary.toLocaleString()} - ${selectedJob.job_max_salary.toLocaleString()}/year`}
+    </span>
+  </div>
+) : (
+  <span className="text-muted">Salary not specified</span>
+)}
+              </div>
+
+              <div className="mb-3">
+  <h6>Job Description</h6>
+  <div 
+    style={{ 
+      maxHeight: showFullDescription ? 'none' : '150px', 
+      overflow: 'hidden',
+      position: 'relative'
+    }}
+  >
+    <p style={{ whiteSpace: 'pre-line' }}>{selectedJob.job_description}</p>
+    {!showFullDescription && (
+      <div 
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '50px',
+          background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 100%)'
+        }}
+      />
+    )}
+  </div>
+  {selectedJob.job_description && selectedJob.job_description.split(/\s+/).length > 100 && (
+    <button 
+      onClick={() => setShowFullDescription(!showFullDescription)}
+      className="btn btn-link p-0 text-primary mt-2"
+      style={{ 
+        textDecoration: 'none',
+        fontSize: '0.875rem',
+        fontWeight: 500
+      }}
+    >
+      {showFullDescription ? 'Show Less' : 'Read More'}
+    </button>
+  )}
+</div>
+
+              {selectedJob.job_highlights &&
+                Object.keys(selectedJob.job_highlights).length > 0 && (
+                  <div className="mb-3">
+                    <h6>Highlights</h6>
+                    {Object.entries(selectedJob.job_highlights).map(
+                      ([key, values]) => (
+                        <div key={key} className="mb-2">
+                          <strong>{key}:</strong>
+                          <ul className="mb-1">
+                            {values.map((value, i) => (
+                              <li key={i}>{value}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+
+              <div className="mb-3">
+                <h6>Apply Options</h6>
+                <div className="d-grid gap-2">
+                  {selectedJob.apply_options &&
+                    selectedJob.apply_options.map((option, index) => (
+                      <Button
+                        key={index}
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => window.open(option.apply_link, "_blank")}
+                      >
+                        Apply via {option.publisher}
+                      </Button>
+                    ))}
+                  {selectedJob.job_apply_link && (
+                    <Button
+                      variant="primary"
+                      onClick={() =>
+                        window.open(selectedJob.job_apply_link, "_blank")
+                      }
+                    >
+                      Apply Now
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseModal}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </>
+        )}
+      </Modal>
         </div>
     );
 };
