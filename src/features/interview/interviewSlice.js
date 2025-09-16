@@ -29,6 +29,7 @@ const interviewSlice = createSlice({
         searchQuery: ""
       },
       history: null,
+      parsedFeedback:null,
       interviewQuestions: null,
       currentQuestion: null,
       loading: false,
@@ -36,11 +37,11 @@ const interviewSlice = createSlice({
     },
     reducers: {
       setFilters: (state, action) => {
-        state.filters = {
-          ...state.filters,
-          ...action.payload
-        };
+        state.filters = action.payload
       },
+      setParsedFeedback: (state , action) => {
+        state.parsedFeedback = action.payload
+      }
     },
     extraReducers: (builder) => {
       builder
@@ -81,5 +82,5 @@ const interviewSlice = createSlice({
   });
   
 
-export const { setFilters } = interviewSlice.actions;
+export const { setFilters ,setParsedFeedback } = interviewSlice.actions;
 export default interviewSlice.reducer;

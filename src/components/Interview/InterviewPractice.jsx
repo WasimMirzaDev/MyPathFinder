@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from "react-router-dom";
+import { setFilters } from '../../features/interview/interviewSlice';
 
-export default function InterviewPractice({interviewQuestions}) {
+export default function InterviewPractice({interviewQuestions , setShowModal , filters , dispatch}) {
 
     const cards = [
         {
@@ -67,12 +68,13 @@ export default function InterviewPractice({interviewQuestions}) {
                         <div className="d-flex mb-3">
                             <div className="search-box me-2">
                                 <form className="position-relative">
-                                    <input className="form-control search-input search" type="search" placeholder="Search by name"
+                                    <input className="form-control search-input search" type="text" placeholder="Search by name"
+                                        onChange={(e) => dispatch(setFilters({ ...filters, ["searchQuery"]: e.target.value }))}
                                         aria-label="Search" />
                                     <svg width={13} className="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magnifying-glass" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"></path></svg>
                                 </form>
                             </div>
-                            <button className="btn px-3 btn-phoenix-secondary" type="button" aria-haspopup="true" aria-expanded="false"
+                            <button  onClick={() => setShowModal(true)} className="btn px-3 btn-phoenix-secondary" type="button" aria-haspopup="true" aria-expanded="false"
                                 data-bs-reference="parent">
                                 <svg width={13} height={16} className="svg-inline--fa fa-filter" data-fa-transform="down-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="filter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="" style={{transformOrigin: '0.5em 0.6875em'}}><g transform="translate(256 256)"><g transform="translate(0, 96)  scale(1, 1)  rotate(0 0 0)"><path fill="currentColor" d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" transform="translate(-256 -256)"></path></g></g></svg>
                             </button>

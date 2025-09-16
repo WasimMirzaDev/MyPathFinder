@@ -30,7 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, getUser, logout } from "./features/user/userSlice";
 import SubscribePlan from "./pages/Subscription/SubscribePlan";
 
-
+import InterviewFeedback from "./pages/Interview/InterviewFeedback";
 
 // const Loader = () => (
 //   <div id="preloader">
@@ -63,6 +63,7 @@ const protectedRoutes = [
   { path: '/', element: <Dashboard /> },
   { path: '/subscription', element:<SubscribePlan/> },
   { path: '/upload-profile', element: <UploadProfile /> },
+  { path: '/question-feedback', element: <InterviewFeedback/>},
   { path: '/application-tracker', element: <ApplicationTracker /> },
   { path: '/cv-builder', element: <CvBuilder /> },
   { path: '/cv-generate/:id', element: <CvGenerate /> },

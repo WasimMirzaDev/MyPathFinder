@@ -70,7 +70,7 @@ export default function PracticeHistory({history}) {
                                         <div className="d-sm-flex align-items-center">
                                             <Link
                                                 className="fw-bold fs-8 lh-sm title line-clamp-1"
-                                                to={q.path}
+                                                to={`/prepration/${q.question.id}`}
                                             >
                                                 {q.question?.title}
                                             </Link>
@@ -86,7 +86,7 @@ export default function PracticeHistory({history}) {
                                     <div className="col-12 col-sm-auto flex-1 text-truncate">
                                         <h6>Your Score</h6>
                                         <div className="d-flex align-items-center gap-1">
-                                            <div style={{ "--phoenix-circle-progress-bar": q.evaluation?.score }}>
+                                            <div style={{ "--phoenix-circle-progress-bar": q.evaluation?.breakdown?.total?.score }}>
                                                 <svg
                                                     className="circle-progress-svg"
                                                     width="38"
@@ -109,12 +109,12 @@ export default function PracticeHistory({history}) {
                                                         r="54"
                                                         fill="none"
                                                         strokeLinecap="round"
-                                                        stroke={q.evaluation?.score <= 20 ? "red" : q.evaluation?.score <= 60 ? "orange" : "green"}
+                                                        stroke={q.evaluation?.breakdown?.total?.score <= 20 ? "red" : q.evaluation?.breakdown?.total?.score <= 60 ? "orange" : "green"}
                                                         strokeWidth="12"
                                                     ></circle>
                                                 </svg>
                                             </div>
-                                            <h6 className="mb-0 text-body">{q.evaluation?.score}%</h6>
+                                            <h6 className="mb-0 text-body">{q.evaluation?.breakdown?.total?.score}%</h6>
                                         </div>
                                     </div>
 
@@ -156,7 +156,7 @@ export default function PracticeHistory({history}) {
 
                                     {/* Retry Button */}
                                     <div className="col-12 col-sm-auto">
-                                        <Link className="fw-semibold fs-9" to={q.path}>
+                                        <Link className="fw-semibold fs-9" to={`/prepration/${q.question.id}`}>
                                             Retry Question
                                             <span className="fa-solid fa-arrow-right ms-2"></span>
                                         </Link>

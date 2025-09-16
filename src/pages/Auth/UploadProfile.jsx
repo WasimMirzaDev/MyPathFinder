@@ -6,19 +6,21 @@ import { getIndustries, getRoles, getEducationLevels , updateUserPro } from '../
 import Select from 'react-select';
 
 import logo from '../../assets/images/MPF-logo.svg'
+import { getUser } from '../../features/user/userSlice';
 
 export default function UploadProfile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { industries, roles, educationLevels, success, loading } = useSelector((state) => state.user);
+    const { data, industries, roles, educationLevels, success, loading } = useSelector((state) => state.user);
 
     const linkedinUrlRef = useRef(null);
 
     useEffect(() => {
-        dispatch(getIndustries());
-        dispatch(getRoles());
-        dispatch(getEducationLevels());
-    }, []);
+        if (!industries.length) dispatch(getIndustries());
+        if (!roles.length) dispatch(getRoles());
+        if (!educationLevels.length) dispatch(getEducationLevels());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
 
     const [formData, setFormData] = useState({
         linkedin_profile_url: "",
@@ -26,6 +28,15 @@ export default function UploadProfile() {
         role_id: "",
         education_level_id: "",
     });
+
+    useEffect(()=>{
+      setFormData({
+        linkedin_profile_url: data?.linkedin_profile_url,
+        industry_id: data?.preferred_industry_id,
+        role_id: data?.role_id,
+        education_level_id: data?.education_level_id,
+      });
+    },[data])
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -37,6 +48,7 @@ export default function UploadProfile() {
         const result = await dispatch(updateUserPro(formData)).unwrap();
         console.log(result);
         if(result.status){
+            dispatch(getUser());
             navigate('/');
         }
     };

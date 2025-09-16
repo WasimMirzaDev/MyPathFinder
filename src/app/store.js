@@ -14,12 +14,13 @@ const persistConfig = {
 
 const persistedResumeReducer = persistReducer(persistConfig, resumeReducer);
 const persistedJobReducer = persistReducer(persistConfig, jobReducer);
+const presistInterviewReducer = persistReducer(persistConfig, interviewReducer);
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     resume: persistedResumeReducer,
-    interview: interviewReducer,
+    interview: presistInterviewReducer,
     job: persistedJobReducer,
   },
   middleware: (getDefaultMiddleware) =>

@@ -6,13 +6,13 @@ import { Spinner } from 'react-bootstrap';
 
 const PrivateRoute = ({ children }) => {
   const location = useLocation();
-  const { data, accessToken, loading } = useSelector((state) => state.user);
+  const { data, accessToken, bootstrapping } = useSelector((state) => state.user);
 
   // Check for token in both Redux and localStorage
   const token = accessToken || localStorage.getItem("access_token");
 
-  // Show loading state while checking auth
-  if (loading) {
+  // Show loading state only while bootstrapping auth
+  if (bootstrapping) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
         <Spinner animation="border" />
@@ -30,8 +30,8 @@ const PrivateRoute = ({ children }) => {
     return null; // or a loading spinner
   }
 
-  // If on subscription page, allow access
-  if (location.pathname === '/subscription') {
+  // If on subscription or feedback page, allow access
+  if (location.pathname === '/subscription' || location.pathname === '/question-feedback') {
     return children;
   }
 
