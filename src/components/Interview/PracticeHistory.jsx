@@ -3,35 +3,35 @@ import { Link } from "react-router-dom";
 
 export default function PracticeHistory({history}) {
 
-    const questions = [
-        {
-            title: "Tell me about yourself",
-            description: "Master the art of introduction",
-            yourScore: 20,
-            avgScore: 75,
-            yourColor: "red",
-            avgColor: "green",
-            path: "/prepration",
-        },
-        {
-            title: "What are your strengths and weaknesses",
-            description: "Show self-awareness and balance",
-            yourScore: 56,
-            avgScore: 61,
-            yourColor: "orange",
-            avgColor: "orange",
-            path: "/prepration",
-        },
-        {
-            title: "Why do you want to work here?",
-            description: "Align your goals with the company",
-            yourScore: 87,
-            avgScore: 75,
-            yourColor: "green",
-            avgColor: "green",
-            path: "/prepration",
-        },
-    ];
+    // const questions = [
+    //     {
+    //         title: "Tell me about yourself",
+    //         description: "Master the art of introduction",
+    //         yourScore: 20,
+    //         avgScore: 75,
+    //         yourColor: "red",
+    //         avgColor: "green",
+    //         path: "/prepration",
+    //     },
+    //     {
+    //         title: "What are your strengths and weaknesses",
+    //         description: "Show self-awareness and balance",
+    //         yourScore: 56,
+    //         avgScore: 61,
+    //         yourColor: "orange",
+    //         avgColor: "orange",
+    //         path: "/prepration",
+    //     },
+    //     {
+    //         title: "Why do you want to work here?",
+    //         description: "Align your goals with the company",
+    //         yourScore: 87,
+    //         avgScore: 75,
+    //         yourColor: "green",
+    //         avgColor: "green",
+    //         path: "/prepration",
+    //     },
+    // ];
 
 
     return (

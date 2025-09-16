@@ -1,7 +1,7 @@
 import axios from "../../api/axios";
 
 export const fetchInterviewUserHistory = async () => {
-  const response = await axios.get("/interview/history"); // e.g. /me endpoint
+  const response = await axios.get("/interview/history?limit=6"); // e.g. /me endpoint
   console.log("request hit",response.data);
   return response.data;
 };
@@ -26,3 +26,4 @@ export const fetchUserInterviewQuestionById = async (id) => {
 // console.log("request hit",response.data);
   return response.data;
 };
+

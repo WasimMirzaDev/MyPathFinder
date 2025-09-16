@@ -103,18 +103,18 @@ const VacanciesList = () => {
 
     // Transform jobs data for DataTable
     const vacancies = useMemo(() => {
-        if (!filteredJobs || filteredJobs.length === 0) {
-            return [
-                {
-                    position: "Senior Software Developer",
-                    location: "Manchester",
-                    date: "01/08/2025",
-                    salary: "£53,000+",
-                    applyNow: "#",
-                    applyWithMpf: "#"
-                },
-            ];
-        }
+        // if (!filteredJobs || filteredJobs.length === 0) {
+        //     return [
+        //         {
+        //             position: "Senior Software Developer",
+        //             location: "Manchester",
+        //             date: "01/08/2025",
+        //             salary: "£53,000+",
+        //             applyNow: "#",
+        //             applyWithMpf: "#"
+        //         },
+        //     ];
+        // }
         
         return filteredJobs.map(job => ({
             position: job.job_title || "N/A",
