@@ -43,3 +43,8 @@ export const generateUserCoverLetter = async (formData) =>{
   const response = await axios.post("/generate-cover-letter", formData);
   return response.data;
 }
+
+export const recentUserCvsCreated = async () =>{
+  const response = await axios.get("/recent-created-cvs")
+  return response.data;
+}

@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, Button, Card, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from 'react-redux';
-import { createEmptyResume , uploadExistingResume , updateResumeById , generateCvAi } from '../../features/resume/resumeSlice';
+import { createEmptyResume , uploadExistingResume , updateResumeById , generateCvAi , getrecentCvsCreated } from '../../features/resume/resumeSlice';
 import { toast } from 'react-toastify';
 import { FiLoader, FiInfo  } from "react-icons/fi";
 
 export default function BuildingComponents() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error ,AiCvLoader , emptyResumeLoader} = useSelector((state) => state.resume);
+  const { loading, error ,AiCvLoader , emptyResumeLoader , recentCVsLoader , recentCVs} = useSelector((state) => state.resume);
 
     const [show, setShow] = useState(false);
     const [profTitle, setProfTitle] = useState("");
@@ -23,6 +23,11 @@ export default function BuildingComponents() {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+
+    useEffect(()=>{
+        dispatch(getrecentCvsCreated());
+    },[])
 
     // const handleSubmit = (e) => {
     //     e.preventDefault();
@@ -196,7 +201,7 @@ export default function BuildingComponents() {
     return (
         <>
             <div className="row mb-3 g-3 feature-cards">
-                <div className="col-12 col-xl-4">
+                <div className="col-12 col-xl-3">
                     <div className="card border h-100 w-100 overflow-hidden position-relative">
                         <div className="card-body px-6 py-6 position-relative text-center">
                             <div
@@ -256,7 +261,7 @@ export default function BuildingComponents() {
                         </div>
                     </div>
                 </div> */}
-                <div className="col-12 col-xl-4">
+                <div className="col-12 col-xl-3">
                     <div className="card border h-100 w-100 overflow-hidden position-relative">
                         <div className="card-body px-6 py-6 position-relative text-center">
                             <div
@@ -279,6 +284,43 @@ export default function BuildingComponents() {
                         </div>
                     </div>
                 </div>
+                <div class="col-12 col-xl-6">
+                        <div class="card border h-100 w-100 overflow-hidden position-relative">
+                            <div class="card-body position-relative text-center">
+              
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 cv-table">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" class="text-start ps-0 bg-white">CV Title</th>
+              <th scope="col" class="bg-white">Date Created</th>
+              <th scope="col" class="bg-white text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recentCVs?.map((item,index)=>{
+                return(
+                     <tr>
+              <td class="text-start">{item?.resume?.cv_resumejson?.candidateName[0]?.firstName ?? ''} {item?.resume?.cv_resumejson?.candidateName[0]?.familyName ?? ''} CV</td>
+              <td>{new Date(item?.created_at).toLocaleDateString()}</td>
+              <td class="text-end">
+                <a href={`/cv-generate/${item?.resume?.id}`} class="btn btn-sm btn-outline-secondary me-2">
+                  <i class="fa-regular fa-eye me-1"></i> View
+                </a>
+                <a href={`/cv-generate/${item?.resume?.id}?download=true`} target="_blank" class="btn btn-sm btn-primary">
+                  <i class="fa-solid fa-download me-1"></i> Download
+                </a>
+              </td>
+                     </tr>
+                )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
             </div>
 
             <Modal

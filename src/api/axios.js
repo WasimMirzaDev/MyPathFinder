@@ -9,7 +9,7 @@ const baseURLAPI = 'https://api.mypathfinder.uk/api';
 const baseURL = 'https://api.mypathfinder.uk';
 
 // const baseURL = 'https://deepskyblue-donkey-692108.hostingersite.com';
-// const baseURL = 'http://localhost:8000';
+// const baseURLAPI = 'http://localhost:8000';
 
 const instance = axios.create({
     baseURL: baseURLAPI,
@@ -18,6 +18,7 @@ const instance = axios.create({
         'Accept': 'application/json'
     }
 });
+
 
 instance.interceptors.request.use(
     (config) => {

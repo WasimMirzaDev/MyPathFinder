@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserSummaryAi , generateUserCoverLetter } from "./resumeAPI";
+import { createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserSummaryAi , generateUserCoverLetter , recentUserCvsCreated } from "./resumeAPI";
 import { REHYDRATE } from 'redux-persist';
 
 
@@ -81,11 +81,23 @@ export const generateCoverLetter = createAsyncThunk("coverletter/generate-cover-
   }
 );
 
+export const getrecentCvsCreated = createAsyncThunk("resume/recent-created-cvs", 
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await recentUserCvsCreated();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 const resumeSlice = createSlice({
     name: "resume",
     initialState: {
       parsedResume: {},
+      recentCVs:{},
+      recentCVsLoader:false,
       saveChangesLoader: false,
       AiCvLoader: false,
       AiSummaryLoader: false,
@@ -277,6 +289,18 @@ const resumeSlice = createSlice({
         })
         .addCase(generateCoverLetter.rejected, (state, action) => {
           state.coverletterLoader = false;
+          state.error = action.payload || 'Failed to generate CV';
+        })
+        .addCase(getrecentCvsCreated.pending, (state) => {
+          state.recentCVsLoader = true;
+          state.error = null;
+        })
+        .addCase(getrecentCvsCreated.fulfilled, (state, action) => {
+          state.recentCVsLoader = false;
+          state.recentCVs = action.payload;
+        })
+        .addCase(getrecentCvsCreated.rejected, (state, action) => {
+          state.recentCVsLoader = false;
           state.error = action.payload || 'Failed to generate CV';
         })
         .addCase(REHYDRATE, (state) => {

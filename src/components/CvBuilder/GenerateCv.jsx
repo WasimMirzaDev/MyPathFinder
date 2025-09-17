@@ -305,6 +305,23 @@ export default function CVBuilder() {
 
     const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
 
+    // Handle auto-download when URL contains download=true
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const shouldAutoDownload = urlParams.get('download') === 'true';
+        
+        if (shouldAutoDownload && !downloadPDFLoader && parsedResume) {
+            const downloadAndClose = async () => {
+                await handleDownloadPDF();
+                // Small delay to ensure download starts before closing
+                setTimeout(() => {
+                    window.close();
+                }, 1000);
+            };
+            downloadAndClose();
+        }
+    }, [parsedResume, downloadPDFLoader]);
+
     const handleDownloadPDF = async () => {
         setDownloadPDFLoader(true);
         if (!cvRef.current) {
