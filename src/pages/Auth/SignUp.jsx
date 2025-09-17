@@ -76,41 +76,50 @@ export default function SignUp() {
       terms: false
     },
     validationSchema,
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting, setFieldError, setFieldTouched }) => {
       try {
         setIsLoading(true);
         setApiError('');
+        
+        // Clear previous errors
+        Object.keys(values).forEach(key => {
+          setFieldError(key, '');
+        });
 
-        try {
-          // Dispatch the register action with user data and wait for it to complete
-          const result = await dispatch(register(values)).unwrap();
-          
-          // If we get here, the registration was successful
-          toast.success('Registration successful! Redirecting...');
-          navigate('/upload-profile');
-        } catch (rejected) {
-          // Handle any errors from the API (rejectWithValue payload or axios error)
-          const data = rejected?.errors || rejected; // payload from rejectWithValue is the data object
-          const backendErrors = data?.errors || rejected?.response?.data?.errors;
-          const backendMessage = data?.message || rejected?.response?.data?.message;
-
-          if (backendErrors && typeof backendErrors === 'object') {
-            Object.entries(backendErrors).forEach(([field, errorMessages]) => {
-              const fieldName = String(field).toLowerCase();
-              const firstMessage = Array.isArray(errorMessages) ? errorMessages[0] : String(errorMessages);
-              setFieldError(fieldName, firstMessage);
-              setFieldTouched(fieldName, true, false);
-            });
-          }
-
-          const finalMessage = backendMessage || rejected?.message || 'Registration failed. Please try again.';
-          setApiError(finalMessage);
-          toast.error(finalMessage);
-        }
+        // Dispatch the register action with user data
+        const result = await dispatch(register(values)).unwrap();
+        
+        // If we get here, the registration was successful
+        toast.success('Registration successful! Redirecting...');
+        navigate('/upload-profile');
       } catch (error) {
-        console.error('Registration failed:', error);
-        setApiError('An unexpected error occurred. Please try again.');
-        toast.error('Registration failed. Please try again.');
+        console.error('Registration error:', error);
+        
+        // Handle validation errors (422 status code)
+        if (error.errors) {
+          // Handle field-specific errors
+          Object.entries(error.errors).forEach(([field, messages]) => {
+            const fieldName = field.toLowerCase();
+            const errorMessage = Array.isArray(messages) ? messages[0] : String(messages);
+            setFieldError(fieldName, errorMessage);
+            setFieldTouched(fieldName, true, false);
+          });
+          
+          // Set a general error message if available
+          if (error.message) {
+            setApiError(error.message);
+            toast.error(error.message);
+          } else {
+            const errorMessage = 'Please correct the errors in the form.';
+            setApiError(errorMessage);
+            toast.error(errorMessage);
+          }
+        } else {
+          // Handle other types of errors
+          const errorMessage = error.message || 'Registration failed. Please try again.';
+          setApiError(errorMessage);
+          toast.error(errorMessage);
+        }
       } finally {
         setIsLoading(false);
         setSubmitting(false);

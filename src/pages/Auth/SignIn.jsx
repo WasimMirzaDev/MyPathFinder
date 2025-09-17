@@ -31,21 +31,42 @@ export default function SignIn() {
 
   const handleLogin = async (values, { setSubmitting, setFieldError }) => {
     try {
-      const result = await dispatch(login(values)).unwrap(); // unwrap for direct response
-      console.log('result login', result );
-    // if(values.remember){
-    //   localStorage.setItem("access_token", result.access_token);
-    // }
+      // Clear previous errors
+      setFieldError('email', '');
+      setFieldError('password', '');
+      
+      // Reset loading state in Redux
+      dispatch({ type: 'user/login/pending' });
+      
+      const result = await dispatch(login(values)).unwrap();
+      
       toast.success("Login successful!");
       window.location.href = "/";
-    } catch (err) {
-      console.error("Login failed:", err);
-      if (err.errors) {
-        Object.entries(err.errors).forEach(([field, message]) => {
-          setFieldError(field, Array.isArray(message) ? message[0] : message);
+    } catch (error) {
+      console.error("Login error:", error);
+      
+      // Ensure loading is set to false in both Redux and local state
+      dispatch({ type: 'user/login/rejected', error: error });
+      setSubmitting(false);
+      
+      // Handle 401 Unauthorized (invalid credentials)
+      if (error.status === 401 || error.message?.includes('Unauthenticated')) {
+        setFieldError('password', 'Invalid email or password');
+        toast.error('Invalid email or password');
+      } 
+      // Handle validation errors (422)
+      else if (error.errors) {
+        Object.entries(error.errors).forEach(([field, messages]) => {
+          const errorMessage = Array.isArray(messages) ? messages[0] : String(messages);
+          setFieldError(field.toLowerCase(), errorMessage);
         });
+        toast.error('Please correct the errors in the form');
+      } 
+      // Handle other errors
+      else {
+        const errorMessage = error.message || 'Login failed. Please try again.';
+        toast.error(errorMessage);
       }
-      toast.error(err.message || "An error occurred during login");
     } finally {
       setSubmitting(false);
     }

@@ -157,7 +157,11 @@ const VacanciesList = () => {
                                 }}
                             />
                         )}
-                        <span className="fw-bold text-primary">{row.position}</span>
+                        <span className="fw-bold text-primary">
+                        {row.position.split(' ').length > 7
+                            ? row.position.split(' ').slice(0, 7).join(' ') + '...' 
+                            : row.position}
+                        </span>
                     </div>
                 ),
                 minWidth: '250px',
@@ -191,14 +195,14 @@ const VacanciesList = () => {
                 cell: (row) => (
                     <div className="d-flex gap-2">
                         {/* Apply Now */}
-                        <a
+                        <button
                             className="badge bg-secondary-subtle text-secondary-dark border"
                             onClick={() => {handleJobClick(row.full_job)}}
                             target="_blank"
                             rel="noreferrer"
                         >
                             Apply Now 
-                        </a>
+                        </button>
 
                         {/* Apply with MPF */}
                         {row.applyWithMpf.startsWith("#") ? (

@@ -56,17 +56,27 @@ export default function Activity({recentActivities }) {
                             </div>
                             <div className="col">
                                 <div className="timeline-item-content ps-6 ps-md-3">
-                                    {item.type != "interview" ? <> <h5 className="fs-9 lh-sm">Created a new CV for ‘Senior Graphic Designer’</h5>
-                                     <p className="fs-9"><Link className="fw-semibold" to="#!">View in CV Builder</Link></p></>
+                                    {item.type != "interview" ? <> <h5 className="fs-9 lh-sm">Created a new CV for ‘{(item?.resume?.cv_resumejson?.candidateName[0]['firstName'] ?? "") + ' ' + (item?.resume?.cv_resumejson?.candidateName[0]['familyName'] ?? "")}’</h5>
+                                     <p className="fs-9"><Link className="fw-semibold" onClick={()=>{window.location.href = `/cv-generate/${item?.resume?.id}`}}>View in CV Builder</Link></p>
+                                     <p className="fs-9 text-body-secondary mb-5">
+  {item?.resume?.cv_resumejson?.headline 
+    ? item.resume.cv_resumejson.headline.split(' ').length > 10 
+      ? `${item.resume.cv_resumejson.headline.split(' ').slice(0, 10).join(' ')}...` 
+      : item.resume.cv_resumejson.headline
+    : ''}
+</p>
+                                    </>
                                     : 
                                     <>
                                      <h5 className="fs-9 lh-sm">Achieved a score of {item?.interview?.evaluation?.breakdown?.total?.score}% in General #{item?.interview?.id}: {item?.message}</h5>
                                      <p className="fs-9"><Link className="fw-semibold" onClick={()=>{handleViewDetails(item?.interview)}}>View Feedback</Link></p>
+                                     <p className="fs-9 text-body-secondary mb-5">{item?.interview?.evaluation?.breakdown?.total?.feedback?.split(' ').length > 10 ? `${item?.interview?.evaluation?.breakdown?.total?.feedback?.split(' ').slice(0, 10).join(' ')}...` : item?.interview?.evaluation?.breakdown?.total?.feedback}</p>
                                      </>
                                     }
                                    
                                     {/* <p className="fs-9"><Link className="fw-semibold" to="#!">View in CV Builder</Link></p> */}
-                                    <p className="fs-9 text-body-secondary mb-5">Creative and detail-oriented Graphic Designer with over 5 years of experience delivering engaging visual content across digital...</p>
+                                    
+
                                 </div>
                             </div>
                         </div>

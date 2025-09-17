@@ -9,12 +9,14 @@ import { Button } from 'react-bootstrap';
 import logo from '../assets/images/MPF-logo.svg';
 import logoLight from '../assets/images/MPF-Logo-Light.svg';
 import avatar from '../assets/images/team/40x40/57.webp'
-import { useDispatch } from "react-redux";
+import favicon from '../assets/images/MPF-180x180.png';
+import { useDispatch , useSelector } from "react-redux";
 import { logout } from "../features/user/userSlice";
 
 const MasterLayout = ({ children }) => {
 
   const dispatch = useDispatch();
+  const {data} = useSelector((state) => state.user);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
@@ -330,7 +332,7 @@ const MasterLayout = ({ children }) => {
           </li>
           <li className="nav-item dropdown"><Link className="nav-link lh-1 pe-0" id="navbarDropdownUser" to="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
             <div className="avatar avatar-l ">
-              <img className="rounded-circle " src={avatar} alt="" />
+              <img className="rounded-circle " src={favicon} alt="" />
             </div>
           </Link>
             <div className="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border" aria-labelledby="navbarDropdownUser">
@@ -338,9 +340,9 @@ const MasterLayout = ({ children }) => {
                 <div className="card-body p-0">
                   <div className="text-center pt-4 pb-3">
                     <div className="avatar avatar-xl ">
-                      <img className="rounded-circle " src="img/team/72x72/57.webp" alt="" />
+                      <img className="rounded-circle " src={favicon} alt="" />
                     </div>
-                    <h6 className="mt-2 text-body-emphasis">MPF Admin</h6>
+                    <h6 className="mt-2 text-body-emphasis">{data?.name ?? "MPF Admin"}</h6>
                   </div>
                 </div>
                 <div className="overflow-auto scrollbar">
@@ -353,7 +355,7 @@ const MasterLayout = ({ children }) => {
                 </div>
                 <div className=" p-0">
                   <hr />
-                  <div className="px-3"> <Link className="btn btn-phoenix-secondary d-flex flex-center w-100" to="#"> <span className="me-2" data-feather="log-out"> </span>Sign out</Link></div>
+                  <div className="px-3"> <Link onClick={() => dispatch(logout())} className="btn btn-phoenix-secondary d-flex flex-center w-100" to="#"> <span className="me-2" data-feather="log-out"> </span>Sign out</Link></div>
                   <div className="my-2 text-center fw-bold fs-10 text-body-quaternary"><Link className="text-body-quaternary me-1" to="#">Privacy policy</Link>&bull;<Link className="text-body-quaternary mx-1" to="#">Terms</Link>&bull;<Link className="text-body-quaternary ms-1" to="#">Cookies</Link></div>
                 </div>
               </div>

@@ -31,7 +31,7 @@ const PrivateRoute = ({ children }) => {
   }
 
   // If on subscription or feedback page, allow access
-  if (location.pathname === '/subscription' || location.pathname === '/question-feedback') {
+  if (location.pathname === '/subscription' || location.pathname === '/upload-profile') {
     return children;
   }
 

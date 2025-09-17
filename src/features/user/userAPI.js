@@ -1,13 +1,23 @@
 import axios from "../../api/axios";
 
 export const registerUser = async (userData) => {
-  const response = await axios.post("/register", userData);
-  return response.data;
+  try {
+    const response = await axios.post("/register", userData);
+    return response.data;
+  } catch (error) {
+    // This will be caught by createAsyncThunk's rejected action
+    throw error.response?.data || { message: 'Registration failed. Please try again.' };
+  }
 };
 
 export const loginUser = async (userData) => {
-  const response = await axios.post("/login", userData);
-  return response.data;
+  try {
+    const response = await axios.post("/login", userData);
+    return response.data;
+  } catch (error) {
+    // This will be caught by createAsyncThunk's rejected action
+    throw error.response?.data || { message: 'Login failed. Please try again.' };
+  }
 };
 
 export const fetchUser = async () => {

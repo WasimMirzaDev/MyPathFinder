@@ -29,10 +29,9 @@ export default function InterviewHistory({interviewHistory , handleRetry , handl
                 </div>
             </div>
             <div className="card-body py-0 scrollbar to-do-list-body">
-            {interviewHistory?.map((item)=>{
-                return(
-                    <>
-                    <div className="d-flex hover-actions-trigger py-3 border-translucent border-top">
+            {interviewHistory?.map((item) => {
+                return (
+                    <div key={`interview-${item.id}`} className="d-flex hover-actions-trigger py-3 border-translucent border-top">
                     <div className="row justify-content-between align-items-md-center btn-reveal-trigger border-translucent gx-0 flex-1 cursor-pointer">
                         <div className="col-12 col-md-auto col-xl-12 col-xxl-auto">
                             <div className="mb-1 mb-md-0 d-flex align-items-center lh-1">
@@ -63,7 +62,6 @@ export default function InterviewHistory({interviewHistory , handleRetry , handl
                         </div>
                     </div>
                 </div>
-                    </>
                 );
             })}
                 

@@ -63,18 +63,27 @@ const userSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        // The error payload is already formatted by the API
+        state.error = action.error.message || 'Registration failed. Please try again.';
+        // Re-throw the error to be caught by the component
+        throw action.error;
       })
-      .addCase(login.pending, (state) => { state.loading = true; })
+      .addCase(login.pending, (state) => {
+        state.loading = true;
+        state.error = null; // Clear any previous errors when starting a new login attempt
+      })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
+        state.error = null;
         state.data = action.payload.user;
         state.accessToken = action.payload.access_token;
         localStorage.setItem("access_token", action.payload.access_token);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        // The error payload is already formatted by the API
+        state.error = action.error?.message || 'Login failed. Please check your credentials and try again.';
+        // Don't re-throw the error here as it's already handled in the component
       })
       .addCase(getUser.pending, (state) => { state.bootstrapping = true; })
       .addCase(getUser.fulfilled, (state, action) => {
