@@ -19,7 +19,7 @@ import {
 
 import { Row, Col, Button, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { setParsedResume, updateField, analyzeSummaryAi, setSelectedTemplate, fetchResumeById, updateResumeById } from "../../features/resume/resumeSlice";
+import { setParsedResume, updateField, analyzeResumeAi, setSelectedTemplate, fetchResumeById, updateResumeById } from "../../features/resume/resumeSlice";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from 'react-toastify';
@@ -74,10 +74,12 @@ export default function CVBuilder() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { parsedResume, SummaryIssues, SummarySuggestions, AiSummaryLoader, selectedTemplate, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
+    const { parsedResume, AnalyseResumeData, AiResumeLoader, selectedTemplate, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [activeAccordion, setActiveAccordion] = useState('headline');
+    const [expandedWorkExpItems, setExpandedWorkExpItems] = useState([]);
     const [profilePic, setProfilePic] = useState(null);
 
 
@@ -151,9 +153,11 @@ export default function CVBuilder() {
 
 
 
-    const handleAnalyzeSummary = () => {
-        dispatch(analyzeSummaryAi({
-            paragraph: parsedResume?.summary
+    const handleAnalyze = () => {
+        dispatch(analyzeResumeAi({
+            headline: parsedResume?.headline,
+            summary: parsedResume?.summary,
+            workExperience: parsedResume?.workExperience?.map((item) => item.workExperienceDescription)
         }));
     };
 
@@ -411,12 +415,62 @@ export default function CVBuilder() {
     const [activeTab, setActiveTab] = useState('tabPreview');
 
 
+    const toggleAccordion = (section) => {
+        setActiveAccordion(activeAccordion === section ? null : section);
+    };
+
+    const toggleWorkExpItem = (index) => {
+        setExpandedWorkExpItems(prev => 
+            prev.includes(index) 
+                ? prev.filter(i => i !== index)
+                : [...prev, index]
+        );
+    };
+
     const handleAnalysis = () => {
         setActiveTab('tabAnalysis');
-        if (!(SummaryIssues.length > 0 && SummarySuggestions != "")) {
-            handleAnalyzeSummary();
+        if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
+            handleAnalyze();
         }
     }
+
+
+    const handleApplyWorkExp = (index) => {
+        // clone the parsedResume object
+        const updatedResume = { ...parsedResume };
+      
+        // clone workExperience array
+        const updatedWorkExperience = [...updatedResume.workExperience];
+      
+        // replace only the description at the given index
+        updatedWorkExperience[index] = {
+          ...updatedWorkExperience[index],
+          workExperienceDescription: AnalyseResumeData.workExperience[index].suggested_paragraph,
+        };
+      
+        // assign updated array back
+        updatedResume.workExperience = updatedWorkExperience;
+      
+        // dispatch back to redux
+        dispatch(setParsedResume(updatedResume));
+      };
+
+      
+      const handleApply = (type) => {
+        const updatedResume = { ...parsedResume };
+      
+        if (type === "headline") {
+          updatedResume.headline = AnalyseResumeData.headline.suggested_paragraph;
+        }
+      
+        if (type === "summary") {
+          updatedResume.summary = AnalyseResumeData.summary.suggested_paragraph;
+        }
+      
+        dispatch(setParsedResume(updatedResume));
+      };
+      
+
     // State for form fields
     const [formData, setFormData] = useState({
         firstName: '',
@@ -784,6 +838,7 @@ export default function CVBuilder() {
                                     <button
                                         className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabPreview' ? 'active' : ''}`}
                                         onClick={() => setActiveTab('tabPreview')}
+                                        disabled={AiResumeLoader}
                                     >
                                         <svg width={16} className="svg-inline--fa fa-eye" aria-hidden="true" focusable="false" data-prefix="far" data-icon="eye" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                                             <path fill="currentColor" d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"></path>
@@ -794,6 +849,7 @@ export default function CVBuilder() {
                                 <li className="nav-item" role="presentation">
                                     <button
                                         className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabDesign' ? 'active' : ''}`}
+                                        disabled={AiResumeLoader}
                                         onClick={() => setActiveTab('tabDesign')}
                                     >
                                         <svg width={12} className="svg-inline--fa fa-pen-ruler" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="pen-ruler" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -806,11 +862,12 @@ export default function CVBuilder() {
                                     <button
                                         className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabAnalysis' ? 'active' : ''}`}
                                         onClick={() => handleAnalysis()}
+                                        disabled={AiResumeLoader}
                                     >
-                                        <svg width={14} className="svg-inline--fa fa-chart-line" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chart-line" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        
+                                        {AiResumeLoader ? (<><FiLoader size={14} className="me-2 animate-spin" /> Analysing </>) : <> <svg width={14} className="svg-inline--fa fa-chart-line" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chart-line" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                             <path fill="currentColor" d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64L0 400c0 44.2 35.8 80 80 80l400 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 416c-8.8 0-16-7.2-16-16L64 64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z"></path>
-                                        </svg>
-                                        Analysis
+                                        </svg> Analysis </>}
                                     </button>
                                 </li>
                                 {/* <li className="nav-item" role="presentation">
@@ -848,7 +905,7 @@ export default function CVBuilder() {
                                     <div className="tab-pane fade active show" id="tabPreview" role="tabpanel" aria-labelledby="tabPreview-tab" tabIndex="0">
                                         <div className="d-flex justify-content-between align-items-center mb-3">
                                             <h4 className="mb-0">Basic Information</h4>
-                                            <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume || saveChangesLoader}>{saveChangesLoader ? (<><FiLoader size={14} className="me-2 animate-spin" />Launching...</>) : "Save Changes"}</button>
+                                            <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume || saveChangesLoader}>{saveChangesLoader ? (<><FiLoader size={14} className="me-2 animate-spin" />Saving...</>) : "Save Changes"}</button>
                                         </div>
                                         <div className="accordion" id="cvAccordion">
                                             {/* Personal details */}
@@ -1796,51 +1853,197 @@ export default function CVBuilder() {
                                         </div></div>
                                     </div>
                                 )}
-                                {activeTab === 'tabAnalysis' && (
-                                    <div className={`tab-pane fade ${activeTab === 'tabAnalysis' ? 'show active' : ''}`} id="tabAnalysis" role="tabpanel" aria-labelledby="tabAnalysis-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-sm"><div className="card-body">
-                                            <div className='d-flex justify-content-between align-items-center my-2'>
-                                                <div>
-                                                    <h4>Orignal paragraph :</h4>
-                                                </div>
-                                                <div>
-                                                    <button className='btn btn-primary' onClick={handleAnalyzeSummary} disabled={AiSummaryLoader}>{AiSummaryLoader ? "Analyzing..." : "Analyze"}</button>
+        {activeTab === 'tabAnalysis' && (
+        <div className={`tab-pane fade ${activeTab === 'tabAnalysis' ? 'show active' : ''}`}
+            id="tabAnalysis"
+            role="tabpanel"
+            aria-labelledby="tabAnalysis-tab"
+            tabIndex="0">
+            <div className="accordion" id="analysisAccordion">
+                {/* Headline Section */}
+                <div className="accordion-item border-0 mb-3">
+                    <h2 className="accordion-header" id="headingHeadline">
+                        <button 
+                            className={`accordion-button ${activeAccordion === 'headline' ? '' : 'collapsed'}`}
+                            type="button" 
+                            onClick={() => toggleAccordion('headline')}
+                            aria-expanded={activeAccordion === 'headline'}
+                            aria-controls="collapseHeadline">
+                            <h4 className="mb-0">Headline Analysis</h4>
+                        </button>
+                    </h2>
+                    <div 
+                        id="collapseHeadline" 
+                        className={`accordion-collapse collapse ${activeAccordion === 'headline' ? 'show' : ''}`}
+                        aria-labelledby="headingHeadline"
+                        data-bs-parent="#analysisAccordion">
+                        <div className="accordion-body">
+                            <div className="my-2">{parsedResume?.headline || 'No headline available'}</div>
 
-                                                </div>
-                                            </div>
-                                            <div className='my-2'>
-                                                {parsedResume?.summary}
-                                            </div>
-                                            {SummaryIssues.length > 0 ?
-                                                <div>
-                                                    <h4>Issues :</h4>
-                                                    <div>
+                            {AnalyseResumeData?.headline?.issues?.length > 0 && (
+                                <div className="mt-3">
+                                    <h5>Issues:</h5>
+                                    <ul className="list-group list-group-flush">
+                                        {AnalyseResumeData.headline.issues.map((item, index) => (
+                                            <li key={index} className="list-group-item">
+                                                <strong>{item.issue}</strong>: {item.description}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
 
-                                                        <ul>{SummaryIssues?.map((item, index) => <div key={index} className='mb-2 d-flex'><li>{item.issue} : {item.description}</li></div>)}</ul></div>
-                                                </div>
-                                                :
-                                                <></>
-                                            }
-
-                                            {SummarySuggestions != "" ?
-                                                <div>
-                                                    <div className='d-flex justify-content-between align-items-center my-2'>
-                                                        <div>
-                                                            <h4>Suggested Paragraph :</h4>
-                                                        </div>
-                                                        <div style={{ width: '100px' }}>
-                                                            <button className='btn btn-primary w-100' onClick={handleApplySummary} disabled={AiSummaryLoader}>Apply</button>
-
-                                                        </div>
-                                                    </div>
-                                                    <div>{SummarySuggestions}</div>
-                                                </div>
-                                                : <></>}
-
-                                        </div></div>
-
+                            {AnalyseResumeData?.headline?.suggested_paragraph && (
+                                <div className="mt-3">
+                                    <h5>Suggested Headline:</h5>
+                                    <div className="p-3 bg-light rounded mb-3">
+                                        {AnalyseResumeData.headline.suggested_paragraph}
                                     </div>
-                                )}
+                                    <button
+                                        className="btn btn-primary w-100"
+                                        onClick={() => handleApply("headline")}
+                                        disabled={AiResumeLoader}>
+                                        Apply Suggestion
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Summary Section */}
+                <div className="accordion-item border-0 mb-3">
+                    <h2 className="accordion-header" id="headingSummary">
+                        <button 
+                            className={`accordion-button ${activeAccordion === 'summary' ? '' : 'collapsed'}`}
+                            type="button" 
+                            onClick={() => toggleAccordion('summary')}
+                            aria-expanded={activeAccordion === 'summary'}
+                            aria-controls="collapseSummary">
+                            <h4 className="mb-0">Summary Analysis</h4>
+                        </button>
+                    </h2>
+                    <div 
+                        id="collapseSummary" 
+                        className={`accordion-collapse collapse ${activeAccordion === 'summary' ? 'show' : ''}`}
+                        aria-labelledby="headingSummary"
+                        data-bs-parent="#analysisAccordion">
+                        <div className="accordion-body">
+                            <div className="my-2">{parsedResume?.summary || 'No summary available'}</div>
+
+                            {AnalyseResumeData?.summary?.issues?.length > 0 && (
+                                <div className="mt-3">
+                                    <h5>Issues:</h5>
+                                    <ul className="list-group list-group-flush">
+                                        {AnalyseResumeData.summary.issues.map((item, index) => (
+                                            <li key={index} className="list-group-item">
+                                                <strong>{item.issue}</strong>: {item.description}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {AnalyseResumeData?.summary?.suggested_paragraph && (
+                                <div className="mt-3">
+                                    <h5>Suggested Summary:</h5>
+                                    <div className="p-3 bg-light rounded mb-3">
+                                        {AnalyseResumeData.summary.suggested_paragraph}
+                                    </div>
+                                    <button
+                                        className="btn btn-primary w-100"
+                                        onClick={() => handleApply("summary")}
+                                        disabled={AiResumeLoader}>
+                                        Apply Suggestion
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Work Experience Section */}
+                {AnalyseResumeData?.workExperience?.length > 0 && (
+                    <div className="accordion-item border-0 mb-3">
+                        <h2 className="accordion-header" id="headingWorkExp">
+                            <button 
+                                className={`accordion-button ${activeAccordion === 'work' ? '' : 'collapsed'}`}
+                                type="button" 
+                                onClick={() => toggleAccordion('work')}
+                                aria-expanded={activeAccordion === 'work'}
+                                aria-controls="collapseWorkExp">
+                                <h4 className="mb-0">Work Experience Analysis</h4>
+                            </button>
+                        </h2>
+                        <div 
+                            id="collapseWorkExp" 
+                            className={`accordion-collapse collapse ${activeAccordion === 'work' ? 'show' : ''}`}
+                            aria-labelledby="headingWorkExp"
+                            data-bs-parent="#analysisAccordion">
+                            <div className="accordion-body">
+                                {AnalyseResumeData.workExperience.map((exp, index) => (
+                                    <div key={index} className="mb-4">
+                                        <div className="card mb-2">
+                                            <div 
+                                                className="card-header bg-light"
+                                                onClick={() => toggleWorkExpItem(index)}
+                                                style={{ cursor: 'pointer' }}>
+                                                <div className="d-flex justify-content-between align-items-center">
+                                                    <h6 className="mb-0">
+                                                        { exp.original.split(' ').length > 7
+                            ? exp.original.split(' ').slice(0, 7).join(' ') + '...' 
+                            : exp.original || `Work Experience #${index + 1}`}
+                                                    </h6>
+                                                    {expandedWorkExpItems.includes(index) ? <FiChevronUp /> : <FiChevronDown />}
+                                                </div>
+                                            </div>
+                                            <div className={`collapse ${expandedWorkExpItems.includes(index) ? 'show' : ''}`}>
+                                                <div className="card-body">
+                                                    <div className="mb-3">
+                                                        <h6>Original:</h6>
+                                                        <p className="mb-0">{exp.original}</p>
+                                                    </div>
+
+                                                    {exp.issues?.length > 0 && (
+                                                        <div className="mb-3">
+                                                            <h6>Issues:</h6>
+                                                            <ul className="list-group list-group-flush">
+                                                                {exp.issues.map((issue, idx) => (
+                                                                    <li key={idx} className="list-group-item">
+                                                                        <strong>{issue.issue}</strong>: {issue.description}
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+
+                                                    {exp.suggested_paragraph && (
+                                                        <div>
+                                                            <h6>Suggested Improvement:</h6>
+                                                            <div className="p-3 bg-light rounded mb-3">
+                                                                {exp.suggested_paragraph}
+                                                            </div>
+                                                            <button
+                                                                className="btn btn-primary w-100"
+                                                                onClick={() => handleApplyWorkExp(index)}
+                                                                disabled={AiResumeLoader}>
+                                                                Apply Suggestion
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+        )}
+
                                 {activeTab === 'tabMatching' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabMatching' ? 'show active' : ''}`} id="tabMatching" role="tabpanel" aria-labelledby="tabMatching-tab" tabIndex="0">
                                         <div className="card border-0 shadow-sm"><div className="card-body">Job matching goes here.</div></div>

@@ -62,7 +62,7 @@ export default function Welcome() {
                                 </div>
                                 <h4 className="my-3">Job Search</h4>
                                 <p className="fs-8">
-                                    Find roles that align with your experience, strengths and goals - not just keywords.
+                                    Find roles that align with your experience, strengths and goals.
                                 </p>
                                 <Link className="stretched-link btn btn-primary w-100" to="/job-search">Get Started</Link>
                             </div>

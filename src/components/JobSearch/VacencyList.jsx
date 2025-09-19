@@ -6,6 +6,7 @@ import { FiSearch } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import {fetchJobs , setfilteredJobs} from "../../features/job/jobSlice";
 import {PulseLoader } from "react-spinners";
+import {updateCompletedSteps} from "../../features/user/userSlice";
 
 const VacanciesList = () => {
     const dispatch = useDispatch();
@@ -17,6 +18,7 @@ const VacanciesList = () => {
     const [salaryRange, setSalaryRange] = useState("");
     const { filteredJobs , jobs , loading , error } = useSelector((state) => state.job);
     const [selectedJob, setSelectedJob] = useState(null);
+    const { data } = useSelector((state) => state.user);
     const [showModal, setShowModal] = useState(false);
     
     const ukCities = [
@@ -76,6 +78,20 @@ const VacanciesList = () => {
         setShowModal(false);
         setSelectedJob(null);
       };
+
+      const handleJobRedirect = async (link) => {
+        try {
+          const formData = new FormData();
+          formData.append("applied_job", "true"); // Send as string "true"
+          
+          await dispatch(updateCompletedSteps(formData)).unwrap();
+          window.open(link, "_blank");
+        } catch (error) {
+          console.error("Error updating steps:", error);
+          window.open(link, "_blank");
+        }
+      };
+      
 
 
 
@@ -533,7 +549,7 @@ const VacanciesList = () => {
                         key={index}
                         variant="outline-primary"
                         size="sm"
-                        onClick={() => window.open(option.apply_link, "_blank")}
+                        onClick={() => handleJobRedirect(option.apply_link)}
                       >
                         Apply via {option.publisher}
                       </Button>
@@ -541,9 +557,7 @@ const VacanciesList = () => {
                   {selectedJob.job_apply_link && (
                     <Button
                       variant="primary"
-                      onClick={() =>
-                        window.open(selectedJob.job_apply_link, "_blank")
-                      }
+                      onClick={() => handleJobRedirect(selectedJob.job_apply_link)}
                     >
                       Apply Now
                     </Button>

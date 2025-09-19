@@ -55,12 +55,12 @@ const publicRoutes = [
   { path: '/sign-up', element: <SignUp /> },
   { path: '/verification', element: <Verification /> },
   { path: '/2f-verification', element: <F2Verification /> },
-  { path: '/welcome', element: <Welcome /> },
   { path: '*', element: <ErrorPage /> },
 ];
 
 const protectedRoutes = [
   { path: '/', element: <Dashboard /> },
+  { path: '/welcome', element: <Welcome /> },
   { path: '/subscription', element:<SubscribePlan/> },
   { path: '/upload-profile', element: <UploadProfile /> },
   { path: '/question-feedback', element: <InterviewFeedback/>},

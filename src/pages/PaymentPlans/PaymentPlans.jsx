@@ -6,7 +6,7 @@ const PaymentPlans = () => {
   return (
     <>
       <MasterLayout>
-        <BreadCrum title='Payment Plans.' subTitle='Manage your subscrioption details, all in one place.' />
+        <BreadCrum title='Payment Plans.' subTitle='Manage your subscription details, all in one place.' />
         <div className="row  mt-5">
         <div className="col-md-6">
           <div className="card text-center shadow-sm border">

@@ -34,7 +34,7 @@ export const generateUserCvAi = async (formData) => {
 }
 
 
-export const analyzeUserSummaryAi = async (formData) => {
+export const analyzeUserResumeAi = async (formData) => {
   const response = await axios.post("/analyze-paragraph", formData);
   return response.data;
 }
@@ -46,5 +46,10 @@ export const generateUserCoverLetter = async (formData) =>{
 
 export const recentUserCvsCreated = async () =>{
   const response = await axios.get("/recent-created-cvs")
+  return response.data;
+}
+
+export const delUserCreatedCv = async (id) => {
+  const response = await axios.delete('/v1/resume/'+id);
   return response.data;
 }

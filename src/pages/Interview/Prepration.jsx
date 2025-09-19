@@ -34,6 +34,7 @@ export default function Prepration() {
     const [businessSector, setBusinessSector] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [audioLevel, setAudioLevel] = useState(0);
+    const [isVideoLoading, setIsVideoLoading] = useState(true);
     const audioContextRef = useRef(null);
     const analyserRef = useRef(null);
     const dataArrayRef = useRef(null);
@@ -541,23 +542,34 @@ export default function Prepration() {
               <div className="card-body p-0">
                 {/* Video area with overlay */}
                 <div className="ratio ratio-16x9 interview-overlay-wrap">
-                   <video 
-                ref={videoRef}
-                src={`${baseUrl}/videos/MPF Interview Questions/${currentQuestion?.question?.title.replace(/\?+$/, '_')}.mp4`} 
-                autoPlay 
-                controls={false}
-                onEnded={startRecording}
-                className={`fullscreen-video ${isRecording ? 'd-none' : ''}`}
-            />
-           
-                <video 
-                ref={videoRef}
-                src={`${baseUrl}/videos/MPF Interview Filler/Avatar ${currentQuestion?.question?.avatar} FILLER.mp4`} 
-                 autoPlay
-                controls={false}
-                loop
-                className={`fullscreen-video ${!isRecording ? 'd-none' : ''}`}
-            />
+                   {isVideoLoading && (
+                        <div className="d-flex justify-content-center align-items-center" style={{height: '100%'}}>
+                            <Spinner animation="border" role="status" variant="primary">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                        </div>
+                    )}
+                    <video 
+                        ref={videoRef}
+                        src={`${baseUrl}/videos/MPF Interview Questions/${currentQuestion?.question?.title.replace(/\?+$/, '_')}.mp4`} 
+                        autoPlay 
+                        controls={false}
+                        onEnded={startRecording}
+                        onLoadedData={() => setIsVideoLoading(false)}
+                        onError={() => setIsVideoLoading(false)}
+                        className={`fullscreen-video ${isRecording || isVideoLoading ? 'd-none' : ''}`}
+                    />
+                   
+                    <video 
+                        ref={videoRef}
+                        src={`${baseUrl}/videos/MPF Interview Filler/Avatar ${currentQuestion?.question?.avatar} FILLER.mp4`} 
+                        autoPlay
+                        controls={false}
+                        loop
+                        onLoadedData={() => setIsVideoLoading(false)}
+                        onError={() => setIsVideoLoading(false)}
+                        className={`fullscreen-video ${!isRecording || isVideoLoading ? 'd-none' : ''}`}
+                    />
                   {/* Overlay Card (light theme, auto-height, top-right) */}
                   <div className="card bg-white text-dark border shadow-sm" style={{position: 'absolute', top: '1rem', left: '1rem', width: '320px', zIndex: 10, borderRadius: '1rem', height: 'auto'}}>
                     <div className="card-body p-4 d-flex flex-column text-center">

@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, Button, Card, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from 'react-redux';
-import { createEmptyResume , uploadExistingResume , updateResumeById , generateCvAi , getrecentCvsCreated } from '../../features/resume/resumeSlice';
+import { createEmptyResume , uploadExistingResume , updateResumeById , generateCvAi , getrecentCvsCreated , delCreatedCv } from '../../features/resume/resumeSlice';
 import { toast } from 'react-toastify';
 import { FiLoader, FiInfo  } from "react-icons/fi";
 
 export default function BuildingComponents() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error ,AiCvLoader , emptyResumeLoader , recentCVsLoader , recentCVs} = useSelector((state) => state.resume);
+  const { loading, error ,AiCvLoader , emptyResumeLoader , recentCVsLoader , recentCVs ,delResumeLoader} = useSelector((state) => state.resume);
 
     const [show, setShow] = useState(false);
     const [profTitle, setProfTitle] = useState("");
@@ -145,6 +145,13 @@ export default function BuildingComponents() {
 
 
     const [uploadinginfo , setuploadinginfo] = useState(false);
+
+
+
+    const DeleteCv = async (id) => {
+      const ReturnAction = await dispatch(delCreatedCv(id)).unwrap();
+      console.log(ReturnAction);
+    }
 
     const handleExistingCvUpload = async (file) => {
       if (!file) {
@@ -284,43 +291,49 @@ export default function BuildingComponents() {
                         </div>
                     </div>
                 </div>
+                            {Array.isArray(recentCVs) && recentCVs.length > 0 ? (
                 <div class="col-12 col-xl-6">
                         <div class="card border h-100 w-100 overflow-hidden position-relative">
                             <div class="card-body position-relative text-center">
               
+  <div className="table-responsive">
+    <table className="table table-hover align-middle mb-0 cv-table">
+      <thead className="table-light">
+        <tr>
+          <th scope="col" className="text-start ps-0 bg-white">CV Title</th>
+          <th scope="col" className="bg-white">Date Created</th>
+          <th scope="col" className="bg-white text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {recentCVs.map((item, index) => (
+          <tr key={index}>
+            <td className="text-start">
+              {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || ''}{" "}
+              {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || ''} CV
+            </td>
+            <td>{item?.created_at ? new Date(item.created_at).toLocaleDateString() : ''}</td>
+            <td className="text-end">
+              <a href={`/cv-generate/${item?.resume?.id}`} className="btn btn-sm btn-outline-primary me-2">
+                 View
+              </a>
+              <a href={`/cv-generate/${item?.resume?.id}?download=true`} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-primary me-2">
+                 Download
+              </a>
+              <button onClick={()=>{DeleteCv(item?.resume?.id)}}  className="btn btn-sm btn-darnger" style={{"background-color":"red", "color":"white"}}>
+                 Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0 cv-table">
-          <thead class="table-light">
-            <tr>
-              <th scope="col" class="text-start ps-0 bg-white">CV Title</th>
-              <th scope="col" class="bg-white">Date Created</th>
-              <th scope="col" class="bg-white text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentCVs?.map((item,index)=>{
-                return(
-                     <tr>
-              <td class="text-start">{item?.resume?.cv_resumejson?.candidateName[0]?.firstName ?? ''} {item?.resume?.cv_resumejson?.candidateName[0]?.familyName ?? ''} CV</td>
-              <td>{new Date(item?.created_at).toLocaleDateString()}</td>
-              <td class="text-end">
-                <a href={`/cv-generate/${item?.resume?.id}`} class="btn btn-sm btn-outline-secondary me-2">
-                  <i class="fa-regular fa-eye me-1"></i> View
-                </a>
-                <a href={`/cv-generate/${item?.resume?.id}?download=true`} target="_blank" class="btn btn-sm btn-primary">
-                  <i class="fa-solid fa-download me-1"></i> Download
-                </a>
-              </td>
-                     </tr>
-                )
-            })}
-          </tbody>
-        </table>
-      </div>
     </div>
   </div>
 </div>
+) : null}
             </div>
 
             <Modal

@@ -106,13 +106,13 @@ const InterviewFeedback = () => {
                 <div className="d-flex gap-2">
                     <button 
                         className="btn btn-outline-primary d-flex align-items-center gap-1"
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate('/interview')}
                     >
                         <i className="bi bi-house-door"></i> Main Menu
                     </button>
                     <button 
                         className="btn btn-primary d-flex align-items-center gap-1"
-                        onClick={() => navigate('/dashboard/practice-question/' + parsedFeedback?.question?.id)}
+                        onClick={() => navigate('/prepration/' + parsedFeedback?.question?.id)}
                     >
                         <i className="bi bi-arrow-repeat"></i> Retry
                     </button>

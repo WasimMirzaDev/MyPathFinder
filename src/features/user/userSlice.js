@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels } from "./userAPI";
+import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps } from "./userAPI";
 import { REHYDRATE } from 'redux-persist';
 
 
@@ -32,6 +32,17 @@ export const getEducationLevels = createAsyncThunk("user/getEducationLevels", as
   return await getAllEducationLevels();
 });
 
+export const getAllCompletedSteps = createAsyncThunk("user/get-All-completed-steps", async () => {
+  return await getAllUserCompletedSteps();
+});
+
+export const updateCompletedSteps = createAsyncThunk(
+  "user/update-completed-steps",  // Fixed typo: was "udpate"
+  async (formData) => {
+    return await updateUserCompletedSteps(formData);
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -39,6 +50,7 @@ const userSlice = createSlice({
     industries: [],
     roles: [],
     educationLevels: [],
+    completedSteps: null,
     loading: false,
     bootstrapping: false,
     error: null,
@@ -127,6 +139,32 @@ const userSlice = createSlice({
         state.success = "Profile updated successfully";
       })
       .addCase(updateUserPro.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(getAllCompletedSteps.pending, (state) => { 
+        // state.completedSteps = [];
+        state.loading = true;
+      })
+      .addCase(getAllCompletedSteps.fulfilled, (state, action) => {
+        state.loading = false;
+        state.completedSteps = action.payload;
+        state.success = "Profile updated successfully";
+      })
+      .addCase(getAllCompletedSteps.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(updateCompletedSteps.pending, (state) => { 
+        // state.completedSteps = [];
+        state.loading = true;
+      })
+      .addCase(updateCompletedSteps.fulfilled, (state, action) => {
+        state.loading = false;
+        state.completedSteps = action.payload;
+        state.success = "steps updated successfully";
+      })
+      .addCase(updateCompletedSteps.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
