@@ -455,6 +455,27 @@ export default function CVBuilder() {
         dispatch(setParsedResume(updatedResume));
       };
 
+
+      const handleUndoWorkExp = (index) => {
+        // clone the parsedResume object
+        const updatedResume = { ...parsedResume };
+      
+        // clone workExperience array
+        const updatedWorkExperience = [...updatedResume.workExperience];
+      
+        // replace only the description at the given index
+        updatedWorkExperience[index] = {
+          ...updatedWorkExperience[index],
+          workExperienceDescription: AnalyseResumeData.workExperience[index].original,
+        };
+      
+        // assign updated array back
+        updatedResume.workExperience = updatedWorkExperience;
+      
+        // dispatch back to redux
+        dispatch(setParsedResume(updatedResume));
+      };
+
       
       const handleApply = (type) => {
         const updatedResume = { ...parsedResume };
@@ -465,6 +486,21 @@ export default function CVBuilder() {
       
         if (type === "summary") {
           updatedResume.summary = AnalyseResumeData.summary.suggested_paragraph;
+        }
+      
+        dispatch(setParsedResume(updatedResume));
+      };
+
+
+      const handleUndoApply = (type) => {
+        const updatedResume = { ...parsedResume };
+      
+        if (type === "headline") {
+          updatedResume.headline = AnalyseResumeData.headline.original;
+        }
+      
+        if (type === "summary") {
+          updatedResume.summary = AnalyseResumeData.summary.original;
         }
       
         dispatch(setParsedResume(updatedResume));
@@ -864,7 +900,6 @@ export default function CVBuilder() {
                                         onClick={() => handleAnalysis()}
                                         disabled={AiResumeLoader}
                                     >
-                                        
                                         {AiResumeLoader ? (<><FiLoader size={14} className="me-2 animate-spin" /> Analysing </>) : <> <svg width={14} className="svg-inline--fa fa-chart-line" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chart-line" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                             <path fill="currentColor" d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64L0 400c0 44.2 35.8 80 80 80l400 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 416c-8.8 0-16-7.2-16-16L64 64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z"></path>
                                         </svg> Analysis </>}
@@ -1899,12 +1934,20 @@ export default function CVBuilder() {
                                     <div className="p-3 bg-light rounded mb-3">
                                         {AnalyseResumeData.headline.suggested_paragraph}
                                     </div>
+                                    <div className='d-flex space-between' style={{"gap":"15px"}}>
                                     <button
-                                        className="btn btn-primary w-100"
+                                        className="btn btn-primary w-75"
                                         onClick={() => handleApply("headline")}
                                         disabled={AiResumeLoader}>
                                         Apply Suggestion
                                     </button>
+                                    <button
+                                        className="btn btn-outline-primary w-25"
+                                        onClick={() => handleUndoApply("headline")}
+                                        disabled={AiResumeLoader}>
+                                        Undo Suggestion
+                                    </button>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -1950,12 +1993,20 @@ export default function CVBuilder() {
                                     <div className="p-3 bg-light rounded mb-3">
                                         {AnalyseResumeData.summary.suggested_paragraph}
                                     </div>
+                                    <div className='d-flex space-between' style={{"gap":"15px"}}>
                                     <button
-                                        className="btn btn-primary w-100"
+                                        className="btn btn-primary w-75"
                                         onClick={() => handleApply("summary")}
                                         disabled={AiResumeLoader}>
                                         Apply Suggestion
                                     </button>
+                                    <button
+                                        className="btn btn-primary w-25"
+                                        onClick={() => handleUndoApply("summary")}
+                                        disabled={AiResumeLoader}>
+                                        Undo Suggestion
+                                    </button>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -1963,7 +2014,7 @@ export default function CVBuilder() {
                 </div>
 
                 {/* Work Experience Section */}
-                {AnalyseResumeData?.workExperience?.length > 0 && (
+                {(parsedResume?.workExperience?.length > 0 || AnalyseResumeData?.workExperience?.length > 0) && (
                     <div className="accordion-item border-0 mb-3">
                         <h2 className="accordion-header" id="headingWorkExp">
                             <button 
@@ -1981,8 +2032,8 @@ export default function CVBuilder() {
                             aria-labelledby="headingWorkExp"
                             data-bs-parent="#analysisAccordion">
                             <div className="accordion-body">
-                                {AnalyseResumeData.workExperience.map((exp, index) => (
-                                    <div key={index} className="mb-4">
+                                { !(AnalyseResumeData?.workExperience?.length > 0) && parsedResume?.workExperience?.map((exp, index) => (
+                                    <div key={`original-${index}`} className="mb-4">
                                         <div className="card mb-2">
                                             <div 
                                                 className="card-header bg-light"
@@ -1990,9 +2041,7 @@ export default function CVBuilder() {
                                                 style={{ cursor: 'pointer' }}>
                                                 <div className="d-flex justify-content-between align-items-center">
                                                     <h6 className="mb-0">
-                                                        { exp.original.split(' ').length > 7
-                            ? exp.original.split(' ').slice(0, 7).join(' ') + '...' 
-                            : exp.original || `Work Experience #${index + 1}`}
+                                                        {exp.workExperienceJobTitle || `Work Experience #${index + 1}`}
                                                     </h6>
                                                     {expandedWorkExpItems.includes(index) ? <FiChevronUp /> : <FiChevronDown />}
                                                 </div>
@@ -2000,9 +2049,53 @@ export default function CVBuilder() {
                                             <div className={`collapse ${expandedWorkExpItems.includes(index) ? 'show' : ''}`}>
                                                 <div className="card-body">
                                                     <div className="mb-3">
-                                                        <h6>Original:</h6>
-                                                        <p className="mb-0">{exp.original}</p>
+                                                        <h6>Job Title:</h6>
+                                                        <p className="mb-2">{exp.workExperienceJobTitle || 'Not specified'}</p>
+                                                        
+                                                        <h6>Company:</h6>
+                                                        <p className="mb-2">{exp.workExperienceOrganization || 'Not specified'}</p>
+                                                        
+                                                        <h6>Duration:</h6>
+                                                        <p className="mb-2">
+                                                            {exp.workExperienceDates?.start?.date || 'Not specified'} 
+                                                            to {exp.workExperienceDates?.end?.date || 'Present'}
+                                                        </p>
+                                                        
+                                                        <h6>Description:</h6>
+                                                        <p className="mb-0">{exp.workExperienceDescription || 'No description provided'}</p>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {AnalyseResumeData?.workExperience?.map((exp, index) => (
+                                    <div key={`analysis-${index}`} className="mb-4">
+                                        <div className="card mb-2 border-primary">
+                                            <div 
+                                                className="card-header bg-primary text-white"
+                                                onClick={() => toggleWorkExpItem(index + 1000)}
+                                                style={{ cursor: 'pointer' }}>
+                                                <div className="d-flex justify-content-between align-items-center">
+                                                    <h6 className="mb-0">
+                                                        {parsedResume?.workExperience[index]?.workExperienceJobTitle?.split(' ').length > 7
+                                                            ? parsedResume?.workExperience[index]?.workExperienceJobTitle.split(' ').slice(0, 7).join(' ') + '...' 
+                                                            : parsedResume?.workExperience[index]?.workExperienceJobTitle || `Analysis #${index + 1}`}
+                                                    </h6>
+                                                    {expandedWorkExpItems.includes(index + 1000) ? <FiChevronUp /> : <FiChevronDown />}
+                                                </div>
+                                            </div>
+                                            <div className={`collapse ${expandedWorkExpItems.includes(index + 1000) ? 'show' : ''}`}>
+                                                <div className="card-body">
+                                                    {exp.original && (
+                                                                                                              <div>
+                                                                                                              <h6>Orignal:</h6>
+                                                                                                              <div className="p-3 bg-light rounded mb-3">
+                                                                                                                  {exp.original}
+                                                                                                              </div>
+                                                                                                          </div>
+                                                    )}
 
                                                     {exp.issues?.length > 0 && (
                                                         <div className="mb-3">
@@ -2023,12 +2116,20 @@ export default function CVBuilder() {
                                                             <div className="p-3 bg-light rounded mb-3">
                                                                 {exp.suggested_paragraph}
                                                             </div>
+                                                            <div className='d-flex space-between' style={{"gap":"15px"}}>
                                                             <button
-                                                                className="btn btn-primary w-100"
+                                                                className="btn btn-primary w-75"
                                                                 onClick={() => handleApplyWorkExp(index)}
                                                                 disabled={AiResumeLoader}>
                                                                 Apply Suggestion
                                                             </button>
+                                                            <button
+                                                                className="btn btn-primary w-25"
+                                                                onClick={() => handleUndoWorkExp(index)}
+                                                                disabled={AiResumeLoader}>
+                                                                undo Suggestion
+                                                            </button>
+                                                            </div>
                                                         </div>
                                                     )}
                                                 </div>

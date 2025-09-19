@@ -320,8 +320,8 @@ export default function BuildingComponents() {
               <a href={`/cv-generate/${item?.resume?.id}?download=true`} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-primary me-2">
                  Download
               </a>
-              <button onClick={()=>{DeleteCv(item?.resume?.id)}}  className="btn btn-sm btn-darnger" style={{"background-color":"red", "color":"white"}}>
-                 Delete
+              <button onClick={()=>{DeleteCv(item?.resume?.id)}} disabled={delResumeLoader}  className="btn btn-sm btn-darnger" style={{"background-color":"red", "color":"white"}}>
+                 {delResumeLoader ? "Deleting .." : "Delete"}
               </button>
             </td>
           </tr>

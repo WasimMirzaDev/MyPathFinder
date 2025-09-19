@@ -1,8 +1,8 @@
-import React, { useEffect, useState ,useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import MasterLayout from "../../masterLayout/MasterLayout";
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch , useSelector } from 'react-redux';
-import {fetchInterviewQuestionById , setParsedFeedback } from "../../features/interview/interviewSlice"
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchInterviewQuestionById, setParsedFeedback } from "../../features/interview/interviewSlice"
 import { baseUrl } from '../../api/axios';
 import { Spinner } from "react-bootstrap";
 import { motion } from "framer-motion";
@@ -12,12 +12,11 @@ import axios from '../../utils/axios';
 import "./practiceQuestion.css";
 
 export default function Prepration() {
-    const {id} = useParams();
+    const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // const [parsedFeedback,setParsedFeedback] = useState(null);
-    const { interviewQuestions, currentQuestion , loading , errro , parsedFeedback } = useSelector((state) => state.interview);
+    const { interviewQuestions, currentQuestion, loading, error, parsedFeedback } = useSelector((state) => state.interview);
     const { data } = useSelector((state) => state.user);
     const [isRecording, setIsRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -39,9 +38,7 @@ export default function Prepration() {
     const analyserRef = useRef(null);
     const dataArrayRef = useRef(null);
     const animationFrameRef = useRef(null);
-
-
-    
+    const [preparationAudioLevel, setPreparationAudioLevel] = useState(0); // New state for preparation screen
 
     useEffect(() => {
         const dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
@@ -49,7 +46,6 @@ export default function Prepration() {
             return new Dropdown(dropdownToggleEl);
         });
     }, []);
-    
 
     const startRecording = async () => {
         try {
@@ -175,6 +171,163 @@ export default function Prepration() {
             }
         }
     };
+
+
+
+        // Start monitoring microphone level for preparation screen
+        const startMicrophoneMonitoring = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioContext = new AudioContext();
+                const analyser = audioContext.createAnalyser();
+                analyser.fftSize = 32;
+                
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                
+                const updateAudioLevel = () => {
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        sum += dataArray[i];
+                    }
+                    const average = sum / bufferLength;
+                    const normalizedLevel = Math.min(Math.max((average - 20) / 50, 0), 1);
+                    setPreparationAudioLevel(normalizedLevel);
+                    
+                    requestAnimationFrame(updateAudioLevel);
+                };
+                
+                updateAudioLevel();
+                
+                // Store for cleanup
+                audioContextRef.current = audioContext;
+                analyserRef.current = analyser;
+                
+            } catch (error) {
+                console.error("Microphone monitoring error:", error);
+            }
+        };
+    
+        // Stop microphone monitoring
+        const stopMicrophoneMonitoring = () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+            if (audioContextRef.current) {
+                audioContextRef.current.close();
+            }
+            setPreparationAudioLevel(0);
+        };
+    
+        // const startRecording = async () => {
+        //     try {
+        //         // First stop the monitoring
+        //         stopMicrophoneMonitoring();
+                
+        //         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+        //         // Set up audio context and analyzer for recording
+        //         const AudioContext = window.AudioContext || window.webkitAudioContext;
+        //         const audioContext = new AudioContext();
+        //         audioContextRef.current = audioContext;
+                
+        //         const analyser = audioContext.createAnalyser();
+        //         analyser.fftSize = 32;
+        //         analyserRef.current = analyser;
+                
+        //         const source = audioContext.createMediaStreamSource(stream);
+        //         source.connect(analyser);
+                
+        //         const bufferLength = analyser.frequencyBinCount;
+        //         dataArrayRef.current = new Uint8Array(bufferLength);
+                
+        //         const recorder = new MediaRecorder(stream);
+        //         let chunks = [];
+                
+        //         // Animation loop for audio level during recording
+        //         const updateAudioLevel = () => {
+        //             if (!analyserRef.current) return;
+                    
+        //             analyserRef.current.getByteFrequencyData(dataArrayRef.current);
+        //             let sum = 0;
+        //             for (let i = 0; i < bufferLength; i++) {
+        //                 sum += dataArrayRef.current[i];
+        //             }
+        //             const average = sum / bufferLength;
+        //             const normalizedLevel = Math.min(Math.max((average - 20) / 50, 0), 1);
+        //             setAudioLevel(normalizedLevel);
+                    
+        //             animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
+        //         };
+                
+        //         animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
+        
+        //         recorder.ondataavailable = (e) => {
+        //             chunks.push(e.data);
+        //         };
+        
+        //         recorder.onstop = async () => {
+        //             const blob = new Blob(chunks, { type: 'audio/webm' });
+        //             const formData = new FormData();
+        //             formData.append('audio', blob, 'answer.webm');
+        //             formData.append('question_id', id);
+        
+        //             try {
+        //                 setIsSubmitting(true);
+        //                 const response = await axios.post('/api/interview/submit-audio', formData, {
+        //                     headers: { 'Content-Type': 'multipart/form-data' }
+        //                 });
+        //                 dispatch(setParsedFeedback(response.data));
+        //                 navigate('/question-feedback');
+        //             } catch (error) {
+        //                 console.error('Upload failed:', error);
+        //             }
+        //         };
+        
+        //         recorder.start();
+        //         setMediaRecorder(recorder);
+        //         setAudioChunks(chunks);
+        //         setIsRecording(true);
+        //     } catch (error) {
+        //         console.error("Microphone error:", error);
+        //     }
+        // };
+
+
+
+        useEffect(() => {
+            let isActive = true;
+            const run = async () => {
+                try {
+                    const ReturnAction = await dispatch(fetchInterviewQuestionById(id)).unwrap();
+                    if (!isActive) return;
+                    setIndustry(ReturnAction.industry);
+                    setBusinessSector(ReturnAction.business_sector);
+                } catch (e) {
+                    // noop
+                }
+            };
+            run();
+            return () => { isActive = false; };
+        }, [id, dispatch]);
+    
+        useEffect(() => {
+            // Start monitoring microphone when component mounts
+            if (hasMicAccess) {
+                startMicrophoneMonitoring();
+            }
+            
+            return () => {
+                // Cleanup when component unmounts
+                stopMicrophoneMonitoring();
+            };
+        }, [hasMicAccess]);
     
     // Clean up on unmount
     useEffect(() => {
@@ -345,7 +498,7 @@ export default function Prepration() {
         if (document.fullscreenElement) {
             document.exitFullscreen();
         }
-        navigate('/');
+        navigate('/interview');
     };
 
     const handleDragEnd = (event, info) => {
@@ -427,95 +580,97 @@ export default function Prepration() {
             //     </motion.div>
             // </motion.div>
 
-    if (!isReady && !hasMicAccess || countdown > 0) {
-        return (
-            <MasterLayout>
-                <>
-            <div className="content" data-bs-theme="light">
-                <div className="row mb-3 g-3 feature-cards align-items-center justify-content-center">
-                    <div className="col-12 col-xl-5 d-flex justify-content-center">
-                        <div className="card border w-100 overflow-hidden position-relative">
-                            <div className="card-body p-4 d-flex flex-column text-center">
-                                <div className="d-flex justify-content-center mb-3">
-                                    <div className="position-relative" style={{ width: '120px', height: '120px' }}>
-                                        <svg viewBox="0 0 60 60" className="countdown-ring" style={{ width: '100%', height: '100%' }}>
-                                            <circle 
-                                                className="countdown-bg" 
-                                                cx="30" 
-                                                cy="30" 
-                                                r="26" 
-                                                fill="none" 
-                                                stroke="#e9ecef" 
-                                                strokeWidth="4"
-                                            />
-                                            <circle 
-                                                className="countdown-progress" 
-                                                cx="30" 
-                                                cy="30" 
-                                                r="26" 
-                                                fill="none" 
-                                                stroke="#4e73df" 
-                                                strokeWidth="4"
-                                                strokeLinecap="round"
-                                                strokeDasharray="163.36"
-                                                strokeDashoffset={163.36 - (countdown * 27.23)} // 163.36 = 2 * π * 26
-                                                style={{
-                                                    transition: 'stroke-dashoffset 1s linear',
-                                                    transform: 'rotate(-90deg)',
-                                                    transformOrigin: '50% 50%'
-                                                }}
-                                            />
-                                        </svg>
-                                        <div className="position-absolute top-50 start-50 translate-middle text-primary fw-bold" style={{ fontSize: '2rem' }}>
-                                            {countdown}
+            if (!isReady && !hasMicAccess || countdown > 0) {
+                return (
+                    <MasterLayout>
+                        <div className="content" data-bs-theme="light">
+                            <div className="row mb-3 g-3 feature-cards align-items-center justify-content-center">
+                                <div className="col-12 col-xl-5 d-flex justify-content-center">
+                                    <div className="card border w-100 overflow-hidden position-relative">
+                                        <div className="card-body p-4 d-flex flex-column text-center">
+                                            <div className="d-flex justify-content-center mb-3">
+                                                <div className="position-relative" style={{ width: '120px', height: '120px' }}>
+                                                    <svg viewBox="0 0 60 60" className="countdown-ring" style={{ width: '100%', height: '100%' }}>
+                                                        <circle 
+                                                            className="countdown-bg" 
+                                                            cx="30" 
+                                                            cy="30" 
+                                                            r="26" 
+                                                            fill="none" 
+                                                            stroke="#e9ecef" 
+                                                            strokeWidth="4"
+                                                        />
+                                                        <circle 
+                                                            className="countdown-progress" 
+                                                            cx="30" 
+                                                            cy="30" 
+                                                            r="26" 
+                                                            fill="none" 
+                                                            stroke="#4e73df" 
+                                                            strokeWidth="4"
+                                                            strokeLinecap="round"
+                                                            strokeDasharray="163.36"
+                                                            strokeDashoffset={163.36 - (countdown * 27.23)}
+                                                            style={{
+                                                                transition: 'stroke-dashoffset 1s linear',
+                                                                transform: 'rotate(-90deg)',
+                                                                transformOrigin: '50% 50%'
+                                                            }}
+                                                        />
+                                                    </svg>
+                                                    <div className="position-absolute top-50 start-50 translate-middle text-primary fw-bold" style={{ fontSize: '2rem' }}>
+                                                        {countdown}
+                                                    </div>
+                                                </div>
+                                            </div>
+        
+                                            <div className="mb-2">
+                                                <div className="fw-bold">{data?.name}</div>
+                                                <div className="text-secondary small">Candidate</div>
+                                            </div>
+        
+                                            {/* Show audio level in preparation screen */}
+                                            {hasMicAccess && (
+                                                <div className="mb-3">
+                                                    <div className="fw-semibold mb-1">Answer the question</div>
+                                                    <div className="mic-meter" aria-label="Microphone level" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={preparationAudioLevel * 100} style={{height: '10px', background: '#e9ecef', borderRadius: '9999px', overflow: 'hidden'}}>
+                                                        <div style={{height: '100%', width: `${preparationAudioLevel * 100}%`, background: 'linear-gradient(90deg, #20c997, #198754)', transition: 'width 100ms linear'}} />
+                                                    </div>
+                                                    <div className={`text-secondary mt-2 ${preparationAudioLevel < 0.2 ? 'text-danger' : ''}`} style={{fontSize: '0.85rem'}}>
+                                                        <i className="fas fa-microphone-alt me-2" /> 
+                                                        {preparationAudioLevel < 0.2 ? 'Too quiet' : 'Loud and clear'}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="mb-3">
+                                                <div className="fw-semibold text-dark small mb-1">Current Question</div>
+                                                <div className="p-2 bg-light rounded border small">
+                                                    <span className="fw-bold">#{currentQuestion?.question?.id}: {currentQuestion?.question?.title}</span><br />
+                                                    <span className="text-secondary">{currentQuestion?.question?.speech}</span>
+                                                </div>
+                                            </div>
+        
+                                            <div className="d-grid" onClick={handleStartInterview}>
+                                                <button className="btn btn-primary btn-sm" id="finaliseBtn" disabled={isReady || !hasMicAccess}>I'm ready</button>
+                                            </div>
+        
+                                            <div className="d-flex gap-2 mt-3">
+                                                <button id="skipBtn" className="btn btn-outline-secondary btn-sm w-100" onClick={handleSkipQuestion} disabled={isReady}>
+                                                    Skip question
+                                                </button>
+                                                <button id="exitBtn" className="btn btn-outline-secondary btn-sm w-100" onClick={handleExitInterview} disabled={isReady}>
+                                                    Exit interview
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div className="mb-2">
-                                    <div className="fw-bold">{data?.name}</div>
-                                    <div className="text-secondary small">Candidate</div>
-                                </div>
-
-                                <div className="mb-3">
-                                    <div className="fw-semibold mb-1">Answer the question</div>
-                                    <div className="mic-meter" aria-label="Microphone level" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={audioLevel * 100} style={{height: '10px', background: '#e9ecef', borderRadius: '9999px', overflow: 'hidden'}}>
-                                        <div id="micMeterFill" style={{height: '100%', width: `${audioLevel * 100}%`, background: 'linear-gradient(90deg, #20c997, #198754)', transition: 'width 100ms linear'}} />
-                                    </div>
-                                    <div id="micStatus" className={`text-secondary mt-2 ${audioLevel < 0.2 ? 'text-danger' : ''}`} style={{fontSize: '0.85rem'}}>
-                                        <i className="fas fa-microphone-alt me-2" /> {audioLevel < 0.2 ? 'Too quiet' : 'Loud and clear'}
-                                    </div>
-                                </div>
-                                <div className="mb-3">
-                                    <div className="fw-semibold text-dark small mb-1">Current Question</div>
-                                    <div className="p-2 bg-light rounded border small">
-                                        <span className="fw-bold">#{currentQuestion?.question?.id}: {currentQuestion?.question?.title}</span><br />
-                                        <span className="text-secondary">{currentQuestion?.question?.speech}</span>
-                                    </div>
-                                </div>
-
-                                <div className="d-grid"  onClick={handleStartInterview} >
-                                    <button className="btn btn-primary btn-sm" id="finaliseBtn" disabled={isReady || !hasMicAccess}>I'm ready</button>
-                                </div>
-
-                                <div className="d-flex gap-2 mt-3">
-                                    <button id="skipBtn" className="btn btn-outline-secondary btn-sm w-100" onClick={handleSkipQuestion} disabled={isReady}>
-                                        Skip question
-                                    </button>
-                                    <button id="exitBtn" className="btn btn-outline-secondary btn-sm w-100" onClick={handleExitInterview} disabled={isReady}>
-                                        Exit interview
-                                    </button>
-                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-            </div>
-            </>
-             </MasterLayout>
-        );
-    }
+                    </MasterLayout>
+                );
+            }
 
     // if (isReady && !hasMicAccess) {
     //     return (

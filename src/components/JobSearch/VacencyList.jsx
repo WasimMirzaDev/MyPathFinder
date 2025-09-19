@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
-import Avatar from '../../assets/images/team/72x72/58.webp'
+import Avatar from '../../assets/images/MPF-180x180.png'
 import { Button , Modal , Badge} from "react-bootstrap";
 import { FiSearch } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -260,7 +260,7 @@ const VacanciesList = () => {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <h4>Alex Dobricic</h4>
+                                                    <h4>{data?.name}</h4>
                                                     <div className="dropdown">
                                                         <a
                                                             className="text-body-secondary dropdown-toggle text-decoration-none dropdown-caret-none"
@@ -268,12 +268,12 @@ const VacanciesList = () => {
                                                             data-bs-toggle="dropdown"
                                                             aria-expanded="false"
                                                         >
-                                                            Senior Software Developer
+                                                            {data?.role?.name}
                                                         </a>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div>
+                                            {/* <div>
                                                 <span className="badge badge-phoenix badge-phoenix-secondary me-2">
                                                     Skill 1
                                                 </span>
@@ -286,7 +286,7 @@ const VacanciesList = () => {
                                                 <span className="badge badge-phoenix badge-phoenix-secondary">
                                                     Skill 4
                                                 </span>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
                                 </div>

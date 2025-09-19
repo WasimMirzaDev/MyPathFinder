@@ -54,6 +54,12 @@ const Interview = () => {
 
       dispatch(fetchInterviewQuestions());
       dispatch(fetchInterviewHistory());
+    }else{
+        dispatch(setFilters({
+            subcategory: null,
+            questionType: null,
+            difficulty: null
+          }));
     }
   },[data]);
 
