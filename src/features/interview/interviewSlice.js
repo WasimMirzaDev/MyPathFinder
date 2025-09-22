@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchInterviewUserHistory , fetchUserInterviewQuestions , fetchUserInterviewQuestionById } from "./interviewAPI";
+import { fetchInterviewUserHistory , fetchUserInterviewQuestions , fetchUserInterviewQuestionById , fetchRandomInterviewQuestions } from "./interviewAPI";
 
 
 export const fetchInterviewHistory = createAsyncThunk("interview/history", async () => {
@@ -17,6 +17,11 @@ export const fetchInterviewQuestions = createAsyncThunk(
 
 export const fetchInterviewQuestionById = createAsyncThunk("interview/question-by-id", async (id) => {
   return await fetchUserInterviewQuestionById(id);
+});
+
+
+export const getRandomQuestions = createAsyncThunk("interview/random-questions", async () => {
+  return await fetchRandomInterviewQuestions();
 });
 
 const interviewSlice = createSlice({
@@ -64,6 +69,17 @@ const interviewSlice = createSlice({
           state.interviewQuestions = action.payload;
         })
         .addCase(fetchInterviewQuestions.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
+        })
+        .addCase(getRandomQuestions.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(getRandomQuestions.fulfilled, (state, action) => {
+          state.loading = false;
+          state.interviewQuestions = action.payload;
+        })
+        .addCase(getRandomQuestions.rejected, (state, action) => {
           state.loading = false;
           state.error = action.error.message;
         })

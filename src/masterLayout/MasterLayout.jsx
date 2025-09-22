@@ -258,7 +258,7 @@ const MasterLayout = ({ children }) => {
                           <div className="avatar avatar-m status-online me-3"><img className="rounded-circle" src="img/team/40x40/30.webp" alt="" />
                           </div>
                           <div className="flex-1 me-sm-3">
-                            <h4 className="fs-9 text-body-emphasis">My Pathfinder</h4>
+                            <h4 className="fs-9 text-body-emphasis">Mypathfinder</h4>
                             <p className="fs-9 text-body-highlight mb-2 mb-sm-3 fw-normal"><span className='me-1 fs-10'>💬</span>Sent you a message!<span className="ms-2 text-body-quaternary text-opacity-75 fw-bold fs-10">10m</span></p>
                             <p className="text-body-secondary fs-9 mb-0"><span className="me-1 fas fa-clock"></span><span className="fw-bold">10:41 AM </span>July 7,2025</p>
                           </div>
@@ -276,7 +276,7 @@ const MasterLayout = ({ children }) => {
                             <img className="rounded-circle" src="img/team/40x40/30.webp" alt="" />
                           </div>
                           <div className="flex-1 me-sm-3">
-                            <h4 className="fs-9 text-body-emphasis">My Pathfinder</h4>
+                            <h4 className="fs-9 text-body-emphasis">Mypathfinder</h4>
                             <p className="fs-9 text-body-highlight mb-2 mb-sm-3 fw-normal"><span className='me-1 fs-10'>📅</span>Created an event.<span className="ms-2 text-body-quaternary text-opacity-75 fw-bold fs-10">20m</span></p>
                             <p className="text-body-secondary fs-9 mb-0"><span className="me-1 fas fa-clock"></span><span className="fw-bold">10:20 AM </span>August 2,2025</p>
                           </div>
@@ -293,7 +293,7 @@ const MasterLayout = ({ children }) => {
                           <div className="avatar avatar-m status-online me-3"><img className="rounded-circle" src="img/team/40x40/30.webp" alt="" />
                           </div>
                           <div className="flex-1 me-sm-3">
-                            <h4 className="fs-9 text-body-emphasis">My Pathfinder</h4>
+                            <h4 className="fs-9 text-body-emphasis">Mypathfinder</h4>
                             <p className="fs-9 text-body-highlight mb-2 mb-sm-3 fw-normal"><span className='me-1 fs-10'>💬</span>Sent you a message!<span className="ms-2 text-body-quaternary text-opacity-75 fw-bold fs-10">10m</span></p>
                             <p className="text-body-secondary fs-9 mb-0"><span className="me-1 fas fa-clock"></span><span className="fw-bold">10:41 AM </span>July 7,2025</p>
                           </div>
@@ -311,7 +311,7 @@ const MasterLayout = ({ children }) => {
                             <img className="rounded-circle" src="img/team/40x40/30.webp" alt="" />
                           </div>
                           <div className="flex-1 me-sm-3">
-                            <h4 className="fs-9 text-body-emphasis">My Pathfinder</h4>
+                            <h4 className="fs-9 text-body-emphasis">Mypathfinder</h4>
                             <p className="fs-9 text-body-highlight mb-2 mb-sm-3 fw-normal"><span className='me-1 fs-10'>📅</span>Created an event.<span className="ms-2 text-body-quaternary text-opacity-75 fw-bold fs-10">20m</span></p>
                             <p className="text-body-secondary fs-9 mb-0"><span className="me-1 fas fa-clock"></span><span className="fw-bold">10:20 AM </span>August 2,2025</p>
                           </div>
@@ -368,7 +368,7 @@ const MasterLayout = ({ children }) => {
         <footer className="footer position-absolute" style={{ translate: 'none', rotate: 'none', scale: 'none', transform: 'translate(0px, 0px)', opacity: 1 }}>
           <div className="row g-0 justify-content-between align-items-center h-100">
             <div className="col-12 col-sm-auto text-center">
-              <p className="mb-0 mt-2 mt-sm-0 fs-9">2025 © MyPathfinder<span className="d-none d-sm-inline-block"></span></p>
+              <p className="mb-0 mt-2 mt-sm-0 fs-9">2025 © Mypathfinder<span className="d-none d-sm-inline-block"></span></p>
             </div>
             <div className="col-12 col-sm-auto text-center">
               <p className="mb-0 text-body-tertiary text-opacity-85 fs-9">v1.23.0</p>

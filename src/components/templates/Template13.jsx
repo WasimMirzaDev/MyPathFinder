@@ -38,7 +38,10 @@ const Template13 = ({ resumeData }) => {
       borderBottom: '1px solid #ccc',
       paddingBottom: '5px',
       marginTop: '30px',
-      color: '#000'
+      color: '#000',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     personalDetails: {
       marginTop: '10px',
@@ -83,6 +86,9 @@ const Template13 = ({ resumeData }) => {
       paddingLeft: 0
     },
     bulletItem: {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       marginBottom: '5px'
     },
     footer: {
@@ -90,7 +96,13 @@ const Template13 = ({ resumeData }) => {
       fontSize: '12px',
       marginTop: '40px',
       color: '#999'
+    },
+    pagecontentfull : {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     }
+
   };
 
   return (
@@ -189,9 +201,9 @@ const Template13 = ({ resumeData }) => {
           <div style={styles.sectionContent}>
             {resumeData.education.map((edu, index) => (
               <div key={index} style={{ marginBottom: '20px' }}>
-                <div><strong>{edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}</strong></div>
-                <div>{edu.educationAccreditation}</div>
-                <div>{edu.educationOrganization}</div>
+                <div style={styles.pagecontentfull}><strong>{edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}</strong></div>
+                <div style={styles.pagecontentfull}>{edu.educationAccreditation}</div>
+                <div style={styles.pagecontentfull}>{edu.educationOrganization}</div>
                 {edu.educationDescription && (
                   <ul style={styles.bulletList}>
                     {edu.educationDescription.split('\n').map((point, i) => (

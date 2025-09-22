@@ -5,7 +5,7 @@ import InterviewPractice from "../../components/Interview/InterviewPractice";
 import PracticeHistory from "../../components/Interview/PracticeHistory";
 import { useDispatch, useSelector } from "react-redux";
 import { setFilters } from "../../features/interview/interviewSlice";
-import { fetchInterviewHistory , fetchInterviewQuestions } from "../../features/interview/interviewSlice";
+import { fetchInterviewHistory , fetchInterviewQuestions ,getRandomQuestions } from "../../features/interview/interviewSlice";
 import { motion } from "framer-motion";
 import { 
   Container, 
@@ -62,6 +62,12 @@ const Interview = () => {
           }));
     }
   },[data]);
+
+
+  const getRandomQuestionsInterview = async() =>{
+    console.log("hit");
+    dispatch(getRandomQuestions());
+  }
 
 
       // Fetch filter options on component mount
@@ -308,7 +314,7 @@ const isNextDisabled = () => {
             {!showModal && (
               <>
         <BreadCrum title='Interview Simulator' subTitle='Practise with industry specific questions and real-time feedback.' />
-        <InterviewPractice interviewQuestions={interviewQuestions} setShowModal={setShowModal} filters={filters} dispatch={dispatch}/>
+        <InterviewPractice interviewQuestions={interviewQuestions} setShowModal={setShowModal} filters={filters} dispatch={dispatch} getRandomQuestionsInterview={getRandomQuestionsInterview}/>
         <PracticeHistory history={history} />
         </>
         )}

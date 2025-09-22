@@ -41,6 +41,9 @@ const Template11 = ({ resumeData }) => {
       fontWeight: 'bold',
       display: 'inline-block',
       marginBottom: '10px',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     detailText: {
       margin: '2px 0',
@@ -56,13 +59,22 @@ const Template11 = ({ resumeData }) => {
     eduInstitution: {
       fontWeight: 'bold',
       fontSize: '14px',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     eduLocation: {
       fontStyle: 'italic',
       fontSize: '13px',
       marginBottom: '5px',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     eduDate: {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontSize: '13px',
     },
     bulletList: {
@@ -71,6 +83,9 @@ const Template11 = ({ resumeData }) => {
     },
     bulletItem: {
       fontSize: '13px',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       marginBottom: '4px',
     },
     italicLabel: {
@@ -84,15 +99,29 @@ const Template11 = ({ resumeData }) => {
     jobTitle: {
       fontWeight: 'bold',
       fontSize: '14px',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     jobOrg: {
       fontSize: '13px',
       color: '#666',
       marginBottom: '4px',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     jobDate: {
       fontSize: '13px',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
+    pagecontentfull : {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
+    }
   };
 
   return (

@@ -107,12 +107,20 @@ const Template8 = ({ resumeData }) => {
       marginBottom: '30px'
     },
     contentTitle: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       margin: '0 0 15px 0',
       fontSize: '18px',
       color: '#4a6fa5',
       fontWeight: 'bold'
     },
     contentText: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       margin: 0,
       fontSize: '12px',
       lineHeight: '1.6',
@@ -120,22 +128,38 @@ const Template8 = ({ resumeData }) => {
       textAlign: 'justify'
     },
     jobHeader: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       display: 'flex',
       justifyContent: 'space-between',
       marginBottom: '5px'
     },
     jobTitle: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       margin: 0,
       fontSize: '14px',
       fontWeight: 'bold',
       color: '#333'
     },
     jobDate: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontSize: '12px',
       color: '#4a6fa5',
       fontWeight: 'bold'
     },
     companyName: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontSize: '12px',
       color: '#666',
       marginBottom: '8px'
@@ -148,6 +172,10 @@ const Template8 = ({ resumeData }) => {
       color: '#333'
     },
     bulletItem: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       marginBottom: '5px'
     }
   };

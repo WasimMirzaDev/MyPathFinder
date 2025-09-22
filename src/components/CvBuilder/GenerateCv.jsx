@@ -26,6 +26,8 @@ import { toast } from 'react-toastify';
 import { useNavigate, useParams } from "react-router-dom";
 import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
 import CoverLetter from "./components/coverLetter";
+import html2pdf from "html2pdf.js";
+
 
 
 const cardTemplate = [
@@ -100,6 +102,22 @@ export default function CVBuilder() {
     const handleTabClick = (tabName) => {
         setActiveTab((prevTab) => (prevTab === tabName ? '' : tabName)); // toggle if same, else set new
     };
+
+    const handleNextTab = () =>{
+        if(activeTab == "tabPreview"){
+            setActiveTab("tabDesign"); // toggle if same, else set new
+        }else if(activeTab == "tabDesign"){
+            setActiveTab("tabAnalysis"); // toggle if same, else set new
+        }
+    }
+
+    const handlePreviousTab = () =>{
+        if(activeTab == "tabAnalysis"){
+            setActiveTab("tabDesign"); // toggle if same, else set new
+        }else if(activeTab == "tabDesign"){
+            setActiveTab("tabPreview"); // toggle if same, else set new
+        }
+    }
 
 
     const handleTemplateChange = (templateName) => {
@@ -327,66 +345,22 @@ export default function CVBuilder() {
     }, [parsedResume, downloadPDFLoader]);
 
     const handleDownloadPDF = async () => {
-        setDownloadPDFLoader(true);
-        if (!cvRef.current) {
-            setDownloadPDFLoader(false);
-            return;
-        }
-
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const a4Width = 210; // A4 width in mm
-        const a4Height = 297; // A4 height in mm
-        const a4WidthPx = 794; // A4 width in pixels
-        const a4HeightPx = 1123; // A4 height in pixels
-        const paddingTopBottom = 5; // 5mm padding for top and bottom
-
-        // Create and clone content
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'absolute';
-        tempContainer.style.left = '-9999px';
-        tempContainer.style.width = `${a4WidthPx}px`;
-        tempContainer.style.backgroundColor = '#ffffff';
-        const clonedContent = cvRef.current.cloneNode(true);
-        tempContainer.appendChild(clonedContent);
-        document.body.appendChild(tempContainer);
-
-        // Calculate pages based on visible content
-        const contentHeight = clonedContent.scrollHeight;
-        let totalPages = Math.ceil(contentHeight / a4HeightPx);
-        // Adjust if last page has minimal content
-        if (contentHeight % a4HeightPx < a4HeightPx * 0.2) {
-            totalPages--;
-        }
-
-        try {
-            for (let i = 0; i < totalPages; i++) {
-                const canvas = await html2canvas(clonedContent, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    width: a4WidthPx,
-                    height: a4HeightPx,
-                    scrollY: i * a4HeightPx,
-                    windowHeight: a4HeightPx,
-                    y: i * a4HeightPx,
-                });
-
-                const imgData = canvas.toDataURL('image/png', 1.0);
-                if (i > 0) pdf.addPage();
-
-                const imgWidth = a4Width; // Full width, no side padding
-                const imgHeight = ((canvas.height * a4Width) / canvas.width) * (a4Height - 2 * paddingTopBottom) / a4Height;
-                pdf.addImage(imgData, 'PNG', 0, paddingTopBottom, imgWidth, imgHeight);
-            }
-
-            pdf.save(`${parsedResume?.candidateName?.[0]?.firstName || 'CV'}.pdf`);
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-        } finally {
-            document.body.removeChild(tempContainer);
-            setDownloadPDFLoader(false);
-        }
-    };
+        if (!cvRef.current) return;
+      
+        const element = cvRef.current;
+      
+        const opt = {
+          margin: 5,
+          filename: `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["css", "legacy"] } // 👈 respects CSS page-break rules
+        };
+      
+        await html2pdf().from(element).set(opt).save();
+      };
+    
 
     const previewContainerRef = useRef(null);
 
@@ -867,7 +841,7 @@ export default function CVBuilder() {
                 {/* LEFT: Tabs + Form */}
                 <div className="col-12 col-xxl-6 col-lg-7">
                     <div className="card border h-100">
-                        <div className="card-header border-bottom-0 pb-0">
+                        <div className="card-header border-bottom-0 pb-0 d-flex justify-content-between">
                             {/* Tabs */}
                             <ul className="nav nav-underline cv-uploader-tabs" id="cvTabs" role="tablist">
                                 <li className="nav-item" role="presentation">
@@ -900,18 +874,18 @@ export default function CVBuilder() {
                                         onClick={() => handleAnalysis()}
                                         disabled={AiResumeLoader}
                                     >
-                                        {AiResumeLoader ? (<><FiLoader size={14} className="me-2 animate-spin" /> Analysing </>) : <> <svg width={14} className="svg-inline--fa fa-chart-line" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chart-line" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        {AiResumeLoader ? (<><FiLoader size={14} className="me-2 animate-spin" /> analyzing </>) : <> <svg width={14} className="svg-inline--fa fa-chart-line" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chart-line" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                             <path fill="currentColor" d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64L0 400c0 44.2 35.8 80 80 80l400 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 416c-8.8 0-16-7.2-16-16L64 64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z"></path>
                                         </svg> Analysis </>}
                                     </button>
                                 </li>
                                 {/* <li className="nav-item" role="presentation">
                                     <button
-                                        className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabMatching' ? 'active' : ''}`}
-                                        onClick={() => setActiveTab('tabMatching')}
+                                    className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabMatching' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('tabMatching')}
                                     >
-                                        <svg width={16} className="svg-inline--fa fa-link" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                                            <path fill="currentColor" d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"></path>
+                                    <svg width={16} className="svg-inline--fa fa-link" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                    <path fill="currentColor" d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"></path>
                                         </svg>
                                         Job Matching
                                     </button>
@@ -923,11 +897,12 @@ export default function CVBuilder() {
                                     >
                                         <svg width={10} className="svg-inline--fa fa-file-lines" aria-hidden="true" focusable="false" data-prefix="far" data-icon="file-lines" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                                             <path fill="currentColor" d="M64 464c-8.8 0-16-7.2-16-16L48 64c0-8.8 7.2-16 16-16l160 0 0 80c0 17.7 14.3 32 32 32l80 0 0 288c0 8.8-7.2 16-16 16L64 464zM64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-293.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0L64 0zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0z"></path>
-                                        </svg>
-                                        Cover Letter
-                                    </button>
-                                </li> */}
+                                            </svg>
+                                            Cover Letter
+                                            </button>
+                                            </li> */}
                             </ul>
+                                            <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume || saveChangesLoader}>{saveChangesLoader ? (<><FiLoader size={14} className="me-2 animate-spin" />Saving...</>) : "Save Changes"}</button>
                         </div>
 
                         <div className="card-body pt-3">
@@ -940,7 +915,7 @@ export default function CVBuilder() {
                                     <div className="tab-pane fade active show" id="tabPreview" role="tabpanel" aria-labelledby="tabPreview-tab" tabIndex="0">
                                         <div className="d-flex justify-content-between align-items-center mb-3">
                                             <h4 className="mb-0">Basic Information</h4>
-                                            <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume || saveChangesLoader}>{saveChangesLoader ? (<><FiLoader size={14} className="me-2 animate-spin" />Saving...</>) : "Save Changes"}</button>
+                                            
                                         </div>
                                         <div className="accordion" id="cvAccordion">
                                             {/* Personal details */}
@@ -1552,6 +1527,7 @@ export default function CVBuilder() {
                                                         <div className="card border-0">
                                                             <div className="border rounded p-3">
                                                                 <label className="form-label">Add Skills (one per line)</label>
+                                                                <div className='d-flex'>
                                                                 <input type="text" className="form-control me-2" placeholder="Type a skill and press Enter to add it"
                                                                     value={currentSkill}
                                                                     onChange={(e) => setCurrentSkill(e.target.value)}
@@ -1562,8 +1538,7 @@ export default function CVBuilder() {
                                                                         }
                                                                     }}
                                                                 />
-                                                                <div className="d-flex justify-content-end">
-                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3"
+                                                                   <button type="button" className="btn btn-outline-primary btn-sm"
                                                                         onClick={() => {
                                                                             if (currentSkill.trim()) {
                                                                                 const currentSkills = parsedResume?.skill || [];
@@ -1572,13 +1547,12 @@ export default function CVBuilder() {
                                                                             }
                                                                         }}
                                                                     >
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check me-1">
+                                                                            <polyline points="20 6 9 17 4 12"></polyline>
                                                                         </svg>
-                                                                        Add Skill
                                                                     </button>
-                                                                </div>
+                                                                    </div>
+                                                               
                                                             </div>
 
                                                             <div className="mt-3">
@@ -1682,7 +1656,7 @@ export default function CVBuilder() {
                                                                             }}
                                                                         />
                                                                     </div>
-                                                                    <div className="col-md-4">
+                                                                    <div className="col-md-3">
                                                                         <select className="form-select"
                                                                             value={languageLevel}
                                                                             onChange={(e) => setLanguageLevel(e.target.value)}
@@ -1693,17 +1667,15 @@ export default function CVBuilder() {
                                                                             <option value="Native">Native</option>
                                                                         </select>
                                                                     </div>
-                                                                </div>
-                                                                <div className="d-flex justify-content-end">
-                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3"
+                                                                    <div className='col-md-1'>
+                                                                    <button type="button" className="btn btn-outline-primary btn-sm " style={{padding:"5px"}}
                                                                         onClick={handleAddLanguage}
                                                                     >
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check me-1">
+                                                                            <polyline points="20 6 9 17 4 12"></polyline>
                                                                         </svg>
-                                                                        Add Language
                                                                     </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <div className="mt-3 d-flex flex-wrap gap-2">
@@ -1758,7 +1730,8 @@ export default function CVBuilder() {
                                                         <div className="card border-0">
                                                             <div className="border rounded p-3">
                                                                 <label className="form-label">Add Hobby</label>
-                                                                <input type="text" className="form-control" placeholder="Hobby name"
+                                                                <div className='d-flex'>
+                                                                <input type="text" className="form-control me-2" placeholder="Hobby name"
                                                                     value={currentHobby}
                                                                     onChange={(e) => setCurrentHobby(e.target.value)}
                                                                     onKeyDown={(e) => {
@@ -1768,17 +1741,14 @@ export default function CVBuilder() {
                                                                         }
                                                                     }}
                                                                 />
-                                                                <div className="d-flex justify-content-end">
-                                                                    <button type="button" className="btn btn-outline-secondary btn-sm mt-3"
+                                                                    <button type="button" className="btn btn-outline-primary btn-sm"
                                                                         onClick={handleAddHobby}
                                                                     >
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check me-1">
+                                                                            <polyline points="20 6 9 17 4 12"></polyline>
                                                                         </svg>
-                                                                        Add Hobby
                                                                     </button>
-                                                                </div>
+                                                                    </div>
                                                             </div>
                                                             <div className="mt-3 d-flex flex-wrap gap-2">
 
@@ -1806,17 +1776,7 @@ export default function CVBuilder() {
                                             </div>
                                         </div>
 
-                                        {/* Prev/Next */}
-                                        <div className="card border-0 shadow-sm mt-3">
-                                            <div className="card-body p-3 d-flex justify-content-between align-items-center">
-                                                <button type="button" className="btn btn-outline-primary d-flex align-items-center gap-2" disabled="">
-                                                    <span aria-hidden="true">←</span> Previous
-                                                </button>
-                                                <button type="button" className="btn btn-primary d-flex align-items-center gap-2">
-                                                    Next <span aria-hidden="true">→</span>
-                                                </button>
-                                            </div>
-                                        </div>
+                                       
                                     </div>
                                 )}
 
@@ -1913,7 +1873,7 @@ export default function CVBuilder() {
                         aria-labelledby="headingHeadline"
                         data-bs-parent="#analysisAccordion">
                         <div className="accordion-body">
-                            <div className="my-2">{parsedResume?.headline || 'No headline available'}</div>
+                            <div className="my-2">{AnalyseResumeData?.headline?.original || parsedResume?.headline || 'No headline available'}</div>
 
                             {AnalyseResumeData?.headline?.issues?.length > 0 && (
                                 <div className="mt-3">
@@ -1972,7 +1932,7 @@ export default function CVBuilder() {
                         aria-labelledby="headingSummary"
                         data-bs-parent="#analysisAccordion">
                         <div className="accordion-body">
-                            <div className="my-2">{parsedResume?.summary || 'No summary available'}</div>
+                            <div className="my-2">{AnalyseResumeData?.summary?.original || parsedResume?.summary || 'No summary available'}</div>
 
                             {AnalyseResumeData?.summary?.issues?.length > 0 && (
                                 <div className="mt-3">
@@ -2158,6 +2118,21 @@ export default function CVBuilder() {
                                         </div></div>
                                     </div>
                                 )}
+
+                                                                        {/* Prev/Next */}
+                                                                        <div className="card border-0 shadow-sm mt-3">
+                                            <div className="card-body p-3 d-flex justify-content-between align-items-center">
+                                                <button type="button" className="btn btn-outline-primary d-flex align-items-center gap-2" disabled={activeTab == "tabPreview"}  onClick={handlePreviousTab}>
+                                                    <span aria-hidden="true">←</span> Previous
+                                                </button>
+                                                <button type="button" className="btn btn-primary d-flex align-items-center gap-2"
+                                                onClick={handleNextTab}
+                                                disabled={activeTab == "tabAnalysis"}
+                                                >
+                                                    Next <span aria-hidden="true">→</span>
+                                                </button>
+                                            </div>
+                                        </div>
                             </div>
                         </div>
                     </div>

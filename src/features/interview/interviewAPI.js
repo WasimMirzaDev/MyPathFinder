@@ -27,3 +27,10 @@ export const fetchUserInterviewQuestionById = async (id) => {
   return response.data;
 };
 
+
+export const fetchRandomInterviewQuestions = async () => {
+  console.log("interview", id);
+  const response = await axios.get(`/random-questions`); // e.g. /me endpoint
+// console.log("request hit",response.data);
+  return response.data;
+};

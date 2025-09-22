@@ -17,6 +17,7 @@
     "formik": "^2.4.6",
     "framer-motion": "^12.23.12",
     "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.12.1",
     "jspdf": "^3.0.2",
     "libphonenumber-js": "^1.12.16",
     "list.js": "^2.3.1",

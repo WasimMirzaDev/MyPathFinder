@@ -24,6 +24,10 @@ const Template10 = ({ resumeData }) => {
           color: '#008060',
           fontSize: '20px',
           marginTop: '30px',
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           borderBottom: '1px solid #ccc',
           paddingBottom: '5px'
         },
@@ -54,10 +58,16 @@ const Template10 = ({ resumeData }) => {
           width: '30%'
         },
         jobTitle: {
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           color: '#000',
           fontWeight: 'bold'
         },
         jobCompany: {
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           color: '#008060'
         },
         bulletList: {
@@ -65,18 +75,32 @@ const Template10 = ({ resumeData }) => {
           paddingLeft: '18px' // to match UL indent
         },
         bulletItem: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           marginBottom: '4px'
         },
         education: {
+
           marginTop: '10px'
         },
         skillsRow: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           display: 'flex',
           justifyContent: 'space-between'
         },
         skillsLabel: {
           fontWeight: 'bold',
           width: '30%'
+        },
+        pagecontentfull : {
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
         }
       };
       
@@ -261,7 +285,7 @@ const Template10 = ({ resumeData }) => {
         {resumeData?.education?.map((edu, index) => (
           <div key={index} style={styles.education}>
             <strong>{edu.educationAccreditation}</strong>
-            <p style={styles.jobInfo}>
+            <p style={styles.pagecontentfull}>
               {edu.educationOrganization}<br />
               {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
               {edu.educationDescription && (

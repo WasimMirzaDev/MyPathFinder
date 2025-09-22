@@ -67,6 +67,10 @@ const Template6 = ({ resumeData }) => {
     },
     sectionTitle: {
       margin: '0',
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontSize: '16px',
       color: '#2585E0',
       fontWeight: '600'
@@ -91,18 +95,30 @@ const Template6 = ({ resumeData }) => {
       color: '#777'
     },
     jobTitle: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       margin: '0',
       fontSize: '15px',
       fontWeight: '600',
       color: '#2585E0'
     },
     company: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       margin: '4px 0',
       fontSize: '14px',
       color: '#2585E0',
       fontWeight: '500'
     },
     bulletList: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       margin: '8px 0 0 18px',
       padding: '0',
       fontSize: '14px',
@@ -194,7 +210,7 @@ const Template6 = ({ resumeData }) => {
             {resumeData?.languages?.map((lang, index) => {
               let width;
               switch(lang.level) {
-                case 'Native': width = '90%'; break;
+                case 'Native': width = '100%'; break;
                 case 'Advanced': width = '70%'; break;
                 case 'Intermediate': width = '50%'; break;
                 case 'Beginner': width = '30%'; break;
@@ -236,7 +252,10 @@ const Template6 = ({ resumeData }) => {
               <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
               <p style={styles.company}>{edu.educationOrganization}</p>
               {edu.educationDescription && (
-                <p style={{ margin: '8px 0', fontSize: '14px', color: '#333', lineHeight: '1.6' }}>
+                <p style={{ margin: '8px 0', fontSize: '14px', color: '#333', lineHeight: '1.6',
+                  pageBreakInside: "avoid",
+                  pageBreakBefore: "auto",
+                  pageBreakAfter: "auto", }}>
                   {edu.educationDescription}
                 </p>
               )}

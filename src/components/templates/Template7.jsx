@@ -1,5 +1,6 @@
 import React from 'react';
 import demo_profile from '../../assets/demo_profile.avif';
+import { color } from 'framer-motion';
 
 const Template7 = ({ resumeData }) => {
   const styles = {
@@ -55,6 +56,10 @@ const Template7 = ({ resumeData }) => {
       fontSize: '13px'
     },
     sectionTitle: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       color: '#6ac2c5',
       fontSize: '16px',
       borderBottom: '2px solid #6ac2c5',
@@ -62,18 +67,34 @@ const Template7 = ({ resumeData }) => {
       marginTop: '20px'
     },
     sectionText: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontSize: '13px',
       lineHeight: '1.6',
       marginTop: '10px'
     },
     jobTitle: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontWeight: 'bold',
       marginTop: '10px'
     },
     jobDate: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       float: 'right'
     },
     company: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontSize: '13px',
       color: '#888'
     },
@@ -90,7 +111,8 @@ const Template7 = ({ resumeData }) => {
       paddingBottom: '5px'
     },
     sidebarItem: {
-      margin: '10px 0'
+      margin: '10px 0',
+      color:"#fff"
     },
     sidebarList: {
       listStyle: 'none',
@@ -101,6 +123,10 @@ const Template7 = ({ resumeData }) => {
       margin: '5px 0'
     },
     bulletPoint: {
+      
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
       marginRight: '5px'
     }
   };

@@ -210,7 +210,7 @@ export default function BuildingComponents() {
             <div className="row mb-3 g-3 feature-cards">
                 <div className="col-12 col-xl-3">
                     <div className="card border h-100 w-100 overflow-hidden position-relative">
-                        <div className="card-body px-6 py-6 position-relative text-center">
+                        <div className="card-body px-6 py-6 position-relative text-center" style={{height:"300px"}}>
                             <div
                                 className="icon-item icon-item-md rounded-1 shadow-none mx-auto"
                                 style={{ backgroundColor: '#ece5fc' }}>
@@ -236,6 +236,12 @@ export default function BuildingComponents() {
                                     e.target.value = null;
                                 }}
                                 accept=".pdf,.doc,.docx,.rtf,.odt" />
+                            <div   style={{ position: "absolute",
+                                  bottom: "15px",
+                                  left: "50%",
+                                  width:"280px",
+                                  transform: "translate(-50%, -50%)", /* pull it back half of its size */
+}}>
                             <label
                                 htmlFor="cvUpload"
                                 className={`btn btn-primary w-100 stretched-link ${emptyResumeLoader || loading || AiCvLoader ? 'disabled' : ''}`}
@@ -247,6 +253,7 @@ export default function BuildingComponents() {
                             <small id="cvUploadName" className={`mt-2 text-body-secondary ${uploadinginfo ? 'd-block' : 'd-none'}`}>
                                 <FiInfo className="me-1" /> Uploading your CV for analysis — this may take up to a minute.
                             </small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -278,16 +285,23 @@ export default function BuildingComponents() {
                             </div>
                             <h4 className="my-3">Generate with AI</h4>
                             <p className="fs-8">Track your progress, stay organised, and see where you can improve.</p>
-
-
+                            
+                            <div   style={{ position: "absolute",
+                                  bottom: "15px",
+                                  left: "50%",
+                                  width:"280px",
+                                  transform: "translate(-50%, -50%)", /* pull it back half of its size */
+}}>
                             <button
                                 type="button"
                                 className="stretched-link btn btn-primary w-100"
+                              
                                 onClick={handleAICV}
                                 disabled={emptyResumeLoader || loading || AiCvLoader}
                                 >
                                 Get Started
                             </button>
+                            </div>
                         </div>
                     </div>
                 </div>

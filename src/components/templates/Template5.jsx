@@ -53,9 +53,14 @@ const Template5 = ({ resumeData }) => {
           padding: '40px'
         },
         section: {
-          marginBottom: '30px'
+          padding:"0px",
+          marginBottom: '0px'
         },
         sectionTitle: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           fontSize: '18px',
           color: '#333',
           borderBottom: '2px solid #ccc',
@@ -63,6 +68,10 @@ const Template5 = ({ resumeData }) => {
           margin: 0
         },
         sectionText: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           margin: '12px 0 30px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -72,23 +81,38 @@ const Template5 = ({ resumeData }) => {
           marginTop: '20px'
         },
         jobTitle: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           margin: '0',
           fontSize: '15px',
           fontWeight: 'bold',
           color: '#222'
         },
         period: {
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           float: 'right',
           fontSize: '13px',
           fontWeight: 'normal',
           color: '#555'
         },
         company: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           margin: '4px 0',
           fontSize: '14px',
           color: '#666'
         },
         list: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           margin: '6px 0 0 20px',
           padding: 0,
           fontSize: '14px',
@@ -96,9 +120,14 @@ const Template5 = ({ resumeData }) => {
           lineHeight: '1.5'
         },
         sidebarSection: {
-          marginBottom: '30px'
+          paddingBottom:"0px",
+          marginBottom: '0px'
         },
         sidebarTitle: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           fontSize: '16px',
           color: '#333',
           borderBottom: '1px solid #ccc',
@@ -117,6 +146,10 @@ const Template5 = ({ resumeData }) => {
           fontWeight: 'bold'
         },
         languageBar: {
+          
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
           marginBottom: '16px'
         },
         barBackground: {
@@ -130,6 +163,11 @@ const Template5 = ({ resumeData }) => {
           backgroundColor: '#333',
           height: '6px',
           borderRadius: '3px'
+        },
+        pagecontentfull : {
+          pageBreakInside: "avoid",
+          pageBreakBefore: "auto",
+          pageBreakAfter: "auto",
         }
       };
   return (
@@ -206,7 +244,7 @@ const Template5 = ({ resumeData }) => {
             {resumeData?.languages?.map((lang, idx) => {
               let width;
               switch(lang.level) {
-                case 'Native': width = '90%'; break;
+                case 'Native': width = '100%'; break;
                 case 'Advanced': width = '70%'; break;
                 case 'Intermediate': width = '50%'; break;
                 case 'Beginner': width = '30%'; break;
@@ -239,7 +277,7 @@ const Template5 = ({ resumeData }) => {
             <h3 style={styles.sidebarTitle}>Hobbies</h3>
             <ul style={styles.list}>
               {resumeData?.hobbies?.map((hobby, idx) => (
-                <li key={idx}>{hobby}</li>
+                <li style={styles.pagecontentfull} key={idx}>{hobby}</li>
               ))}
             </ul>
           </section>

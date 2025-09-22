@@ -73,11 +73,11 @@ export default function UploadProfile() {
                                                 <a className="d-flex flex-center text-decoration-none mb-4" href="index.html"
                                                     aria-label="Go to homepage">
                                                     <div className="d-flex align-items-center fw-bolder fs-3 d-inline-block">
-                                                        <img src={logo} alt="MyPathfinder logo" width="200" />
+                                                        <img src={logo} alt="Mypathfinder logo" width="200" />
                                                     </div>
                                                 </a>
                                                 <h3 className="fw-bold">Lets get to know you a bit first, Alex<span className="text-primary">.</span></h3>
-                                                <p>MyPathfinder curates job opportunities that match your profile, allowing you to apply quickly
+                                                <p>Mypathfinder curates job opportunities that match your profile, allowing you to apply quickly
                                                     and efficiently.</p>
                                             </div>
 

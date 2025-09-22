@@ -25,24 +25,45 @@ const VacanciesList = () => {
         "All",
         "London",
         "Birmingham",
-        "Manchester",
-        "Leeds",
-        "Liverpool",
-        "Newcastle upon Tyne",
-        "Sheffield",
-        "Bristol",
-        "Nottingham",
-        "Leicester",
-        "Coventry",
-        "Cardiff",
         "Glasgow",
+        "Manchester",
+        "Liverpool",
+        "Bristol",
+        "Leeds",
+        "Sheffield",
         "Edinburgh",
+        "Cardiff",
         "Belfast",
-        "Southampton",
-        "Portsmouth",
+        "Newcastle upon Tyne",
+        "Nottingham",
+        "Coventry",
+        "Leicester",
+        "Bradford",
+        "Aberdeen",
         "Stoke-on-Trent",
-        "Sunderland",
+        "Wolverhampton",
+        "Plymouth",
+        "Southampton",
         "Derby",
+        "Brighton and Hove",
+        "Cambridge",
+        "Oxford",
+        "Milton Keynes",
+        "Portsmouth",
+        "York",
+        "Swansea",
+        "Dundee",
+        "Norwich",
+        "Exeter",
+        "Gloucester",
+        "Salford",
+        "Peterborough",
+        "Canterbury",
+        "Bath",
+        "Chester",
+        "Durham",
+        "Lincoln",
+        "St Davids"
     ];
     
     
@@ -243,6 +264,47 @@ const VacanciesList = () => {
     return (
         <div className="pb-9">
             <div className="row g-4 g-xl-6">
+
+
+                {/* Vacancies Table */}
+                <div className="col-xl-7 col-xxl-8">
+                    <div className="row g-3 justify-content-between mb-2">
+                        <div className="col-12">
+                            <div className="d-md-flex justify-content-between">
+                                <div className="d-flex mb-3">
+                                    <div className="search-box me-2">
+                                        <form className="position-relative">
+                                            <input
+                                                className="form-control search-input search"
+                                                type="search"
+                                                placeholder="Search vacancies"
+                                                aria-label="Search"
+                                            />
+                                            <svg width={13} className="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magnifying-glass" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"></path></svg>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Table */}
+                    <div className="row g-3">
+                        <div className="col-12">
+                            <div className="card h-100">
+                                <div className="card-body py-0 scrollbar to-do-list-body">
+                                    <DataTable
+                                        columns={columns}
+                                        data={vacancies}
+                                        pagination
+                                        responsive
+                                        persistTableHead
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {/* Sidebar */}
                 <div className="col-xl-5 col-xxl-4">
                     <div className="sticky-leads-sidebar">
@@ -300,7 +362,7 @@ const VacanciesList = () => {
                                     <div className="col-12">
                                         <div className="mb-4">
                                             <div className="d-flex flex-wrap justify-content-between mb-2">
-                                                <h5 className="mb-0 text-body-highlight me-2">Industry</h5>
+                                                <h5 className="mb-0 text-body-highlight me-2">Role</h5>
                                             </div>
                                             <input className="form-select mb-3"  value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
                                         </div>
@@ -395,46 +457,6 @@ const VacanciesList = () => {
                                             </>
                                         )}
                                     </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Vacancies Table */}
-                <div className="col-xl-7 col-xxl-8">
-                    <div className="row g-3 justify-content-between mb-2">
-                        <div className="col-12">
-                            <div className="d-md-flex justify-content-between">
-                                <div className="d-flex mb-3">
-                                    <div className="search-box me-2">
-                                        <form className="position-relative">
-                                            <input
-                                                className="form-control search-input search"
-                                                type="search"
-                                                placeholder="Search vacancies"
-                                                aria-label="Search"
-                                            />
-                                            <svg width={13} className="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magnifying-glass" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"></path></svg>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Table */}
-                    <div className="row g-3">
-                        <div className="col-12">
-                            <div className="card h-100">
-                                <div className="card-body py-0 scrollbar to-do-list-body">
-                                    <DataTable
-                                        columns={columns}
-                                        data={vacancies}
-                                        pagination
-                                        responsive
-                                        persistTableHead
-                                    />
                                 </div>
                             </div>
                         </div>

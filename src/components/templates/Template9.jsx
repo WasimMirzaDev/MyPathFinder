@@ -49,6 +49,10 @@ const Template9 = ({ resumeData }) => {
     },
     sectionTitle: {
       fontSize: '16px',
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontWeight: 'bold',
       margin: '0 0 12px 0',
       color: '#000',
@@ -72,28 +76,50 @@ const Template9 = ({ resumeData }) => {
     profileText: {
       margin: '0 0 25px 0',
       textAlign: 'justify',
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       lineHeight: '1.5'
+      
     },
     jobPeriod: {
       margin: '0 0 4px 0',
       fontWeight: 'bold',
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontSize: '14px'
     },
     jobTitle: {
       margin: '0 0 4px 0',
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontWeight: 'bold',
       fontSize: '14px'
     },
     company: {
       margin: '0 0 8px 0',
       fontWeight: 'bold',
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontSize: '14px'
+      
     },
     bulletList: {
       margin: '0 0 20px 0',
       paddingLeft: '18px'
     },
     bulletItem: {
+      
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       marginBottom: '4px'
     }
   };

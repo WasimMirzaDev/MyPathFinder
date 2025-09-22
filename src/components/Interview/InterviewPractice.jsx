@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from "react-router-dom";
 import { setFilters } from '../../features/interview/interviewSlice';
 
-export default function InterviewPractice({interviewQuestions , setShowModal , filters , dispatch}) {
+export default function InterviewPractice({interviewQuestions , setShowModal , filters , dispatch ,getRandomQuestionsInterview}) {
 
     const cards = [
         {
@@ -56,7 +56,7 @@ export default function InterviewPractice({interviewQuestions , setShowModal , f
                 <div className="col-12">
                     <div className="d-md-flex justify-content-between">
                         <div className="mb-3">
-                            <button className="btn btn-primary me-4">
+                            <button className="btn btn-primary me-4" onClick={getRandomQuestionsInterview}>
                                 <svg width={13} className="svg-inline--fa fa-shuffle me-2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="shuffle" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M403.8 34.4c12-5 25.7-2.2 34.9 6.9l64 64c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-64 64c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6l0-32-32 0c-10.1 0-19.6 4.7-25.6 12.8L284 229.3 244 176l31.2-41.6C293.3 110.2 321.8 96 352 96l32 0 0-32c0-12.9 7.8-24.6 19.8-29.6zM164 282.7L204 336l-31.2 41.6C154.7 401.8 126.2 416 96 416l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c10.1 0 19.6-4.7 25.6-12.8L164 282.7zm274.6 188c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6l0-32-32 0c-30.2 0-58.7-14.2-76.8-38.4L121.6 172.8c-6-8.1-15.5-12.8-25.6-12.8l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c30.2 0 58.7 14.2 76.8 38.4L326.4 339.2c6 8.1 15.5 12.8 25.6 12.8l32 0 0-32c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l64 64c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-64 64z"></path></svg>
                                 Practise random question
                             </button>
@@ -109,7 +109,7 @@ export default function InterviewPractice({interviewQuestions , setShowModal , f
                                             <span className="fa-solid fa-arrow-right ms-2"></span>
                                         </Link>
                                     </div>
-                                    <div className="col-12 col-sm-auto">
+                                    {/* <div className="col-12 col-sm-auto">
                                         <div className="d-flex align-items-center">
                                             <svg width={13} xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-grid me-2" strokeWidth={2}><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                                             <p className="mb-0 fs-9 fw-semibold text-body-tertiary reports">
@@ -124,7 +124,7 @@ export default function InterviewPractice({interviewQuestions , setShowModal , f
                                                 {question.time}
                                             </p>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>

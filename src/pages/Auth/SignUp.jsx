@@ -139,7 +139,7 @@ export default function SignUp() {
                   <div className="text-center mb-5">
                     <div className="d-flex flex-center text-decoration-none mb-4">
                       <div className="d-flex align-items-center fw-bolder fs-3 d-inline-block">
-                        <img src={logo} alt="MyPathfinder logo" width="200" />
+                        <img src={logo} alt="Mypathfinder logo" width="200" />
                       </div>
                     </div>
                     <h3 className="fw-bold">Sign Up</h3>

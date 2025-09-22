@@ -51,17 +51,29 @@ const Template12 = ({ resumeData }) => {
       fontWeight: 'bold',
       padding: '8px 12px',
       fontSize: '16px',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     sectionContent: {
       padding: '12px',
     },
     contactParagraph: {
       margin: '5px 0',
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     jobTitle: {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       fontWeight: 'bold',
     },
     jobInfo: {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       marginBottom: '8px',
       fontSize: '14px',
       color: '#333',
@@ -74,8 +86,16 @@ const Template12 = ({ resumeData }) => {
       margin: '8px 0',
     },
     li: {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
       marginBottom: '6px',
     },
+    pagecontentfull : {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
+    }
   };
 
   return (
