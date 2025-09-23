@@ -29,8 +29,8 @@ export const fetchUserInterviewQuestionById = async (id) => {
 
 
 export const fetchRandomInterviewQuestions = async () => {
-  console.log("interview", id);
-  const response = await axios.get(`/random-questions`); // e.g. /me endpoint
-// console.log("request hit",response.data);
+  console.log("Fetching random questions");
+  const response = await axios.get('/random-questions');
+  console.log("Random questions response:", response.data);
   return response.data;
 };

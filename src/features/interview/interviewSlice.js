@@ -20,8 +20,16 @@ export const fetchInterviewQuestionById = createAsyncThunk("interview/question-b
 });
 
 
-export const getRandomQuestions = createAsyncThunk("interview/random-questions", async () => {
-  return await fetchRandomInterviewQuestions();
+export const getRandomQuestions = createAsyncThunk("interview/random-questions", async (_, { rejectWithValue }) => {
+  try {
+    console.log("Dispatching getRandomQuestions action");
+    const response = await fetchRandomInterviewQuestions();
+    console.log("Received response in getRandomQuestions:", response);
+    return response;
+  } catch (error) {
+    console.error("Error in getRandomQuestions:", error);
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
 const interviewSlice = createSlice({

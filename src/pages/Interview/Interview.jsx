@@ -64,9 +64,19 @@ const Interview = () => {
   },[data]);
 
 
-  const getRandomQuestionsInterview = async() =>{
-    console.log("hit");
-    dispatch(getRandomQuestions());
+  const getRandomQuestionsInterview = async () => {
+    console.log("getRandomQuestionsInterview called");
+    try {
+      console.log("Dispatching getRandomQuestions action");
+      const resultAction = await dispatch(getRandomQuestions());
+      if (getRandomQuestions.fulfilled.match(resultAction)) {
+        console.log("Successfully fetched random questions:", resultAction.payload);
+      } else if (getRandomQuestions.rejected.match(resultAction)) {
+        console.error("Failed to fetch random questions:", resultAction.error);
+      }
+    } catch (error) {
+      console.error("Error in getRandomQuestionsInterview:", error);
+    }
   }
 
 
