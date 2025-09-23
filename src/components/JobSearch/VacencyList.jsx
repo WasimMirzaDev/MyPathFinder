@@ -362,7 +362,7 @@ const VacanciesList = () => {
                                     <div className="col-12">
                                         <div className="mb-4">
                                             <div className="d-flex flex-wrap justify-content-between mb-2">
-                                                <h5 className="mb-0 text-body-highlight me-2">Role</h5>
+                                                <h5 className="mb-0 text-body-highlight me-2">Job Title</h5>
                                             </div>
                                             <input className="form-select mb-3"  value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
                                         </div>

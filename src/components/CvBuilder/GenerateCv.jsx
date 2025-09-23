@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus, FiLoader, FiDownload } from "react-icons/fi";
+import Swal from 'sweetalert2';
 import avatar from '../../assets/images/team/150x150/57.webp'
 import {
     ModernTemplate,
@@ -568,7 +569,8 @@ export default function CVBuilder() {
         eduDegree: '',
         eduInstitution: '',
         eduStartDate: '',
-        eduEndDate: ''
+        eduEndDate: '',
+        achievedGrade:''
     });
 
     const eduHandleInputChange = (e) => {
@@ -583,17 +585,20 @@ export default function CVBuilder() {
         // Check if there's already an empty form
         if (eduCurrentForm) {
             // Check if the current form has any data
-            const eduHasData = Object.values(eduFormData).some(eduValue => eduValue.trim() !== '');
+            const eduHasData = Object.values(eduFormData).some(eduValue => 
+                eduValue && typeof eduValue === 'string' ? eduValue.trim() !== '' : false
+            );
 
             if (eduHasData) {
                 // Check if all required fields are filled
-                const eduAllFieldsFilled = eduFormData.eduDegree.trim() !== '' &&
-                    eduFormData.eduInstitution.trim() !== '' &&
-                    eduFormData.eduStartDate.trim() !== '' &&
-                    eduFormData.eduEndDate.trim() !== '';
+                const eduAllFieldsFilled = 
+                    (eduFormData.eduDegree && eduFormData.eduDegree.trim() !== '') &&
+                    (eduFormData.eduInstitution && eduFormData.eduInstitution.trim() !== '') &&
+                    (eduFormData.eduStartDate && eduFormData.eduStartDate.trim() !== '') &&
+                    (eduFormData.eduEndDate && eduFormData.eduEndDate.trim() !== '');
 
                 if (!eduAllFieldsFilled) {
-                    alert('Please complete the current education form before adding a new one');
+                    toast.error('Please complete the current education form before adding a new one');
                     return;
                 }
 
@@ -608,7 +613,8 @@ export default function CVBuilder() {
             eduDegree: '',
             eduInstitution: '',
             eduStartDate: '',
-            eduEndDate: ''
+            eduEndDate: '',
+            achievedGrade:""
         });
 
         // Reset form data
@@ -616,6 +622,7 @@ export default function CVBuilder() {
             eduDegree: '',
             eduInstitution: '',
             eduStartDate: '',
+            achievedGrade:"",
             eduEndDate: ''
         });
     };
@@ -623,7 +630,7 @@ export default function CVBuilder() {
     const eduHandleSaveEducation = () => {
         // Validate form data
         if (!eduFormData.eduDegree || !eduFormData.eduInstitution || !eduFormData.eduStartDate || !eduFormData.eduEndDate) {
-            alert('Please fill all fields');
+            toast.error('Please fill all the required fields');
             return;
         }
 
@@ -647,7 +654,8 @@ export default function CVBuilder() {
                 end: {
                     date: eduFormData.eduEndDate
                 }
-            }
+            },
+            achievedGrade: eduFormData.achievedGrade
         }
 
 
@@ -659,11 +667,12 @@ export default function CVBuilder() {
             eduDegree: '',
             eduInstitution: '',
             eduStartDate: '',
-            eduEndDate: ''
+            eduEndDate: '',
+            achievedGrade: ""
         });
 
 
-        alert('Education added successfully');
+        // toast.success('');
     };
 
     const eduHandleEditEducation = (eduIndex) => {
@@ -674,7 +683,8 @@ export default function CVBuilder() {
                 eduDegree: eduToEdit.educationAccreditation,
                 eduInstitution: eduToEdit.educationOrganization,
                 eduStartDate: eduToEdit.educationDates.start.date,
-                eduEndDate: eduToEdit.educationDates.end.date
+                eduEndDate: eduToEdit.educationDates.end.date,
+                achievedGrade: eduToEdit.achievedGrade
             });
 
             // Remove from displayed list while editing
@@ -696,7 +706,8 @@ export default function CVBuilder() {
                     end: {
                         date: eduFormData.eduEndDate
                     }
-                }
+                },
+                achievedGrade: eduFormData.achievedGrade
             };
 
             dispatch(updateField({ path: "education", value: [...parsedResume.education, eduNewEducation] }));
@@ -707,18 +718,34 @@ export default function CVBuilder() {
             eduDegree: '',
             eduInstitution: '',
             eduStartDate: '',
-            eduEndDate: ''
+            eduEndDate: '',
+            achievedGrade :""
         });
     };
 
     const eduHandleDeleteEducation = (index) => {
-        if (window.confirm('Are you sure you want to delete this education entry?')) {
-            dispatch(updateField({
-                path: "education",
-                value: parsedResume.education.filter((_, i) => i !== index)
-            }));
-            alert('Education entry deleted successfully');
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to delete this education entry',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(updateField({
+                    path: "education",
+                    value: parsedResume.education.filter((_, i) => i !== index)
+                }));
+                // Swal.fire(
+                //     'Deleted!',
+                //     'Education entry has been deleted.',
+                //     'success'
+                // );
+            }
+        });
     };
 
     // =================================================================================
@@ -731,7 +758,7 @@ export default function CVBuilder() {
         const hasIncomplete = expItems.some(item => !item.expIsComplete);
 
         if (hasIncomplete) {
-            alert('Please complete the current experience form before adding a new one');
+            toast.error('Please complete the current experience form before adding a new one');
             return;
         }
 
@@ -781,7 +808,7 @@ export default function CVBuilder() {
 
         // Validate required fields
         if (!item.workExperienceJobTitle || !item.workExperienceOrganization || !item.workExperienceDates?.start?.date || !item.workExperienceDates?.end?.date) {
-            alert('Please fill all required fields');
+            toast.error('Please fill all the required fields');
             return;
         }
 
@@ -794,8 +821,6 @@ export default function CVBuilder() {
             path: "workExperience",
             value: updatedExperience
         }));
-
-        alert('Experience saved successfully');
     };
 
     // Edit an existing complete item
@@ -812,16 +837,25 @@ export default function CVBuilder() {
 
     // Delete an experience item
     const expHandleDeleteExperience = (expIndex) => {
-        if (window.confirm('Are you sure you want to delete this experience entry?')) {
-            const updatedExperience = parsedResume.workExperience.filter((_, index) => index !== expIndex);
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to delete this experience entry',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const updatedExperience = parsedResume.workExperience.filter((_, index) => index !== expIndex);
 
-            dispatch(updateField({
-                path: "workExperience",
-                value: updatedExperience
-            }));
-
-            alert('Experience entry deleted successfully');
-        }
+                dispatch(updateField({
+                    path: "workExperience",
+                    value: updatedExperience
+                }));
+            }
+        });
     };
 
     // Cancel editing and remove incomplete items
@@ -1277,6 +1311,15 @@ export default function CVBuilder() {
                                                                                 />
                                                                             </div>
                                                                         </div>
+                                                                    </div>
+                                                                    <div className="mb-2">
+                                                                        <label className="form-label">Grade Achieved</label>
+                                                                        <input
+                                                                            className="form-control"
+                                                                            name="achievedGrade"
+                                                                            value={eduFormData.achievedGrade}
+                                                                            onChange={eduHandleInputChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="d-flex align-items-center justify-content-end gap-2 mt-2">
                                                                         <button

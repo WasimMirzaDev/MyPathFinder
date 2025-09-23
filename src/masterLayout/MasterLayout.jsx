@@ -102,12 +102,12 @@ const MasterLayout = ({ children }) => {
                   </div>
                 </Link>
                 </div>
-
-                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/application-tracker')}`} to="/application-tracker" role="button" data-bs-toggle="" aria-expanded="false">
-                  <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:calendar' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Application Tracker</span></span>
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/job-search')}`} to="/job-search" role="button" data-bs-toggle="" aria-expanded="false">
+                  <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:search' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Job Search</span></span>
                   </div>
                 </Link>
                 </div>
+
 
                 <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/interview')}`} to="/interview" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:brand-line' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Interview Practise</span></span>
@@ -115,8 +115,8 @@ const MasterLayout = ({ children }) => {
                 </Link>
                 </div>
 
-                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/job-search')}`} to="/job-search" role="button" data-bs-toggle="" aria-expanded="false">
-                  <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:search' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Job Search</span></span>
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/application-tracker')}`} to="/application-tracker" role="button" data-bs-toggle="" aria-expanded="false">
+                  <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:calendar' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Application Tracker</span></span>
                   </div>
                 </Link>
                 </div>
@@ -205,20 +205,20 @@ const MasterLayout = ({ children }) => {
               CV Builder</Link>
 
             </li>
-            <li className="nav-item dropdown"><Link className="nav-link lh-1" to="/application-tracker" aria-haspopup="true">
-              <Icon icon='tabler:calendar' width={'16px'} height={'16px'} className="me-1" />
-              Application Tracker</Link>
-
-            </li>
-            <li className="nav-item dropdown"><Link className="nav-link lh-1" to="/interview" aria-haspopup="true">
-              <Icon icon='tabler:brand-line' width={'16px'} height={'16px'} className="me-1" />
-              Interview Practise</Link>
-            </li>
             <li className="nav-item dropdown">
               <Link className="nav-link lh-1" to="/job-search" aria-haspopup="true">
                 <Icon icon='tabler:search' width={'16px'} height={'16px'} className="me-1" />
                 Job Search
               </Link>
+            </li>
+            <li className="nav-item dropdown"><Link className="nav-link lh-1" to="/interview" aria-haspopup="true">
+              <Icon icon='tabler:brand-line' width={'16px'} height={'16px'} className="me-1" />
+              Interview Practise</Link>
+            </li>
+            <li className="nav-item dropdown"><Link className="nav-link lh-1" to="/application-tracker" aria-haspopup="true">
+              <Icon icon='tabler:calendar' width={'16px'} height={'16px'} className="me-1" />
+              Application Tracker</Link>
+
             </li>
           </ul>
         </div>
