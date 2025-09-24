@@ -214,75 +214,79 @@ const Template8 = ({ resumeData }) => {
         </div>
 
         {/* Personal Details */}
-        <div style={{ marginBottom: '25px' }}>
-          <h3 style={styles.sectionTitle}>Personal details</h3>
+        {!(resumeData?.personalDisabled) && (
+          <div style={{ marginBottom: '25px' }}>
+            <h3 style={styles.sectionTitle}>{resumeData?.personalTitle || 'Personal details'}</h3>
 
-          <div style={styles.detailItem}>
-            <div style={styles.detailIcon}>👤</div>
-            <span style={styles.detailText}>
-              {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
-            </span>
-          </div>
-
-          {resumeData?.email?.[0] && (
             <div style={styles.detailItem}>
-              <div style={styles.detailIcon}>✉️</div>
-              <span style={styles.detailText}>{resumeData.email[0]}</span>
-            </div>
-          )}
-
-          {resumeData?.phoneNumber?.[0]?.formattedNumber && (
-            <div style={styles.detailItem}>
-              <div style={styles.detailIcon}>📞</div>
-              <span style={styles.detailText}>{resumeData.phoneNumber[0].formattedNumber}</span>
-            </div>
-          )}
-
-          {resumeData?.location?.formatted && (
-            <div style={{ ...styles.detailItem, alignItems: 'flex-start' }}>
-              <div style={{ ...styles.detailIcon, marginTop: '2px' }}>🏠</div>
-              <span style={styles.addressText}>
-                {resumeData.location.formatted.split(',').map((line, i) => (
-                  <React.Fragment key={i}>
-                    {line.trim()}
-                    {i < resumeData.location.formatted.split(',').length - 1 && <br />}
-                  </React.Fragment>
-                ))}
-              </span>
-            </div>
-          )}
-
-          {/* {resumeData?.website?.[0] && (
-            <div style={styles.detailItem}>
-              <div style={styles.detailIcon}>💼</div>
+              <div style={styles.detailIcon}>👤</div>
               <span style={styles.detailText}>
-                {resumeData.website[0].replace(/^https?:\/\//, '')}
+                {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
               </span>
             </div>
-          )} */}
-        </div>
+
+            {resumeData?.email?.[0] && (
+              <div style={styles.detailItem}>
+                <div style={styles.detailIcon}>✉️</div>
+                <span style={styles.detailText}>{resumeData.email[0]}</span>
+              </div>
+            )}
+
+            {resumeData?.phoneNumber?.[0]?.formattedNumber && (
+              <div style={styles.detailItem}>
+                <div style={styles.detailIcon}>📞</div>
+                <span style={styles.detailText}>{resumeData.phoneNumber[0].formattedNumber}</span>
+              </div>
+            )}
+
+            {resumeData?.location?.formatted && (
+              <div style={{ ...styles.detailItem, alignItems: 'flex-start' }}>
+                <div style={{ ...styles.detailIcon, marginTop: '2px' }}>🏠</div>
+                <span style={styles.addressText}>
+                  {resumeData.location.formatted.split(',').map((line, i) => (
+                    <React.Fragment key={i}>
+                      {line.trim()}
+                      {i < resumeData.location.formatted.split(',').length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
+                </span>
+              </div>
+            )}
+
+            {resumeData?.website?.[0] && (
+              <div style={styles.detailItem}>
+                <div style={styles.detailIcon}>💼</div>
+                <span style={styles.detailText}>
+                  {resumeData.website[0].replace(/^https?:\/\//, '')}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Languages */}
-        <div style={{ marginBottom: '25px' }}>
-          <h3 style={styles.sectionTitle}>Languages</h3>
-          
-          {resumeData?.languages?.map((lang, index) => {
-            const levels = renderLanguageLevel(lang.level);
-            return (
-              <div key={index} style={styles.languageContainer}>
-                <div style={styles.languageName}>{lang.name}</div>
-                <div style={styles.languageBar}>
-                  {levels.map((active, i) => (
-                    <div 
-                      key={i} 
-                      style={active ? styles.languageDot : styles.languageDotInactive}
-                    />
-                  ))}
+        {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+          <div style={{ marginBottom: '25px' }}>
+            <h3 style={styles.sectionTitle}>{resumeData?.languagesTitle || "Languages"}</h3>
+            
+            {resumeData?.languages?.map((lang, index) => {
+              const levels = renderLanguageLevel(lang.level);
+              return (
+                <div key={index} style={styles.languageContainer}>
+                  <div style={styles.languageName}>{lang.name}</div>
+                  <div style={styles.languageBar}>
+                    {levels.map((active, i) => (
+                      <div 
+                        key={i} 
+                        style={active ? styles.languageDot : styles.languageDotInactive}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Qualities */}
         {/* <div style={{ marginBottom: '25px' }}>
@@ -297,8 +301,9 @@ const Template8 = ({ resumeData }) => {
         </div> */}
 
         {/* Hobbies */}
+        {!(resumeData?.hobbiesDisabled) && (
         <div>
-          <h3 style={styles.sectionTitle}>Hobbies</h3>
+          <h3 style={styles.sectionTitle}>{resumeData?.hobbiesTitle || "Hobbies"}</h3>
           
           {resumeData?.hobbies?.map((hobby, index) => (
             <div key={index} style={styles.qualityItem}>
@@ -307,61 +312,71 @@ const Template8 = ({ resumeData }) => {
             </div>
           ))}
         </div>
+    )}
       </div>
 
       {/* Right Content Area */}
       <div style={styles.rightContent}>
-        {/* Profile Section */}
+        {/* Professional Summary */}
         <div style={styles.contentSection}>
-          <h2 style={styles.contentTitle}>Profile</h2>
+          <h2 style={styles.contentTitle}>Professional Summary</h2>
           <p style={styles.contentText}>
             {resumeData?.summary || 'Professional summary goes here...'}
           </p>
         </div>
 
-        {/* Employment Section */}
-        <div style={styles.contentSection}>
-          <h2 style={styles.contentTitle}>Employment</h2>
-          
-          {resumeData?.workExperience?.map((job, index) => (
-            <div key={index} style={{ marginBottom: index === resumeData.workExperience.length - 1 ? 0 : '25px' }}>
-              <div style={styles.jobHeader}>
-                <h3 style={styles.jobTitle}>{job.workExperienceJobTitle}</h3>
-                <span style={styles.jobDate}>
-                  {job.workExperienceDates?.start?.date} - {job.workExperienceDates?.end?.date || 'Present'}
-                </span>
+        {/* Work Experience */}
+        {resumeData?.workExperience?.length > 0 && !(resumeData?.employmentDisabled) && (
+          <div style={styles.contentSection}>
+            <h2 style={styles.contentTitle}>{resumeData?.employmentTitle || 'Employment'}</h2>
+            
+            {resumeData?.workExperience?.map((job, index) => (
+              <div key={index} style={{ marginBottom: index === resumeData.workExperience.length - 1 ? 0 : '25px' }}>
+                <div style={styles.jobHeader}>
+                  <h3 style={styles.jobTitle}>{job.workExperienceJobTitle}</h3>
+                  <span style={styles.jobDate}>
+                    {job.workExperienceDates?.start?.date} - {job.workExperienceDates?.end?.date || 'Present'}
+                  </span>
+                </div>
+                <div style={styles.companyName}>{job.workExperienceOrganization}</div>
+                {job.workExperienceDescription && (
+                  <ul style={styles.bulletList}>
+                    {job.workExperienceDescription.split('\n').map((item, i) => (
+                      <li key={i} style={styles.bulletItem}>{item}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
-              <div style={styles.companyName}>{job.workExperienceOrganization}</div>
-              {job.workExperienceDescription && (
-                <ul style={styles.bulletList}>
-                  {job.workExperienceDescription.split('\n').map((item, i) => (
-                    <li key={i} style={styles.bulletItem}>{item}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {/* Education Section */}
-        <div>
-          <h2 style={styles.contentTitle}>Education</h2>
-          
-          {resumeData?.education?.map((edu, index) => (
-            <div key={index} style={{ marginBottom: index === resumeData.education.length - 1 ? 0 : '20px' }}>
-              <div style={styles.jobHeader}>
-                <h3 style={styles.jobTitle}>{edu.educationAccreditation}</h3>
-                <span style={styles.jobDate}>
-                  {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
-                </span>
+        {/* Education */}
+        {resumeData?.education?.length > 0 && !(resumeData?.educationDisabled) && (
+          <div style={styles.contentSection}>
+            <h2 style={styles.contentTitle}>{resumeData?.educationTitle || 'Education'}</h2>
+            
+            {resumeData?.education?.map((edu, index) => (
+              <div key={index} style={{ marginBottom: index === resumeData.education.length - 1 ? 0 : '20px' }}>
+                <div style={styles.jobHeader}>
+                  <h3 style={styles.jobTitle}>{edu.educationAccreditation}</h3>
+                  <span style={styles.jobDate}>
+                    {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
+                  </span>
+                </div>
+                <div style={styles.companyName}>{edu.educationOrganization}</div>
+                {edu.educationDescription && (
+                  <p style={styles.contentText}>{edu.educationDescription}</p>
+                )}
+                {edu.achievedGrade ? (
+                  <div style={{ marginTop: '5px' }}>
+                    <strong>Grade: </strong>{edu.achievedGrade}
+                  </div>
+                ) : ""}
               </div>
-              <div style={styles.companyName}>{edu.educationOrganization}</div>
-              {edu.educationDescription && (
-                <p style={styles.contentText}>{edu.educationDescription}</p>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

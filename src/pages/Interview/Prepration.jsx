@@ -704,27 +704,43 @@ export default function Prepration() {
                             </Spinner>
                         </div>
                     )}
-                    <video 
-                        ref={videoRef}
-                        src={`${baseUrl}/videos/MPF Interview Questions/${currentQuestion?.question?.title.replace(/\?+$/, '_')}.mp4`} 
-                        autoPlay 
-                        controls={false}
-                        onEnded={startRecording}
-                        onLoadedData={() => setIsVideoLoading(false)}
-                        onError={() => setIsVideoLoading(false)}
-                        className={`fullscreen-video ${isRecording || isVideoLoading ? 'd-none' : ''}`}
-                    />
-                   
-                    <video 
-                        ref={videoRef}
-                        src={`${baseUrl}/videos/MPF Interview Filler/Avatar ${currentQuestion?.question?.avatar} FILLER.mp4`} 
-                        autoPlay
-                        controls={false}
-                        loop
-                        onLoadedData={() => setIsVideoLoading(false)}
-                        onError={() => setIsVideoLoading(false)}
-                        className={`fullscreen-video ${!isRecording || isVideoLoading ? 'd-none' : ''}`}
-                    />
+<div className="video-wrapper">
+  <video
+    ref={videoRef}
+    src={`${baseUrl}/videos/MPF Interview Questions/${currentQuestion?.question?.title.replace(/\?+$/, '_')}.mp4`} 
+    autoPlay
+    muted
+    playsInline
+    controls={false}
+    disablePictureInPicture
+    controlsList="nodownload nofullscreen noremoteplayback"
+    onEnded={startRecording}
+    onLoadedData={() => setIsVideoLoading(false)}
+    onError={() => setIsVideoLoading(false)}
+    className={`video-player ${isRecording || isVideoLoading ? 'd-none' : ''}`}
+  />
+</div>
+
+
+<div className="video-wrapper">
+  <video
+    ref={videoRef}
+    src={`${baseUrl}/videos/MPF Interview Filler/Avatar ${currentQuestion?.question?.avatar} FILLER.mp4`} 
+    autoPlay
+    muted
+    playsInline
+    controls={false}
+    disablePictureInPicture
+    controlsList="nodownload nofullscreen noremoteplayback"
+    loop
+    onLoadedData={() => setIsVideoLoading(false)}
+    onError={() => setIsVideoLoading(false)}
+    className={`video-player ${!isRecording || isVideoLoading ? 'd-none' : ''}`}
+  />
+</div>
+
+
+
                   {/* Overlay Card (light theme, auto-height, top-right) */}
                   <div className="card bg-white text-dark border shadow-sm" style={{position: 'absolute', top: '1rem', left: '1rem', width: '320px', zIndex: 10, borderRadius: '1rem', height: 'auto'}}>
                     <div className="card-body p-4 d-flex flex-column text-center">

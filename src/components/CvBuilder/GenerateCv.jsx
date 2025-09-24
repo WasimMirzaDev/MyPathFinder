@@ -946,32 +946,119 @@ export default function CVBuilder() {
                             <div className="tab-content" id="cvTabsContent">
                                 {/* TAB: Preview (main form) */}
                                 {activeTab === 'tabPreview' && (
+                                    <>
                                     <div className="tab-pane fade active show" id="tabPreview" role="tabpanel" aria-labelledby="tabPreview-tab" tabIndex="0">
-                                        <div className="d-flex justify-content-between align-items-center mb-3">
-                                            <h4 className="mb-0">Basic Information</h4>
-                                            
-                                        </div>
-                                        <div className="accordion" id="cvAccordion">
-                                            {/* Personal details */}
-                                            <div className="accordion-item">
-                                                <h2 className="accordion-header" id="headingPersonal">
-                                                    <button
-                                                        className={`accordion-button ${openSections.personal ? '' : 'collapsed'}`}
-                                                        type="button"
-                                                        onClick={() => toggleSection('personal')}
-                                                    >
-                                                        Personal details
-                                                    </button>
-                                                </h2>
-                                                <div
-                                                    id="collapsePersonal"
-                                                    className={`accordion-collapse collapse ${openSections.personal ? 'show' : ''}`}
-                                                    aria-labelledby="headingPersonal"
-                                                >
-                                                    <div className="accordion-body">
+                                    <div className="d-flex justify-content-between align-items-center mb-3">
+                                        <h4 className="mb-0">Basic Information</h4>
+                                    </div>
+                                    <div className="accordion" id="cvAccordion">
+                                        {/* Personal details */}
+                                        <div className="accordion-item">
+                                            <h2 className="accordion-header" id="headingPersonal">
+                                                <div className="d-flex justify-content-between align-items-center w-100">
+                                                    <div className="d-flex align-items-center">
+                                                        {/* <div className="form-check form-switch me-3">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                checked={!parsedResume?.personalDisabled}
+                                                                onChange={(e) => 
+                                                                    dispatch(
+                                                                        updateField({
+                                                                            path: "personalDisabled",
+                                                                            value: !e.target.checked
+                                                                        })
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div> */}
+                                                        {parsedResume?.editingPersonalTitle ? (
+                                                            <div className="d-flex align-items-center">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm me-2"
+                                                                    style={{ width: '200px' }}
+                                                                    value={parsedResume?.personalTitle || "Personal details"}
+                                                                    onChange={(e) =>
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "personalTitle",
+                                                                                value: e.target.value
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onBlur={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingPersonalTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            dispatch(
+                                                                                updateField({
+                                                                                    path: "editingPersonalTitle",
+                                                                                    value: false
+                                                                                })
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-success"
+                                                                    onClick={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingPersonalTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    ✓
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                className={`accordion-button ${openSections.personal ? '' : 'collapsed'} ${parsedResume?.personalDisabled ? 'text-muted' : ''}`}
+                                                                type="button"
+                                                                onClick={() => toggleSection('personal')}
+                                                                style={{ background: 'none', border: 'none', textAlign: 'left' }}
+                                                            >
+                                                                {parsedResume?.personalTitle || "Personal details"}
+                                                                <span
+                                                                    type="button"
+                                                                    className=" ms-2"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingPersonalTitle",
+                                                                                value: true
+                                                                            })
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <i class="uil uil-edit fs-8"></i>
+                                                                </span>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </h2>
+                                            <div
+                                                id="collapsePersonal"
+                                                className={`accordion-collapse collapse ${openSections.personal ? 'show' : ''}`}
+                                                aria-labelledby="headingPersonal"
+                                            >
+                                                <div className="accordion-body">
+                                                    {!parsedResume?.personalDisabled ? (
                                                         <div className="card border-0">
-                                                            {/* Avatar + Name/Headline */}
-                                                            <div className="row g-3 mb-3">
+                                                                                                                       {/* Avatar + Name/Headline */}
+                                                                                                                       <div className="row g-3 mb-3">
                                                                 <div className="col-md-3 col-4">
                                                                     <div className="border rounded d-flex flex-column justify-content-center align-items-center overflow-hidden" style={{ height: '120px' }}>
                                                                         {profilePic || (parsedResume?.profilePic) ? (
@@ -1188,29 +1275,121 @@ export default function CVBuilder() {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    ) : (
+                                                        <div className="text-muted text-center py-3">
+                                                            This section is disabled
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-
-                                            {/* Education */}
-                                            <div className="accordion-item">
-                                                <h2 className="accordion-header" id="headingEducation">
-                                                    <button
-                                                        className={`accordion-button ${openSections.education ? '' : 'collapsed'}`}
-                                                        type="button"
-                                                        onClick={() => toggleSection('education')}
-                                                    >
-                                                        Education
-                                                    </button>
-                                                </h2>
-                                                <div
-                                                    id="collapseEducation"
-                                                    className={`accordion-collapse collapse ${openSections.education ? 'show' : ''}`}
-                                                    aria-labelledby="headingEducation"
-                                                >
-                                                    <div className="accordion-body">
+                                        </div>
+                                
+                                        {/* Education */}
+                                        <div className="accordion-item">
+                                            <h2 className="accordion-header" id="headingEducation">
+                                                <div className="d-flex justify-content-between align-items-center w-100">
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="form-check form-switch me-3">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                checked={!parsedResume?.educationDisabled}
+                                                                onChange={(e) => 
+                                                                    dispatch(
+                                                                        updateField({
+                                                                            path: "educationDisabled",
+                                                                            value: !e.target.checked
+                                                                        })
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                        {parsedResume?.editingEducationTitle ? (
+                                                            <div className="d-flex align-items-center">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm me-2"
+                                                                    style={{ width: '200px' }}
+                                                                    value={parsedResume?.educationTitle || "Education"}
+                                                                    onChange={(e) =>
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "educationTitle",
+                                                                                value: e.target.value
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onBlur={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingEducationTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            dispatch(
+                                                                                updateField({
+                                                                                    path: "editingEducationTitle",
+                                                                                    value: false
+                                                                                })
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-success"
+                                                                    onClick={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingEducationTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    ✓
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                className={`accordion-button ${openSections.education ? '' : 'collapsed'} ${parsedResume?.educationDisabled ? 'text-muted' : ''}`}
+                                                                type="button"
+                                                                onClick={() => toggleSection('education')}
+                                                                style={{ background: 'none', border: 'none', textAlign: 'left' }}
+                                                            >
+                                                                {parsedResume?.educationTitle || "Education"}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-secondary ms-2"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingEducationTitle",
+                                                                                value: true
+                                                                            })
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    ✏️
+                                                                </button>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </h2>
+                                            <div
+                                                id="collapseEducation"
+                                                className={`accordion-collapse collapse ${openSections.education ? 'show' : ''}`}
+                                                aria-labelledby="headingEducation"
+                                            >
+                                                <div className="accordion-body">
+                                                    {!parsedResume?.educationDisabled ? (
                                                         <div className="card border-0">
-                                                            {parsedResume.education?.map((eduItem, eduIndex) => (
+                                                                                                                       {parsedResume.education?.map((eduItem, eduIndex) => (
                                                                 <div key={eduIndex} className="mb-3 p-3 border rounded">
                                                                     <div className="d-flex justify-content-between align-items-center mb-2">
                                                                         <small className="fw-bold text-muted">Education #{eduIndex + 1}</small>
@@ -1358,31 +1537,121 @@ export default function CVBuilder() {
                                                                 Add Education
                                                             </button>
                                                         </div>
-                                                    </div>
+                                                    ) : (
+                                                        <div className="text-muted text-center py-3">
+                                                            This section is disabled
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-
-                                            {/* Employment */}
-                                            <div className="accordion-item">
-                                                <h2 className="accordion-header" id="headingEmployment">
-                                                    <button
-                                                        className={`accordion-button ${openSections.employment ? '' : 'collapsed'}`}
-                                                        type="button"
-                                                        onClick={() => toggleSection('employment')}
-                                                    >
-                                                        Employment
-                                                    </button>
-                                                </h2>
-                                                <div
-                                                    id="collapseEmployment"
-                                                    className={`accordion-collapse collapse ${openSections.employment ? 'show' : ''}`}
-                                                    aria-labelledby="headingEmployment"
-                                                >
-
-                                                    <div className="accordion-body">
+                                        </div>
+                                
+                                        {/* Employment */}
+                                        <div className="accordion-item">
+                                            <h2 className="accordion-header" id="headingEmployment">
+                                                <div className="d-flex justify-content-between align-items-center w-100">
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="form-check form-switch me-3">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                checked={!parsedResume?.employmentDisabled}
+                                                                onChange={(e) => 
+                                                                    dispatch(
+                                                                        updateField({
+                                                                            path: "employmentDisabled",
+                                                                            value: !e.target.checked
+                                                                        })
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                        {parsedResume?.editingEmploymentTitle ? (
+                                                            <div className="d-flex align-items-center">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm me-2"
+                                                                    style={{ width: '200px' }}
+                                                                    value={parsedResume?.employmentTitle || "Employment"}
+                                                                    onChange={(e) =>
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "employmentTitle",
+                                                                                value: e.target.value
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onBlur={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingEmploymentTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            dispatch(
+                                                                                updateField({
+                                                                                    path: "editingEmploymentTitle",
+                                                                                    value: false
+                                                                                })
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-success"
+                                                                    onClick={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingEmploymentTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    ✓
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                className={`accordion-button ${openSections.employment ? '' : 'collapsed'} ${parsedResume?.employmentDisabled ? 'text-muted' : ''}`}
+                                                                type="button"
+                                                                onClick={() => toggleSection('employment')}
+                                                                style={{ background: 'none', border: 'none', textAlign: 'left' }}
+                                                            >
+                                                                {parsedResume?.employmentTitle || "Employment"}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-secondary ms-2"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingEmploymentTitle",
+                                                                                value: true
+                                                                            })
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    ✏️
+                                                                </button>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </h2>
+                                            <div
+                                                id="collapseEmployment"
+                                                className={`accordion-collapse collapse ${openSections.employment ? 'show' : ''}`}
+                                                aria-labelledby="headingEmployment"
+                                            >
+                                                <div className="accordion-body">
+                                                    {!parsedResume?.employmentDisabled ? (
                                                         <div className="card border-0">
-
-                                                            {parsedResume.workExperience?.map((expItem, expIndex) => (
+                                                                                                                       {parsedResume.workExperience?.map((expItem, expIndex) => (
                                                                 <div key={expIndex} className="mb-3 p-3 border rounded">
 
                                                                     {expItem?.expIsComplete ? (
@@ -1543,32 +1812,122 @@ export default function CVBuilder() {
                                                                 </svg>
                                                                 Add Experience
                                                             </button>
-
-
                                                         </div>
-                                                    </div>
+                                                    ) : (
+                                                        <div className="text-muted text-center py-3">
+                                                            This section is disabled
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-
-                                            {/* Skills */}
-                                            <div className="accordion-item">
-                                                <h2 className="accordion-header" id="headingSkills">
-                                                    <button
-                                                        className={`accordion-button ${openSections.skills ? '' : 'collapsed'}`}
-                                                        type="button"
-                                                        onClick={() => toggleSection('skills')}
-                                                    >
-                                                        Skills
-                                                    </button>
-                                                </h2>
-                                                <div
-                                                    id="collapseSkills"
-                                                    className={`accordion-collapse collapse ${openSections.skills ? 'show' : ''}`}
-                                                    aria-labelledby="headingSkills"
-                                                >
-                                                    <div className="accordion-body">
+                                        </div>
+                                
+                                        {/* Skills */}
+                                        <div className="accordion-item">
+                                            <h2 className="accordion-header" id="headingSkills">
+                                                <div className="d-flex justify-content-between align-items-center w-100">
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="form-check form-switch me-3">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                checked={!parsedResume?.skillsDisabled}
+                                                                onChange={(e) => 
+                                                                    dispatch(
+                                                                        updateField({
+                                                                            path: "skillsDisabled",
+                                                                            value: !e.target.checked
+                                                                        })
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                        {parsedResume?.editingSkillsTitle ? (
+                                                            <div className="d-flex align-items-center">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm me-2"
+                                                                    style={{ width: '200px' }}
+                                                                    value={parsedResume?.skillsTitle || "Skills"}
+                                                                    onChange={(e) =>
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "skillsTitle",
+                                                                                value: e.target.value
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onBlur={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingSkillsTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            dispatch(
+                                                                                updateField({
+                                                                                    path: "editingSkillsTitle",
+                                                                                    value: false
+                                                                                })
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-success"
+                                                                    onClick={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingSkillsTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    ✓
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                className={`accordion-button ${openSections.skills ? '' : 'collapsed'} ${parsedResume?.skillsDisabled ? 'text-muted' : ''}`}
+                                                                type="button"
+                                                                onClick={() => toggleSection('skills')}
+                                                                style={{ background: 'none', border: 'none', textAlign: 'left' }}
+                                                            >
+                                                                {parsedResume?.skillsTitle || "Skills"}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-secondary ms-2"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingSkillsTitle",
+                                                                                value: true
+                                                                            })
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    ✏️
+                                                                </button>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </h2>
+                                            <div
+                                                id="collapseSkills"
+                                                className={`accordion-collapse collapse ${openSections.skills ? 'show' : ''}`}
+                                                aria-labelledby="headingSkills"
+                                            >
+                                                <div className="accordion-body">
+                                                    {!parsedResume?.skillsDisabled ? (
                                                         <div className="card border-0">
-                                                            <div className="border rounded p-3">
+                                                                                                                        <div className="border rounded p-3">
                                                                 <label className="form-label">Add Skills (one per line)</label>
                                                                 <div className='d-flex'>
                                                                 <input type="text" className="form-control me-2" placeholder="Type a skill and press Enter to add it"
@@ -1662,29 +2021,121 @@ export default function CVBuilder() {
 
                                                             <small className="text-muted d-block">Type a skill and press Enter or click Add</small>
                                                         </div>
-                                                    </div>
+                                                    ) : (
+                                                        <div className="text-muted text-center py-3">
+                                                            This section is disabled
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-
-                                            {/* Languages */}
-                                            <div className="accordion-item">
-                                                <h2 className="accordion-header" id="headingLanguages">
-                                                    <button
-                                                        className={`accordion-button ${openSections.languages ? '' : 'collapsed'}`}
-                                                        type="button"
-                                                        onClick={() => toggleSection('languages')}
-                                                    >
-                                                        Languages
-                                                    </button>
-                                                </h2>
-                                                <div
-                                                    id="collapseLanguages"
-                                                    className={`accordion-collapse collapse ${openSections.languages ? 'show' : ''}`}
-                                                    aria-labelledby="headingLanguages"
-                                                >
-                                                    <div className="accordion-body">
+                                        </div>
+                                
+                                        {/* Languages */}
+                                        <div className="accordion-item">
+                                            <h2 className="accordion-header" id="headingLanguages">
+                                                <div className="d-flex justify-content-between align-items-center w-100">
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="form-check form-switch me-3">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                checked={!parsedResume?.languagesDisabled}
+                                                                onChange={(e) => 
+                                                                    dispatch(
+                                                                        updateField({
+                                                                            path: "languagesDisabled",
+                                                                            value: !e.target.checked
+                                                                        })
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                        {parsedResume?.editingLanguagesTitle ? (
+                                                            <div className="d-flex align-items-center">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm me-2"
+                                                                    style={{ width: '200px' }}
+                                                                    value={parsedResume?.languagesTitle || "Languages"}
+                                                                    onChange={(e) =>
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "languagesTitle",
+                                                                                value: e.target.value
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onBlur={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingLanguagesTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            dispatch(
+                                                                                updateField({
+                                                                                    path: "editingLanguagesTitle",
+                                                                                    value: false
+                                                                                })
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-success"
+                                                                    onClick={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingLanguagesTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    ✓
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                className={`accordion-button ${openSections.languages ? '' : 'collapsed'} ${parsedResume?.languagesDisabled ? 'text-muted' : ''}`}
+                                                                type="button"
+                                                                onClick={() => toggleSection('languages')}
+                                                                style={{ background: 'none', border: 'none', textAlign: 'left' }}
+                                                            >
+                                                                {parsedResume?.languagesTitle || "Languages"}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-secondary ms-2"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingLanguagesTitle",
+                                                                                value: true
+                                                                            })
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    ✏️
+                                                                </button>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </h2>
+                                            <div
+                                                id="collapseLanguages"
+                                                className={`accordion-collapse collapse ${openSections.languages ? 'show' : ''}`}
+                                                aria-labelledby="headingLanguages"
+                                            >
+                                                <div className="accordion-body">
+                                                    {!parsedResume?.languagesDisabled ? (
                                                         <div className="card border-0">
-                                                            <div className="border rounded p-3">
+                                                                                                                        <div className="border rounded p-3">
                                                                 <label className="form-label">Add Language</label>
                                                                 <div className="row g-2">
                                                                     <div className="col-md-8">
@@ -1749,29 +2200,121 @@ export default function CVBuilder() {
                                                                     ))}
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    ) : (
+                                                        <div className="text-muted text-center py-3">
+                                                            This section is disabled
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-
-                                            {/* Hobbies */}
-                                            <div className="accordion-item">
-                                                <h2 className="accordion-header" id="headingHobbies">
-                                                    <button
-                                                        className={`accordion-button ${openSections.hobbies ? '' : 'collapsed'}`}
-                                                        type="button"
-                                                        onClick={() => toggleSection('hobbies')}
-                                                    >
-                                                        Hobbies
-                                                    </button>
-                                                </h2>
-                                                <div
-                                                    id="collapseHobbies"
-                                                    className={`accordion-collapse collapse ${openSections.hobbies ? 'show' : ''}`}
-                                                    aria-labelledby="headingHobbies"
-                                                >
-                                                    <div className="accordion-body">
+                                        </div>
+                                
+                                        {/* Hobbies */}
+                                        <div className="accordion-item">
+                                            <h2 className="accordion-header" id="headingHobbies">
+                                                <div className="d-flex justify-content-between align-items-center w-100">
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="form-check form-switch me-3">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                checked={!parsedResume?.hobbiesDisabled}
+                                                                onChange={(e) => 
+                                                                    dispatch(
+                                                                        updateField({
+                                                                            path: "hobbiesDisabled",
+                                                                            value: !e.target.checked
+                                                                        })
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                        {parsedResume?.editingHobbiesTitle ? (
+                                                            <div className="d-flex align-items-center">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm me-2"
+                                                                    style={{ width: '200px' }}
+                                                                    value={parsedResume?.hobbiesTitle || "Hobbies"}
+                                                                    onChange={(e) =>
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "hobbiesTitle",
+                                                                                value: e.target.value
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onBlur={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingHobbiesTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            dispatch(
+                                                                                updateField({
+                                                                                    path: "editingHobbiesTitle",
+                                                                                    value: false
+                                                                                })
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-success"
+                                                                    onClick={() => 
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingHobbiesTitle",
+                                                                                value: false
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    ✓
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                className={`accordion-button ${openSections.hobbies ? '' : 'collapsed'} ${parsedResume?.hobbiesDisabled ? 'text-muted' : ''}`}
+                                                                type="button"
+                                                                onClick={() => toggleSection('hobbies')}
+                                                                style={{ background: 'none', border: 'none', textAlign: 'left' }}
+                                                            >
+                                                                {parsedResume?.hobbiesTitle || "Hobbies"}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-secondary ms-2"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "editingHobbiesTitle",
+                                                                                value: true
+                                                                            })
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    ✏️
+                                                                </button>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </h2>
+                                            <div
+                                                id="collapseHobbies"
+                                                className={`accordion-collapse collapse ${openSections.hobbies ? 'show' : ''}`}
+                                                aria-labelledby="headingHobbies"
+                                            >
+                                                <div className="accordion-body">
+                                                    {!parsedResume?.hobbiesDisabled ? (
                                                         <div className="card border-0">
-                                                            <div className="border rounded p-3">
+                                                                                                                        <div className="border rounded p-3">
                                                                 <label className="form-label">Add Hobby</label>
                                                                 <div className='d-flex'>
                                                                 <input type="text" className="form-control me-2" placeholder="Hobby name"
@@ -1814,13 +2357,20 @@ export default function CVBuilder() {
                                                                 ))}
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    ) : (
+                                                        <div className="text-muted text-center py-3">
+                                                            This section is disabled
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
-
-                                       
                                     </div>
+                                </div>
+
+
+
+                                    </>
                                 )}
 
                                 {/* TAB placeholders */}

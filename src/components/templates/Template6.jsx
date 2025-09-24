@@ -150,117 +150,144 @@ const Template6 = ({ resumeData }) => {
   return (
     <div style={styles.container}>
       {/* Header */}
-      <div style={styles.header}>
-        <div style={{ flex: 1 }}>
-          <h1 style={styles.name}>
-            {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
-          </h1>
-          <p style={styles.contactInfo}>
-            ✉️ {resumeData?.email?.[0]}   📞 {resumeData?.phoneNumber?.[0]?.formattedNumber}   📍 {resumeData?.location?.formatted} | {resumeData?.location?.city} | {resumeData?.location?.postCode}
-          </p>
-          {/* {resumeData?.website?.[0] && (
+      {!(resumeData?.personalDisabled) && (
+        <div style={styles.header}>
+          <div style={{ flex: 1 }}>
+            <h1 style={styles.name}>
+              {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
+            </h1>
             <p style={styles.contactInfo}>
-              <a href={resumeData.website[0]} style={styles.link}>
-                {resumeData.website[0].replace(/^https?:\/\//, '')}
-              </a>
+              {resumeData?.email?.[0] && `✉️ ${resumeData.email[0]} `}
+              {resumeData?.phoneNumber?.[0]?.formattedNumber && `📞 ${resumeData.phoneNumber[0].formattedNumber} `}
+              {resumeData?.location?.formatted && `📍 ${resumeData.location.formatted}`}
+              {resumeData?.location?.city && ` | ${resumeData.location.city}`}
+              {resumeData?.location?.postCode && ` | ${resumeData.location.postCode}`}
             </p>
-          )} */}
+          </div>
+          <img 
+            src={resumeData?.profilePic || demo_profile} 
+            alt="Profile" 
+            style={styles.profilePic} 
+          />
         </div>
-        <img 
-          src={resumeData?.profilePic || demo_profile} 
-          alt="Profile" 
-          style={styles.profilePic} 
-        />
-      </div>
+      )}
 
       {/* Profile Summary */}
-      <p style={styles.profileText}>
-        {resumeData?.summary || 'Professional summary goes here...'}
-      </p>
+      {!(resumeData?.profileDisabled) && (
+        <div>
+          <h2 style={{ ...styles.sectionTitle, padding: '0 40px', marginTop: '20px' }}>
+            {resumeData?.profileTitle || 'PROFILE'}
+          </h2>
+          <p style={styles.profileText}>
+            {resumeData?.summary || 'Professional summary goes here...'}
+          </p>
+        </div>
+      )}
 
       {/* Two Column Section */}
       <div style={styles.twoColumn}>
         {/* Left Column - Timeline */}
         <div style={styles.leftColumn}>
           {/* Employment Timeline */}
-          <h2 style={styles.sectionTitle}>Employment</h2>
-          {resumeData?.workExperience?.map((job, index) => (
-            <div key={index} style={styles.timelineItem}>
-              <p style={styles.timelineDate}>
-                {job.workExperienceDates?.start?.date} – {job.workExperienceDates?.end?.date || 'Present'}
-              </p>
-              <div style={styles.timelineDot}></div>
-            </div>
-          ))}
+          {resumeData?.workExperience?.length > 0 && !(resumeData?.employmentDisabled) && (
+            <>
+              <h2 style={styles.sectionTitle}>{resumeData?.employmentTitle || 'EMPLOYMENT'}</h2>
+              {resumeData.workExperience.map((job, index) => (
+                <div key={index} style={styles.timelineItem}>
+                  <p style={styles.timelineDate}>
+                    {job.workExperienceDates?.start?.date} – {job.workExperienceDates?.end?.date || 'Present'}
+                  </p>
+                  <div style={styles.timelineDot}></div>
+                </div>
+              ))}
+            </>
+          )}
 
           {/* Education Timeline */}
-          <h2 style={{ ...styles.sectionTitle, margin: '40px 0 0' }}>Education</h2>
-          {resumeData?.education?.map((edu, index) => (
-            <div key={index} style={styles.timelineItem}>
-              <p style={styles.timelineDate}>
-                {edu.educationDates?.start?.date} – {edu.educationDates?.end?.date}
-              </p>
-              <div style={styles.timelineDot}></div>
-            </div>
-          ))}
+          {resumeData?.education?.length > 0 && !(resumeData?.educationDisabled) && (
+            <>
+              <h2 style={{ ...styles.sectionTitle, margin: '40px 0 0' }}>
+                {resumeData?.educationTitle || 'EDUCATION'}
+              </h2>
+              {resumeData.education.map((edu, index) => (
+                <div key={index} style={styles.timelineItem}>
+                  <p style={styles.timelineDate}>
+                    {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
+                    {edu.achievedGrade && ` | Grade: ${edu.achievedGrade}`}
+                  </p>
+                  <div style={styles.timelineDot}></div>
+                </div>
+              ))}
+            </>
+          )}
 
           {/* Languages */}
-          <h2 style={{ ...styles.sectionTitle, margin: '40px 0 10px' }}>Languages</h2>
-          <div>
-            {resumeData?.languages?.map((lang, index) => {
-              let width;
-              switch(lang.level) {
-                case 'Native': width = '100%'; break;
-                case 'Advanced': width = '70%'; break;
-                case 'Intermediate': width = '50%'; break;
-                case 'Beginner': width = '30%'; break;
-                default: width = '50%';
-              }
-              
-              return (
-                <div key={index} style={styles.languageContainer}>
-                  {lang.name}
-                  <div style={styles.languageBarBg}>
-                    <div style={{ ...styles.languageBarFill, width }}></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+            <div>
+              <h2 style={{ ...styles.sectionTitle, margin: '40px 0 10px' }}>
+                {resumeData?.languagesTitle?.toUpperCase() || 'LANGUAGES'}
+              </h2>
+              <div>
+                {resumeData.languages.map((lang, index) => {
+                  let width;
+                  switch(lang.level) {
+                    case 'Native': width = '100%'; break;
+                    case 'Advanced': width = '70%'; break;
+                    case 'Intermediate': width = '50%'; break;
+                    case 'Beginner': width = '30%'; break;
+                    default: width = '50%';
+                  }
+                  
+                  return (
+                    <div key={index} style={styles.languageContainer}>
+                      {lang.name}
+                      <div style={styles.languageBarBg}>
+                        <div style={{ ...styles.languageBarFill, width }}></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column - Details */}
         <div style={styles.rightColumn}>
           {/* Employment Details */}
-          {resumeData?.workExperience?.map((job, index) => (
-            <div key={index} style={{ marginBottom: '30px' }}>
-              <p style={styles.jobTitle}>{job.workExperienceJobTitle}</p>
-              <p style={styles.company}>{job.workExperienceOrganization}</p>
-              {job.workExperienceDescription && (
-                <ul style={styles.bulletList}>
-                  {job.workExperienceDescription.split('\n').map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
+          {resumeData?.workExperience?.length > 0 && !(resumeData?.employmentDisabled) &&
+            resumeData.workExperience.map((job, index) => (
+              <div key={index} style={{ marginBottom: '30px' }}>
+                <p style={styles.jobTitle}>{job.workExperienceJobTitle}</p>
+                <p style={styles.company}>{job.workExperienceOrganization}</p>
+                {job.workExperienceDescription && (
+                  <ul style={styles.bulletList}>
+                    {job.workExperienceDescription.split('\n').map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))
+          }
 
           {/* Education Details */}
-          {resumeData?.education?.map((edu, index) => (
-            <div key={index} style={{ marginBottom: index === resumeData.education.length - 1 ? 0 : '30px' }}>
-              <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
-              <p style={styles.company}>{edu.educationOrganization}</p>
-              {edu.educationDescription && (
-                <p style={{ margin: '8px 0', fontSize: '14px', color: '#333', lineHeight: '1.6',
-                  pageBreakInside: "avoid",
-                  pageBreakBefore: "auto",
-                  pageBreakAfter: "auto", }}>
-                  {edu.educationDescription}
-                </p>
-              )}
-            </div>
-          ))}
+          {resumeData?.education?.length > 0 && !(resumeData?.educationDisabled) &&
+            resumeData.education.map((edu, index) => (
+              <div key={index} style={{ marginBottom: index === resumeData.education.length - 1 ? 0 : '30px' }}>
+                <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
+                <p style={styles.company}>{edu.educationOrganization}</p>
+                {edu.educationDescription && (
+                  <p style={{ margin: '8px 0', fontSize: '14px', color: '#333', lineHeight: '1.6',
+                    pageBreakInside: "avoid",
+                    pageBreakBefore: "auto",
+                    pageBreakAfter: "auto", }}>
+                    {edu.educationDescription}
+                  </p>
+                )}
+              </div>
+            ))
+          }
         </div>
       </div>
     </div>

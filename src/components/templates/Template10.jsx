@@ -214,7 +214,7 @@ const Template10 = ({ resumeData }) => {
       </h1>
 
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Personal details</h2>
+        <h2 style={styles.sectionTitle}>{resumeData?.personalTitle || "Personal details"}</h2>
         <div style={styles.personalDetails}>
           {resumeData?.email?.[0] && (
             <div style={styles.detailItem}>
@@ -256,8 +256,10 @@ const Template10 = ({ resumeData }) => {
         </p>
       </section>
 
+
+{resumeData?.employmentDisabled && (
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Work Experience</h2>
+        <h2 style={styles.sectionTitle}>{resumeData?.employmentTitle || "Work Experience"}</h2>
         {resumeData?.workExperience?.map((job, index) => (
           <div key={index} style={styles.job}>
             <div style={styles.jobHeader}>
@@ -279,14 +281,28 @@ const Template10 = ({ resumeData }) => {
           </div>
         ))}
       </section>
+      )}
 
+{resumeData?.educationDisabled && (
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Education</h2>
+        <h2 style={styles.sectionTitle}>{resumeData?.educationTitle || "Education"}</h2>
         {resumeData?.education?.map((edu, index) => (
           <div key={index} style={styles.education}>
             <strong>{edu.educationAccreditation}</strong>
             <p style={styles.pagecontentfull}>
               {edu.educationOrganization}<br />
+
+              {edu.achievedGrade ? (
+                <>
+                <div>
+                Grade:
+                </div>
+                <div>
+                {edu.achievedGrade}
+                </div>
+                <br/>
+             </>
+            ) : ""}
               {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
               {edu.educationDescription && (
                 <ul style={styles.bulletList}>
@@ -299,9 +315,12 @@ const Template10 = ({ resumeData }) => {
           </div>
         ))}
       </section>
+      )}
 
+
+{resumeData?.skillsDisabled && (
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Skills</h2>
+        <h2 style={styles.sectionTitle}>{resumeData?.skillsTitle || "Skills"}</h2>
         <div className="skills-column">
         {(resumeData?.skill || []).filter(skill => skill.selected).map((skill, index) => (
             <div key={index} style={styles.skillsRow}>
@@ -311,6 +330,7 @@ const Template10 = ({ resumeData }) => {
           ))}
         </div>
       </section>
+      )}
     </div>
   );
 };

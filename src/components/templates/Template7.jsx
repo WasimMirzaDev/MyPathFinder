@@ -136,107 +136,110 @@ const Template7 = ({ resumeData }) => {
       {/* Left Sidebar */}
       <div style={styles.leftSidebar}>
         {/* Languages */}
-        <div style={{ marginBottom: '30px' }}>
-          <h3 style={styles.sidebarTitle}>LANGUAGES</h3>
-          {resumeData?.languages?.map((lang, index) => (
-            <p key={index} style={styles.sidebarItem}>{lang.name}</p>
-          ))}
-        </div>
-
-        {/* Qualities */}
-        {/* <div style={{ marginBottom: '30px' }}>
-          <h3 style={styles.sidebarTitle}>QUALITIES</h3>
-          <ul style={styles.sidebarList}>
-            {resumeData?.qualities?.map((quality, index) => (
-              <li key={index} style={styles.sidebarListItem}>
-                <span style={styles.bulletPoint}>▪</span> {quality}
-              </li>
+        {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+          <div style={{ marginBottom: '30px' }}>
+            <h3 style={styles.sidebarTitle}>{resumeData?.languagesTitle?.toUpperCase() || 'LANGUAGES'}</h3>
+            {resumeData.languages.map((lang, index) => (
+              <p key={index} style={styles.sidebarItem}>{lang.name}</p>
             ))}
-          </ul>
-        </div> */}
+          </div>
+        )}
+
+
+{/* Skills Section */}
+{!(resumeData?.skillsDisabled) && (
+  <div style={{ marginBottom: '30px' }}>
+    <h3 style={styles.sidebarTitle}>{resumeData?.skillsTitle || "SKILLS"}</h3>
+    <ul style={styles.sidebarList}>
+      {(resumeData?.skill || [])
+        .filter(skill => skill.selected)
+        .map((skill, index) => (
+          <li key={index} style={styles.sidebarListItem}>
+            <span style={styles.bulletPoint}>▪</span> {skill.name || skill}
+          </li>
+        ))}
+    </ul>
+  </div>
+)}
 
         {/* Hobbies */}
-        <div>
-          <h3 style={styles.sidebarTitle}>HOBBIES</h3>
-          <ul style={styles.sidebarList}>
-            {resumeData?.hobbies?.map((hobby, index) => (
-              <li key={index} style={styles.sidebarListItem}>
-                <span style={styles.bulletPoint}>▪</span> {hobby}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {resumeData?.hobbies?.length > 0 && !(resumeData?.hobbiesDisabled) && (
+          <div>
+            <h3 style={styles.sidebarTitle}>{resumeData?.hobbiesTitle?.toUpperCase() || 'HOBBIES'}</h3>
+            <ul style={styles.sidebarList}>
+              {resumeData.hobbies.map((hobby, index) => (
+                <li key={index} style={styles.sidebarListItem}>
+                  <span style={styles.bulletPoint}>▪</span> {hobby}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Right Content */}
       <div style={styles.rightContent}>
         {/* Header */}
-        <div style={styles.header}>
-          <img 
-            src={resumeData?.profilePic || demo_profile} 
-            alt="Profile" 
-            style={styles.profileImage} 
-          />
-          <div>
-            <h1 style={styles.name}>
-              {resumeData?.candidateName?.[0]?.firstName?.toUpperCase()} {resumeData?.candidateName?.[0]?.familyName?.toUpperCase()}
-            </h1>
-            {resumeData?.email?.[0] && (
-              <p style={styles.contactInfo}>📧 {resumeData.email[0]}</p>
-            )}
-            {resumeData?.phoneNumber?.[0]?.formattedNumber && (
-              <p style={styles.contactInfo}>📱 {resumeData.phoneNumber[0].formattedNumber}</p>
-            )}
-            {resumeData?.location?.formatted && (
-              <p style={styles.contactInfo}>📍 {resumeData.location.formatted}</p>
-            )}
-            {resumeData?.location?.city && (
-              <p style={styles.contactInfo}>📍 {resumeData.location.city}</p>
-            )}
-            {resumeData?.location?.postCode && (
-              <p style={styles.contactInfo}>📍 {resumeData.location.postCode}</p>
-            )}
-            {/* {resumeData?.website?.[0] && (
-              <p style={styles.contactInfo}>🔗 {resumeData.website[0].replace(/^https?:\/\//, '')}</p>
-            )} */}
+        {!(resumeData?.personalDisabled) && (
+          <div style={styles.header}>
+            <img 
+              src={resumeData?.profilePic || demo_profile} 
+              alt="Profile" 
+              style={styles.profileImage} 
+            />
+            <div>
+              <h1 style={styles.name}>
+                {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
+              </h1>
+              <p style={styles.contactInfo}>
+                {resumeData?.email?.[0]} | {resumeData?.phoneNumber?.[0]?.formattedNumber}
+              </p>
+              <p style={styles.contactInfo}>
+                {resumeData?.location?.formatted}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Profile */}
-        <div>
-          <h2 style={styles.sectionTitle}>PROFILE</h2>
-          <p style={styles.sectionText}>
-            {resumeData?.summary || 'Professional summary goes here...'}
-          </p>
-        </div>
+        {!(resumeData?.profileDisabled) && (
+          <div>
+            <h2 style={styles.sectionTitle}>{resumeData?.profileTitle?.toUpperCase() || 'PROFILE'}</h2>
+            <p style={styles.sectionText}>
+              {resumeData?.summary || 'Professional summary goes here...'}
+            </p>
+          </div>
+        )}
 
         {/* Employment */}
-        <div>
-          <h2 style={styles.sectionTitle}>EMPLOYMENT</h2>
-          
-          {resumeData?.workExperience?.map((job, index) => (
-            <div key={index} style={{ marginTop: index === 0 ? '10px' : '20px' }}>
-              <div>
-                <strong>{job.workExperienceJobTitle}</strong>
-                <span style={{ ...styles.jobDate, float: 'right' }}>
-                  {job.workExperienceDates?.start?.date} - {job.workExperienceDates?.end?.date || 'Present'}
-                </span>
+        {resumeData?.workExperience?.length > 0 && !(resumeData?.employmentDisabled) && (
+          <div>
+            <h2 style={styles.sectionTitle}>{resumeData?.employmentTitle?.toUpperCase() || 'EMPLOYMENT'}</h2>
+            {resumeData.workExperience.map((job, index) => (
+              <div key={index} style={{ marginTop: index === 0 ? '10px' : '20px' }}>
+                <div>
+                  <strong>{job.workExperienceJobTitle}</strong>
+                  <span style={{ ...styles.jobDate, float: 'right' }}>
+                    {job.workExperienceDates?.start?.date} - {job.workExperienceDates?.end?.date || 'Present'}
+                  </span>
+                </div>
+                <span style={styles.company}>{job.workExperienceOrganization}</span>
+                {job.workExperienceDescription && (
+                  <ul style={styles.bulletList}>
+                    {job.workExperienceDescription.split('\n').map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
-              <span style={styles.company}>{job.workExperienceOrganization}</span>
-              {job.workExperienceDescription && (
-                <ul style={styles.bulletList}>
-                  {job.workExperienceDescription.split('\n').map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Education */}
+        {!(resumeData?.educationDisabled) && (
         <div>
-          <h2 style={styles.sectionTitle}>EDUCATION</h2>
+          <h2 style={styles.sectionTitle}>{resumeData?.educationTitle ||"EDUCATION"}</h2>
           
           {resumeData?.education?.map((edu, index) => (
             <div key={index} style={{ marginTop: index === 0 ? '10px' : '20px' }}>
@@ -246,6 +249,11 @@ const Template7 = ({ resumeData }) => {
                   {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
                 </span>
               </div>
+              {edu.achievedGrade ? (
+                <>
+               Grade : <span style={styles.company}>{edu.achievedGrade}</span><br/>
+               </>
+              ):""}
               <span style={styles.company}>{edu.educationOrganization}</span>
               {edu.educationDescription && (
                 <p style={styles.sectionText}>{edu.educationDescription}</p>
@@ -253,6 +261,7 @@ const Template7 = ({ resumeData }) => {
             </div>
           ))}
         </div>
+        )}
       </div>
     </div>
   );

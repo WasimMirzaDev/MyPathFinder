@@ -132,7 +132,7 @@ const Template11 = ({ resumeData }) => {
       <hr style={styles.horizontalRule} />
 
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Personal details</h2>
+        <h2 style={styles.sectionTitle}>{resumeData?.personalTitle || "Personal details"}</h2>
         <div style={styles.personalDetails}>
           {resumeData?.location?.formatted && (
             <div style={styles.detailItem}>
@@ -174,8 +174,9 @@ const Template11 = ({ resumeData }) => {
         </p>
       </section>
 
+    {!(resumeData?.educationDisabled) && (
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Education</h2>
+        <h2 style={styles.sectionTitle}>{resumeData?.educationTitle || "Education"}</h2>
         {resumeData?.education?.map((edu, index) => (
           <div key={index} style={styles.eduItem}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -192,6 +193,15 @@ const Template11 = ({ resumeData }) => {
             {edu.educationOrganization && (
               <div style={styles.eduLocation}>{edu.educationOrganization}</div>
             )}
+
+
+
+{edu?.achievedGrade ? (
+                <strong style={styles.eduInstitution}>
+                
+                Grade: { ` ${edu.achievedGrade}`}
+              </strong>
+              ) : <></>}
             {edu.educationDescription && (
               <>
                 <p style={styles.italicLabel}>
@@ -207,9 +217,12 @@ const Template11 = ({ resumeData }) => {
           </div>
         ))}
       </section>
+      )}
 
+
+      {!(resumeData?.employmentDisabled) && (
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Employment</h2>
+        <h2 style={styles.sectionTitle}>{resumeData?.employmentTitle || "Employment"}</h2>
         {resumeData?.workExperience?.map((job, index) => (
           <div key={index} style={styles.employmentItem}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -229,10 +242,11 @@ const Template11 = ({ resumeData }) => {
           </div>
         ))}
       </section>
+      )}
 
-      {resumeData?.skill?.length > 0 && (
+      {resumeData?.skill?.length > 0 && !(resumeData?.skillsDisabled) && (
         <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>Skills</h2>
+          <h2 style={styles.sectionTitle}>{resumeData?.skillsTitle || "Skills"}</h2>
           <ul style={styles.bulletList}>
           {(resumeData?.skill || []).filter(skill => skill.selected).map((skill, index) => (
               <li key={index} style={styles.bulletItem}>
