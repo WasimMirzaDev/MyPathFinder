@@ -957,22 +957,8 @@ Cover Letter
                                                 <div className="accordion-item">
                                                     <h2 className="accordion-header" id="headingPersonal">
                                                         <div className="d-flex justify-content-between align-items-center w-100">
-                                                            <div className="d-flex align-items-center">
-                                                                {/* <div className="form-check form-switch me-3">
-<input
-className="form-check-input"
-type="checkbox"
-checked={!parsedResume?.personalDisabled}
-onChange={(e) => 
-dispatch(
-updateField({
-path: "personalDisabled",
-value: !e.target.checked
-})
-)
-}
-/>
-</div> */}
+                                                            <div className="d-flex align-items-center w-100 gap-2">
+                                                                
                                                                 {parsedResume?.editingPersonalTitle ? (
                                                                     <div className="d-flex align-items-center">
                                                                         <input
@@ -1007,7 +993,7 @@ value: !e.target.checked
                                                                                 }
                                                                             }}
                                                                         />
-                                                                        <button
+                                                                        <span
                                                                             type="button"
                                                                             className="btn btn-sm btn-outline-success"
                                                                             onClick={() =>
@@ -1019,8 +1005,11 @@ value: !e.target.checked
                                                                                 )
                                                                             }
                                                                         >
-                                                                            ✓
-                                                                        </button>
+                                                                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                <path d="M5 12l5 5l10 -10" />
+                                                                            </svg>
+                                                                        </span>
                                                                     </div>
                                                                 ) : (
                                                                     <button
@@ -1043,7 +1032,12 @@ value: !e.target.checked
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <i class="uil uil-edit fs-8"></i>
+                                                                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                                                                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                                                                                <path d="M16 5l3 3" />
+                                                                            </svg>
                                                                         </span>
                                                                     </button>
                                                                 )}
