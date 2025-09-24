@@ -272,6 +272,7 @@ const Template8 = ({ resumeData }) => {
             {resumeData?.languages?.map((lang, index) => {
               const levels = renderLanguageLevel(lang.level);
               return (
+        lang.level == null ? null : (
                 <div key={index} style={styles.languageContainer}>
                   <div style={styles.languageName}>{lang.name}</div>
                   <div style={styles.languageBar}>
@@ -283,7 +284,8 @@ const Template8 = ({ resumeData }) => {
                     ))}
                   </div>
                 </div>
-              );
+              
+              ) );
             })}
           </div>
         )}

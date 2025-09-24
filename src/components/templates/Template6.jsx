@@ -238,14 +238,15 @@ const Template6 = ({ resumeData }) => {
                     default: width = '50%';
                   }
                   
-                  return (
+                   return (
+        lang.level == null ? null : (
                     <div key={index} style={styles.languageContainer}>
                       {lang.name}
                       <div style={styles.languageBarBg}>
                         <div style={{ ...styles.languageBarFill, width }}></div>
                       </div>
                     </div>
-                  );
+                  ));
                 })}
               </div>
             </div>

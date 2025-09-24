@@ -280,30 +280,34 @@ const Template5 = ({ resumeData }) => {
           )}
 
           {/* Languages */}
-          {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
-            <section style={styles.sidebarSection}>
-              <h3 style={styles.sidebarTitle}>{resumeData?.languagesTitle || 'Languages'}</h3>
-              {resumeData.languages.map((lang, idx) => {
-                let width;
-                switch (lang.level) {
-                  case 'Native': width = '100%'; break;
-                  case 'Advanced': width = '70%'; break;
-                  case 'Intermediate': width = '50%'; break;
-                  case 'Beginner': width = '30%'; break;
-                  default: width = '50%';
-                }
+{resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+  <section style={styles.sidebarSection}>
+    <h3 style={styles.sidebarTitle}>{resumeData?.languagesTitle || 'Languages'}</h3>
+    {resumeData.languages.map((lang, idx) => {
+      let width;
+      switch (lang.level) {
+        case 'Native': width = '100%'; break;
+        case 'Advanced': width = '70%'; break;
+        case 'Intermediate': width = '50%'; break;
+        case 'Beginner': width = '30%'; break;
+        default: width = '50%';
+      }
 
-                return (
-                  <div key={idx} style={styles.languageBar}>
-                    <span>{lang.name}</span>
-                    <div style={styles.barBackground}>
-                      <div style={{ ...styles.barFill, width: `${width}` }}></div>
-                    </div>
-                  </div>
-                );
-              })}
-            </section>
-          )}
+      // ✅ must return JSX
+      return (
+        lang.level == null ? null : (
+          <div key={idx} style={styles.languageBar}>
+            <span>{lang.name}</span>
+            <div style={styles.barBackground}>
+              <div style={{ ...styles.barFill, width }}></div>
+            </div>
+          </div>
+        )
+      );
+    })}
+  </section>
+)}
+
 
           {/* Hobbies */}
           {resumeData?.hobbies?.length > 0 && !(resumeData?.hobbiesDisabled) && (

@@ -139,9 +139,12 @@ const Template7 = ({ resumeData }) => {
         {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
           <div style={{ marginBottom: '30px' }}>
             <h3 style={styles.sidebarTitle}>{resumeData?.languagesTitle?.toUpperCase() || 'LANGUAGES'}</h3>
-            {resumeData.languages.map((lang, index) => (
+            {resumeData.languages.map((lang, index) => {
+               return (
+        lang.level == null ? null : (
               <p key={index} style={styles.sidebarItem}>{lang.name}</p>
-            ))}
+              ));
+})}
           </div>
         )}
 

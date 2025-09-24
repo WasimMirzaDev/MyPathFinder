@@ -137,13 +137,14 @@ const Template9 = ({ resumeData }) => {
               {resumeData?.headline || 'Professional title'}
             </p>
           </div>
-          <div style={styles.profileImage}>
+          {resumeData?.profilePic ? <div style={styles.profileImage}>
             <img 
               src={resumeData?.profilePic || demo_profile} 
               alt="Profile" 
               style={styles.image} 
             />
-          </div>
+          </div> :""}
+          
         </div>
 
         {/* Personal Details */}
