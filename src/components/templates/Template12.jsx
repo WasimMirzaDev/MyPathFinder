@@ -101,6 +101,8 @@ const Template12 = ({ resumeData }) => {
   return (
     <div style={styles.resumeContainer}>
       <div style={styles.container}>
+      {!(resumeData?.personalDisabled) && (
+        <>
         <div style={styles.profileImage}>
           <img
             src={resumeData?.profilePic || demo_profile}
@@ -117,7 +119,7 @@ const Template12 = ({ resumeData }) => {
 
         {/* Personal Details */}
         <section style={styles.section}>
-          <div style={styles.sectionTitle}>Personal Details</div>
+          <div style={styles.sectionTitle}>{resumeData?.personalTitle || "Personal Details"}</div>
           <div style={styles.sectionContent}>
             {resumeData?.email?.[0] && (
               <p style={styles.contactParagraph}>
@@ -159,11 +161,12 @@ const Template12 = ({ resumeData }) => {
             <p>{resumeData?.summary || 'Professional summary goes here...'}</p>
           </div>
         </section>
-
+        </>
+        )}
         {/* Education */}
-        {resumeData?.education?.length > 0 && (
+        {resumeData?.education?.length > 0  && !(resumeData?.educationDisabled) && (
           <section style={styles.section}>
-            <div style={styles.sectionTitle}>Education</div>
+            <div style={styles.sectionTitle}>{resumeData?.educationTitle || "Education"}</div>
             <div style={styles.sectionContent}>
               {resumeData.education.map((edu, index) => (
                 <div key={index} style={{ marginBottom: '15px' }}>
@@ -172,6 +175,7 @@ const Template12 = ({ resumeData }) => {
                   </p>
                   <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
                   <p style={styles.jobInfo}>{edu.educationOrganization}</p>
+                  {edu.achievedGrade ? <div style={styles.pagecontentfull}> <div style={{display:"flex", gap:"10px"}}> <span style={{fontSize:"17px" , fontWeight:"700"}}>Grade:</span>  {edu.achievedGrade}</div></div> : ""}
                   {edu.educationDescription && (
                     <ul style={styles.ul}>
                       {edu.educationDescription.split('\n').map((desc, i) => (
@@ -186,9 +190,9 @@ const Template12 = ({ resumeData }) => {
         )}
 
         {/* Work Experience */}
-        {resumeData?.workExperience?.length > 0 && (
+        {resumeData?.workExperience?.length > 0 &&!(resumeData?.employmentDisabled) && (
           <section style={styles.section}>
-            <div style={styles.sectionTitle}>Work Experience</div>
+            <div style={styles.sectionTitle}>{resumeData?.employmentTitle || "Work Experience"}</div>
             <div style={styles.sectionContent}>
               {resumeData.workExperience.map((job, index) => (
                 <div key={index} style={{ marginBottom: '15px' }}>

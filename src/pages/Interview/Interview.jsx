@@ -216,35 +216,40 @@ useEffect(() => {
             );
             
         case 3:
-            return (
-                <>
-                    <Modal.Title className="text-center mb-4">Select Subcategory</Modal.Title>
-                    {isLoading ? (
-                        <div className="text-center p-4">
-                            <Spinner animation="border" />
-                        </div>
-                    ) : (
-                        <div className="d-grid gap-2">
-                            {subcategories.length > 0 ? (
-                                subcategories.map(subcategory => (
-                                    <Button
-                                        key={subcategory.id}
-                                        variant={filters.subcategory?.id === subcategory.id ? "primary" : "outline-primary"}
-                                        className="text-start py-3"
-                                        onClick={() => handleFilterChange('subcategory', subcategory)}
-                                    >
-                                        {subcategory.name}
-                                    </Button>
-                                ))
-                            ) : (
-                                <div className="text-center p-3 text-muted">
-                                    No subcategories available for the selected industry
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </>
-            );
+            // Only show subcategory selection for Industry Specific questions
+            if (filters.questionType?.slug == "IND") {
+                return (
+                    <>
+                        <Modal.Title className="text-center mb-4">Select Subcategory</Modal.Title>
+                        {isLoading ? (
+                            <div className="text-center p-4">
+                                <Spinner animation="border" />
+                            </div>
+                        ) : (
+                            <div className="d-grid gap-2">
+                                {subcategories.length > 0 ? (
+                                    subcategories.map(subcategory => (
+                                        <Button
+                                            key={subcategory.id}
+                                            variant={filters.subcategory?.id === subcategory.id ? "primary" : "outline-primary"}
+                                            className="text-start py-3"
+                                            onClick={() => handleFilterChange('subcategory', subcategory)}
+                                        >
+                                            {subcategory.name}
+                                        </Button>
+                                    ))
+                                ) : (
+                                    <div className="text-center p-3 text-muted">
+                                        No subcategories available for the selected industry
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </>
+                );
+            }
+            // For non-industry questions, skip this step
+            return null;
             
         default:
             return null;
@@ -255,7 +260,7 @@ const isNextDisabled = () => {
     switch (currentStep) {
         case 1: return !filters.difficulty;
         case 2: return !filters.questionType;
-        case 3: return !filters.subcategory;
+        case 3: return filters.questionType?.slug === "IND" ? !filters.subcategory : true;
         default: return true;
     }
 };
@@ -295,7 +300,7 @@ const isNextDisabled = () => {
                                     {currentStep === 1 ? 'Cancel' : 'Back'}
                                 </Button>
 
-                                {currentStep < 3 ? (
+                                {(currentStep == 1 || currentStep < 3) && filters?.questionType?.slug == "IND" ? (
                                     <Button 
                                         variant="primary" 
                                         onClick={handleNextStep}
@@ -315,7 +320,7 @@ const isNextDisabled = () => {
                             </div>
 
                             <div className="text-center mt-3 text-muted">
-                                Step {currentStep} of 3
+                                Step {currentStep} of {filters?.questionType?.slug == "IND" ? 3 : 2}
                             </div>
                         </>
                     )}

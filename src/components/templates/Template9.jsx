@@ -147,55 +147,53 @@ const Template9 = ({ resumeData }) => {
         </div>
 
         {/* Personal Details */}
-        <h2 style={styles.sectionTitle}>Personal details</h2>
-        <table style={styles.detailsTable}>
-          <tbody>
-            <tr>
-              <td style={styles.tableLabel}>Name</td>
-              <td style={styles.tableValue}>
-                {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
-              </td>
-            </tr>
-            {resumeData?.email?.[0] && (
-              <tr>
-                <td style={styles.tableLabel}>Email address</td>
-                <td style={styles.tableValue}>{resumeData.email[0]}</td>
-              </tr>
-            )}
-            {resumeData?.phoneNumber?.[0]?.formattedNumber && (
-              <tr>
-                <td style={styles.tableLabel}>Phone number</td>
-                <td style={styles.tableValue}>{resumeData.phoneNumber[0].formattedNumber}</td>
-              </tr>
-            )}
-            {resumeData?.location?.formatted && (
-              <tr>
-                <td style={styles.tableLabel}>Address</td>
-                <td style={styles.tableValue}>{resumeData.location.formatted}</td>
-              </tr>
-            )}
-            {resumeData?.location?.city && (
-              <tr>
-                <td style={styles.tableLabel}>City</td>
-                <td style={styles.tableValue}>{resumeData.location.city}</td>
-              </tr>
-            )}
-            {resumeData?.location?.postCode && (
-              <tr>
-                <td style={styles.tableLabel}>Postcode</td>
-                <td style={styles.tableValue}>{resumeData.location.postCode}</td>
-              </tr>
-            )}
-            {/* {resumeData?.website?.[0] && (
-              <tr>
-                <td style={styles.tableLabel}>LinkedIn</td>
-                <td style={styles.tableValue}>
-                  {resumeData.website[0].replace(/^https?:\/\//, '')}
-                </td>
-              </tr>
-            )} */}
-          </tbody>
-        </table>
+        {!(resumeData?.personalDisabled) && (
+          <>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.personalTitle || 'Personal details'}
+            </h2>
+            <table style={styles.detailsTable}>
+              <tbody>
+                <tr>
+                  <td style={styles.tableLabel}>Name</td>
+                  <td style={styles.tableValue}>
+                    {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
+                  </td>
+                </tr>
+                {resumeData?.email?.[0] && (
+                  <tr>
+                    <td style={styles.tableLabel}>Email address</td>
+                    <td style={styles.tableValue}>{resumeData.email[0]}</td>
+                  </tr>
+                )}
+                {resumeData?.phoneNumber?.[0]?.formattedNumber && (
+                  <tr>
+                    <td style={styles.tableLabel}>Phone number</td>
+                    <td style={styles.tableValue}>{resumeData.phoneNumber[0].formattedNumber}</td>
+                  </tr>
+                )}
+                {resumeData?.location?.formatted && (
+                  <tr>
+                    <td style={styles.tableLabel}>Address</td>
+                    <td style={styles.tableValue}>{resumeData.location.formatted}</td>
+                  </tr>
+                )}
+                {resumeData?.location?.city && (
+                  <tr>
+                    <td style={styles.tableLabel}>City</td>
+                    <td style={styles.tableValue}>{resumeData.location.city}</td>
+                  </tr>
+                )}
+                {resumeData?.location?.postCode && (
+                  <tr>
+                    <td style={styles.tableLabel}>Postcode</td>
+                    <td style={styles.tableValue}>{resumeData.location.postCode}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </>
+        )}
 
         {/* Profile Summary */}
         <h2 style={styles.sectionTitle}>Profile</h2>
@@ -204,42 +202,57 @@ const Template9 = ({ resumeData }) => {
         </p>
 
         {/* Employment History */}
-        <h2 style={styles.sectionTitle}>Employment</h2>
-        {resumeData?.workExperience?.map((job, index) => (
-          <div key={index} style={{ marginBottom: index === resumeData.workExperience.length - 1 ? '5px' : '20px' }}>
-            <p style={styles.jobPeriod}>
-              {job.workExperienceDates?.start?.date} - {job.workExperienceDates?.end?.date || 'Present'}
-            </p>
-            <p style={styles.jobTitle}>{job.workExperienceJobTitle}</p>
-            <p style={styles.company}>{job.workExperienceOrganization}</p>
-            {job.workExperienceDescription && (
-              <ul style={styles.bulletList}>
-                {job.workExperienceDescription.split('\n').map((item, i) => (
-                  <li key={i} style={styles.bulletItem}>{item}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))}
+        {resumeData?.workExperience?.length > 0 && !(resumeData?.employmentDisabled) && (
+          <>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.employmentTitle || 'Employment'}
+            </h2>
+            {resumeData?.workExperience?.map((job, index) => (
+              <div key={index} style={{ marginBottom: index === resumeData.workExperience.length - 1 ? '5px' : '20px' }}>
+                <p style={styles.jobPeriod}>
+                  {job.workExperienceDates?.start?.date} - {job.workExperienceDates?.end?.date || 'Present'}
+                </p>
+                <p style={styles.jobTitle}>{job.workExperienceJobTitle}</p>
+                <p style={styles.company}>{job.workExperienceOrganization}</p>
+                {job.workExperienceDescription && (
+                  <ul style={styles.bulletList}>
+                    {job.workExperienceDescription.split('\n').map((item, i) => (
+                      <li key={i} style={styles.bulletItem}>{item}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </>
+        )}
 
         {/* Education */}
-        <h2 style={styles.sectionTitle}>Education</h2>
-        {resumeData?.education?.map((edu, index) => (
-          <div key={index} style={{ marginBottom: index === resumeData.education.length - 1 ? '5px' : '20px' }}>
-            <p style={styles.jobPeriod}>
-              {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
-            </p>
-            <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
-            <p style={styles.company}>{edu.educationOrganization}</p>
-            {edu.educationDescription && (
-              <ul style={styles.bulletList}>
-                {edu.educationDescription.split('\n').map((item, i) => (
-                  <li key={i} style={styles.bulletItem}>{item}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))}
+        {resumeData?.education?.length > 0 && !(resumeData?.educationDisabled) && (
+          <>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.educationTitle || 'Education'}
+            </h2>
+            {resumeData?.education?.map((edu, index) => (
+              <div key={index} style={{ marginBottom: index === resumeData.education.length - 1 ? '5px' : '20px' }}>
+                <p style={styles.jobPeriod}>
+                  {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
+                </p>
+                <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
+                <p style={styles.company}>{edu.educationOrganization}</p>
+                {edu.achievedGrade? (
+                <p style={styles.company}>{edu.achievedGrade}</p>
+                ) : ""}
+                {edu.educationDescription && (
+                  <ul style={styles.bulletList}>
+                    {edu.educationDescription.split('\n').map((item, i) => (
+                      <li key={i} style={styles.bulletItem}>{item}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
