@@ -264,7 +264,7 @@ export default function BuildingComponents() {
           </div>
         </div>
 
-        {/* <div className="col-12 col-xl-4">
+        <div className="col-12 col-xl-3">
             <div className="card border h-100 w-100 overflow-hidden position-relative">
               <div className="card-body px-6 py-6 position-relative text-center">
                 <div
@@ -280,8 +280,8 @@ export default function BuildingComponents() {
                 >{emptyResumeLoader ?  (<><FiLoader size={14} className="me-2 animate-spin" />Launching...</>)  : 'Launch CV Builder'}</Button>
               </div>
             </div>
-          </div> */}
-        <div className="col-12 col-xl-3">
+          </div>
+        {/* <div className="col-12 col-xl-3">
           <div className="card border h-100 w-100 overflow-hidden position-relative">
             <div className="card-body px-6 py-6 position-relative text-center">
               <div
@@ -290,16 +290,16 @@ export default function BuildingComponents() {
                 <svg width={20} className="svg-inline--fa fa-microchip fs-7" style={{ color: '#ba67ef' }} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="microchip" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M176 24c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c-35.3 0-64 28.7-64 64l-40 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l40 0 0 56-40 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l40 0 0 56-40 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l40 0c0 35.3 28.7 64 64 64l0 40c0 13.3 10.7 24 24 24s24-10.7 24-24l0-40 56 0 0 40c0 13.3 10.7 24 24 24s24-10.7 24-24l0-40 56 0 0 40c0 13.3 10.7 24 24 24s24-10.7 24-24l0-40c35.3 0 64-28.7 64-64l40 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-40 0 0-56 40 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-40 0 0-56 40 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-40 0c0-35.3-28.7-64-64-64l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40-56 0 0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40-56 0 0-40zM160 128l192 0c17.7 0 32 14.3 32 32l0 192c0 17.7-14.3 32-32 32l-192 0c-17.7 0-32-14.3-32-32l0-192c0-17.7 14.3-32 32-32zm192 32l-192 0 0 192 192 0 0-192z"></path></svg>
               </div>
               <h4 className="my-3">Generate with AI</h4>
-              <p className="fs-8">Track your progress, stay organised, and see where you can improve.</p>
+              <p className="fs-8">Track your progress, stay organised, and see where you can improve.</p> */}
 
-              <div style={{
-                position: "absolute",
-                bottom: "15px",
-                left: "50%",
-                width: "280px",
-                transform: "translate(-50%, -50%)", /* pull it back half of its size */
-              }}>
-                <button
+              {/* <div style={{ */}
+                {/* position: "absolute", */}
+                {/* bottom: "15px", */}
+                {/* left: "50%", */}
+                {/* width: "280px", */}
+                {/* transform: "translate(-50%, -50%)", /* pull it back half of its size */ }
+              {/* // }}> */}
+                {/* <button
                   type="button"
                   className="stretched-link btn btn-primary w-100"
 
@@ -311,7 +311,7 @@ export default function BuildingComponents() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         {Array.isArray(recentCVs) && recentCVs.length > 0 ? (
           <div class="col-12 col-xl-6">
             <div class="card border h-100 w-100 overflow-hidden position-relative">
