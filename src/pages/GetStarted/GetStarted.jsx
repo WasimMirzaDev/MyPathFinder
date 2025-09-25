@@ -10,7 +10,7 @@ const GetStarted = () => {
   return (
     <>
       <MasterLayout>
-        <BreadCrum title='Getting Started.' subTitle='The UK’s first all-in-one AI platform for tailored CVs, instant job matching, and interview prep.' />
+        <BreadCrum title='Getting Started' subTitle='The UK’s first all-in-one AI platform for tailored CVs, instant job matching, and interview prep.' />
         <DashboardComponents />
 
 
