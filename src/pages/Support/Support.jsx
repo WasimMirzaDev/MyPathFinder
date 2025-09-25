@@ -6,7 +6,7 @@ const Support = () => {
   return (
     <>
       <MasterLayout>
-        <BreadCrum title='Support.' subTitle='Mypathfinder makes the job search simple, personalised, and efficient.' />
+        <BreadCrum title='Support' subTitle='Mypathfinder makes the job search simple, personalised, and efficient.' />
       </MasterLayout>
     </>
   );
