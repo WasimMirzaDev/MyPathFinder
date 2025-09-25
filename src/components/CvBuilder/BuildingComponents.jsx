@@ -434,7 +434,7 @@ export default function BuildingComponents() {
 
             {/* File Type Selection */}
             <Form.Group className="mb-3">
-              <Form.Label>Document Type</Form.Label>
+              <Form.Label>Language Style</Form.Label>
               <Form.Select
                 value={uploadFormData.fileType}
                 onChange={(e) => setUploadFormData({
@@ -443,10 +443,15 @@ export default function BuildingComponents() {
                 })}
               >
                 <option value="">Select document type...</option>
-                <option value="resume">Resume</option>
-                <option value="cv">CV</option>
-                <option value="portfolio">Portfolio</option>
-                <option value="other">Other</option>
+                <option value="Professional">Professional</option>
+                <option value="Creative">Creative</option>
+                <option value="Analytical">Analytical</option>
+                <option value="ResultsDriven">ResultsDriven</option>
+                <option value="Strategic">Strategic</option>
+                <option value="Technical">Technical</option>
+                <option value="Collaborative">Collaborative</option>
+                <option value="Entrepreneurial">Entrepreneurial</option>
+
               </Form.Select>
             </Form.Group>
 
