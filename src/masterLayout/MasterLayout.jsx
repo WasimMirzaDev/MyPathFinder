@@ -375,7 +375,7 @@ const MasterLayout = ({ children }) => {
             </div>
           </div>
         </footer>
-        <div className="modal fade" id="searchBoxModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true" data-phoenix-modal="data-phoenix-modal">
+        <div className="modal fade" id="searchBoxModal" tabIndex="-1" aria-hidden="true" data-bs-backdrop="true" data-phoenix-modal="data-phoenix-modal">
           <div className="modal-dialog">
             <div className="modal-content mt-15 rounded-pill">
               <div className="modal-body p-0">
