@@ -36,7 +36,7 @@ export default function BuildingComponents() {
 
   // State for upload form data
   const [uploadFormData, setUploadFormData] = useState({
-    fileType: '',
+    languageStyle: '',
     additionalInfo: ''
   });
 
@@ -58,7 +58,7 @@ export default function BuildingComponents() {
   const handleCloseUploadModal = () => {
     setShowUploadModal(false);
     setSelectedFile(null);
-    setUploadFormData({ fileType: '', additionalInfo: '' });
+    setUploadFormData({ languageStyle: '', additionalInfo: '' });
   };
 
   const handleShowUploadModal = (file) => {
@@ -188,8 +188,8 @@ export default function BuildingComponents() {
     formData.append('file', file);
 
     // Add additional info if provided
-    if (uploadFormData.fileType) {
-      formData.append('fileType', uploadFormData.fileType);
+    if (uploadFormData.languageStyle) {
+      formData.append('languageStyle', uploadFormData.languageStyle);
     }
     if (uploadFormData.additionalInfo) {
       formData.append('additionalInfo', uploadFormData.additionalInfo);
@@ -436,10 +436,10 @@ export default function BuildingComponents() {
             <Form.Group className="mb-3">
               <Form.Label>Language Style</Form.Label>
               <Form.Select
-                value={uploadFormData.fileType}
+                value={uploadFormData.languageStyle}
                 onChange={(e) => setUploadFormData({
                   ...uploadFormData,
-                  fileType: e.target.value
+                  languageStyle: e.target.value
                 })}
               >
                 <option value="">Select document type...</option>
