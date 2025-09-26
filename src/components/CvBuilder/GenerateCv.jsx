@@ -110,6 +110,9 @@ export default function CVBuilder() {
             setActiveTab("tabDesign"); // toggle if same, else set new
         } else if (activeTab == "tabDesign") {
             setActiveTab("tabAnalysis"); // toggle if same, else set new
+            if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
+                handleAnalyze();
+            }
         }
     }
 
@@ -153,6 +156,58 @@ export default function CVBuilder() {
     }
 
 
+    useEffect(() => {
+        const fetchData = async () => {
+            if (parsedResume?.languageStyle) {
+                // setActiveTab("tabAnalysis");
+                Swal.info
+                if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
+                    try {
+                        const returnAction = await dispatch(analyzeResumeAi({
+                            languageStyle: parsedResume?.languageStyle ?? null,
+                            headline: parsedResume?.headline,
+                            summary: parsedResume?.summary,
+                            workExperience: parsedResume?.workExperience?.map((item) => item.workExperienceDescription)
+                        })).unwrap();
+    
+                        if (returnAction?.data) {
+                            // Create a single updated resume object
+                            const updatedResume = { ...parsedResume };
+                            
+                            // Update headline if exists in response
+                            if (returnAction.data.headline?.suggested_paragraph) {
+                                updatedResume.headline = returnAction.data.headline.suggested_paragraph;
+                            }
+                            
+                            // Update summary if exists in response
+                            if (returnAction.data.summary?.suggested_paragraph) {
+                                updatedResume.summary = returnAction.data.summary.suggested_paragraph;
+                            }
+                            
+                            // Update work experiences
+                            if (Array.isArray(returnAction.data.workExperience)) {
+                                updatedResume.workExperience = updatedResume.workExperience?.map((item, index) => {
+                                    const suggested = returnAction.data.workExperience[index]?.suggested_paragraph;
+                                    return suggested 
+                                        ? { ...item, workExperienceDescription: suggested }
+                                        : item;
+                                }) || [];
+                            }
+                            
+                            // Dispatch a single update
+                            dispatch(setParsedResume(updatedResume));
+                        }
+                    } catch (error) {
+                        console.error('Error analyzing resume:', error);
+                    }
+                }
+            }
+        };
+    
+        fetchData();
+    }, [parsedResume?.languageStyle]);
+
+
 
 
     const zoomIn = () => {
@@ -175,6 +230,7 @@ export default function CVBuilder() {
 
     const handleAnalyze = () => {
         dispatch(analyzeResumeAi({
+            languageStyle: parsedResume?.languageStyle ?? null,
             headline: parsedResume?.headline,
             summary: parsedResume?.summary,
             workExperience: parsedResume?.workExperience?.map((item) => item.workExperienceDescription)
@@ -411,22 +467,33 @@ export default function CVBuilder() {
     }
 
 
-    const handleApplyWorkExp = (index) => {
+    const handleApplyWorkExp = (index, returnAction = null) => {
         // clone the parsedResume object
         const updatedResume = { ...parsedResume };
-
-        // clone workExperience array
-        const updatedWorkExperience = [...updatedResume.workExperience];
-
-        // replace only the description at the given index
-        updatedWorkExperience[index] = {
-            ...updatedWorkExperience[index],
-            workExperienceDescription: AnalyseResumeData.workExperience[index].suggested_paragraph,
-        };
-
-        // assign updated array back
-        updatedResume.workExperience = updatedWorkExperience;
-
+    
+        // Ensure workExperience exists and has the item at the given index
+        if (!updatedResume.workExperience?.[index]) {
+            console.error('Invalid work experience index or work experience not found');
+            return;
+        }
+    
+        // Get the suggested paragraph from either returnAction or AnalyseResumeData
+        const suggestedParagraph = 
+            returnAction?.data?.workExperience?.[index]?.suggested_paragraph ||
+            AnalyseResumeData?.workExperience?.[index]?.suggested_paragraph;
+    
+        if (!suggestedParagraph) {
+            console.error('No suggested paragraph found for work experience at index', index);
+            return;
+        }
+    
+        // Update the work experience description
+        updatedResume.workExperience = updatedResume.workExperience.map((item, i) => 
+            i === index 
+                ? { ...item, workExperienceDescription: suggestedParagraph }
+                : item
+        );
+    
         // dispatch back to redux
         dispatch(setParsedResume(updatedResume));
     };
@@ -453,17 +520,21 @@ export default function CVBuilder() {
     };
 
 
-    const handleApply = (type) => {
+    const handleApply = (type, returnAction = null) => {
         const updatedResume = { ...parsedResume };
-
+    
         if (type === "headline") {
-            updatedResume.headline = AnalyseResumeData.headline.suggested_paragraph;
+            const suggestedHeadline = returnAction?.data?.headline?.suggested_paragraph || 
+                                   (AnalyseResumeData?.headline?.suggested_paragraph ?? '');
+            updatedResume.headline = suggestedHeadline;
         }
-
+    
         if (type === "summary") {
-            updatedResume.summary = AnalyseResumeData.summary.suggested_paragraph;
+            const suggestedSummary = returnAction?.data?.summary?.suggested_paragraph || 
+                                  (AnalyseResumeData?.summary?.suggested_paragraph ?? '');
+            updatedResume.summary = suggestedSummary;
         }
-
+    
         dispatch(setParsedResume(updatedResume));
     };
 
@@ -523,6 +594,15 @@ export default function CVBuilder() {
         dispatch(updateField({ path: "summary", value: SummarySuggestions }));
     };
 
+
+
+    const handleRemovePhoto = () => {
+        setProfilePic(null); // Clear the profile picture
+        dispatch(updateField({ path: "profilePic", value: null }));
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''; // Reset the file input
+        }
+      };
     // Handle avatar upload
     const handleAvatarUpload = (e) => {
         // const file = e.target.files[0];
@@ -1060,46 +1140,85 @@ Cover Letter
                                                                 <div className="card border-0">
                                                                     {/* Avatar + Name/Headline */}
                                                                     <div className="row g-3 mb-3">
-                                                                        <div className="col-md-3 col-4">
-                                                                            <div className="border rounded d-flex flex-column justify-content-center align-items-center overflow-hidden" style={{ height: '120px' }}>
-                                                                                {profilePic || (parsedResume?.profilePic) ? (
-                                                                                    <img
-                                                                                        src={profilePic || parsedResume.profilePic}
-                                                                                        alt="Profile"
-                                                                                        style={{
-                                                                                            width: '100%',
-                                                                                            height: '100%',
-                                                                                            objectFit: 'cover'
-                                                                                        }}
-                                                                                    />
-                                                                                ) : (
-                                                                                    <div className="text-muted">
-                                                                                        <i className="bi bi-person-circle" style={{ fontSize: '3rem' }}></i>
-                                                                                        <div className="small mt-1">Upload Photo</div>
-                                                                                    </div>
-                                                                                )}
-                                                                                <input
-                                                                                    id="avatarInput"
-                                                                                    ref={fileInputRef}
-                                                                                    type="file"
-                                                                                    accept="image/*"
-                                                                                    className="d-none"
-                                                                                    onChange={handleAvatarUpload}
-                                                                                />
-                                                                            </div>
-                                                                            <button
-                                                                                className="btn btn-outline-secondary btn-sm w-100 mt-2"
-                                                                                type="button"
-                                                                                onClick={() => fileInputRef.current.click()}
-                                                                            >
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-upload me-1">
-                                                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                                                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                                                                </svg>
-                                                                                Upload Photo
-                                                                            </button>
-                                                                        </div>
+                                                                    <div className="col-md-3 col-4">
+      <div className="border rounded d-flex flex-column justify-content-center align-items-center overflow-hidden" style={{ height: '120px' }}>
+        {profilePic || parsedResume?.profilePic ? (
+          <img
+            src={profilePic || parsedResume.profilePic}
+            alt="Profile"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        ) : (
+          <div className="text-muted">
+            <i className="bi bi-person-circle" style={{ fontSize: '3rem' }}></i>
+            <div className="small mt-1">Upload Photo</div>
+          </div>
+        )}
+        <input
+          id="avatarInput"
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="d-none"
+          onChange={handleAvatarUpload}
+        />
+      </div>
+      <div className="d-flex flex-column gap-2 mt-2">
+        <button
+          className="btn btn-outline-secondary btn-sm w-100"
+          type="button"
+          onClick={() => fileInputRef.current.click()}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="feather feather-upload me-1"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Upload Photo
+        </button>
+        {(profilePic || parsedResume?.profilePic) && (
+          <button
+            className="btn btn-outline-danger btn-sm w-100"
+            type="button"
+            onClick={handleRemovePhoto}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="feather feather-trash-2 me-1"
+            >
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            Remove Photo
+          </button>
+        )}
+      </div>
+    </div>
                                                                         <div className="col-md-9 col-8">
                                                                             <div className="row g-3">
                                                                                 <div className="col-md-6">
@@ -2612,13 +2731,13 @@ Cover Letter
                                                                     <button
                                                                         className="btn btn-primary w-75"
                                                                         onClick={() => handleApply("headline")}
-                                                                        disabled={AiResumeLoader}>
+                                                                        disabled={AiResumeLoader || parsedResume.headline == AnalyseResumeData.headline.suggested_paragraph}>
                                                                         Apply Suggestion
                                                                     </button>
                                                                     <button
                                                                         className="btn btn-outline-primary w-25"
                                                                         onClick={() => handleUndoApply("headline")}
-                                                                        disabled={AiResumeLoader}>
+                                                                        disabled={AiResumeLoader || parsedResume.headline != AnalyseResumeData.headline.suggested_paragraph}>
                                                                         Undo Suggestion
                                                                     </button>
                                                                 </div>
@@ -2671,13 +2790,13 @@ Cover Letter
                                                                     <button
                                                                         className="btn btn-primary w-75"
                                                                         onClick={() => handleApply("summary")}
-                                                                        disabled={AiResumeLoader}>
+                                                                        disabled={AiResumeLoader || parsedResume.summary == AnalyseResumeData.summary.suggested_paragraph}>
                                                                         Apply Suggestion
                                                                     </button>
                                                                     <button
                                                                         className="btn btn-primary w-25"
                                                                         onClick={() => handleUndoApply("summary")}
-                                                                        disabled={AiResumeLoader}>
+                                                                        disabled={AiResumeLoader || parsedResume.summary != AnalyseResumeData.summary.suggested_paragraph}>
                                                                         Undo Suggestion
                                                                     </button>
                                                                 </div>
@@ -2794,14 +2913,15 @@ Cover Letter
                                                                                             <button
                                                                                                 className="btn btn-primary w-75"
                                                                                                 onClick={() => handleApplyWorkExp(index)}
-                                                                                                disabled={AiResumeLoader}>
+                                                                                                disabled={AiResumeLoader || 
+                                                                                                    parsedResume.workExperience[index]["workExperienceDescription"] == AnalyseResumeData.workExperience[index].suggested_paragraph}>
                                                                                                 Apply Suggestion
                                                                                             </button>
                                                                                             <button
                                                                                                 className="btn btn-primary w-25"
                                                                                                 onClick={() => handleUndoWorkExp(index)}
-                                                                                                disabled={AiResumeLoader}>
-                                                                                                undo Suggestion
+                                                                                                disabled={AiResumeLoader || parsedResume.workExperience[index]["workExperienceDescription"] != AnalyseResumeData.workExperience[index].suggested_paragraph}>
+                                                                                                Undo Suggestion
                                                                                             </button>
                                                                                         </div>
                                                                                     </div>
