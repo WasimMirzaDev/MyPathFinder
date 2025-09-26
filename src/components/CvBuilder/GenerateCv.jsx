@@ -110,9 +110,9 @@ export default function CVBuilder() {
             setActiveTab("tabDesign"); // toggle if same, else set new
         } else if (activeTab == "tabDesign") {
             setActiveTab("tabAnalysis"); // toggle if same, else set new
-            if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
-                handleAnalyze();
-            }
+            // if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
+            //     handleAnalyze();
+            // }
         }
     }
 
@@ -160,8 +160,9 @@ export default function CVBuilder() {
         const fetchData = async () => {
             if (parsedResume?.languageStyle) {
                 // setActiveTab("tabAnalysis");
-                Swal.info
-                if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
+                console.log("I am here");
+                if(!(parsedResume?.analysingDone)){
+                    
                     try {
                         const returnAction = await dispatch(analyzeResumeAi({
                             languageStyle: parsedResume?.languageStyle ?? null,
@@ -171,8 +172,11 @@ export default function CVBuilder() {
                         })).unwrap();
     
                         if (returnAction?.data) {
-                            // Create a single updated resume object
-                            const updatedResume = { ...parsedResume };
+                            // Create a single updated resume object with the new flag
+                            const updatedResume = { 
+                                ...parsedResume,
+                                analysingDone: true  // Add the flag here
+                            };
                             
                             // Update headline if exists in response
                             if (returnAction.data.headline?.suggested_paragraph) {
@@ -186,28 +190,54 @@ export default function CVBuilder() {
                             
                             // Update work experiences
                             if (Array.isArray(returnAction.data.workExperience)) {
-                                updatedResume.workExperience = updatedResume.workExperience?.map((item, index) => {
+                                updatedResume.workExperience = (updatedResume.workExperience || []).map((item, index) => {
                                     const suggested = returnAction.data.workExperience[index]?.suggested_paragraph;
                                     return suggested 
                                         ? { ...item, workExperienceDescription: suggested }
                                         : item;
-                                }) || [];
+                                });
                             }
                             
-                            // Dispatch a single update
+                            // Dispatch the update
                             dispatch(setParsedResume(updatedResume));
+                            
+                            // Save to the server
+                            dispatch(updateResumeById({ id, parsedResume: updatedResume }));
                         }
                     } catch (error) {
                         console.error('Error analyzing resume:', error);
                     }
+                    
                 }
             }
         };
     
         fetchData();
-    }, [parsedResume?.languageStyle]);
+    }, [parsedResume.languageStyle]);
 
 
+
+useEffect(() => {
+    if (AiResumeLoader) {
+        Swal.fire({
+            title: 'Analyzing Resume',
+            html: 'Please wait while we analyze your resume...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    } else {
+        Swal.close();
+    }
+}, [AiResumeLoader]);
+
+
+useEffect(() => {
+    return () => {
+        Swal.close();
+    };
+}, []);
 
 
     const zoomIn = () => {
@@ -461,9 +491,9 @@ export default function CVBuilder() {
 
     const handleAnalysis = () => {
         setActiveTab('tabAnalysis');
-        if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
-            handleAnalyze();
-        }
+        // if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
+        //     handleAnalyze();
+        // }
     }
 
 
@@ -989,7 +1019,7 @@ export default function CVBuilder() {
                                         Design
                                     </button>
                                 </li>
-                                <li className="nav-item" role="presentation">
+                                {/* <li className="nav-item" role="presentation">
                                     <button
                                         className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabAnalysis' ? 'active' : ''}`}
                                         onClick={() => handleAnalysis()}
@@ -999,7 +1029,7 @@ export default function CVBuilder() {
                                             <path fill="currentColor" d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64L0 400c0 44.2 35.8 80 80 80l400 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 416c-8.8 0-16-7.2-16-16L64 64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z"></path>
                                         </svg> Analysis </>}
                                     </button>
-                                </li>
+                                </li> */}
                                 {/* <li className="nav-item" role="presentation">
 <button
 className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabMatching' ? 'active' : ''}`}
@@ -2725,19 +2755,19 @@ Cover Letter
                                                             <div className="mt-3">
                                                                 <h5>Suggested Headline:</h5>
                                                                 <div className="p-3 bg-light rounded mb-3">
-                                                                    {AnalyseResumeData.headline.suggested_paragraph}
+                                                                    {AnalyseResumeData.headline?.suggested_paragraph}
                                                                 </div>
                                                                 <div className='d-flex space-between' style={{ "gap": "15px" }}>
                                                                     <button
                                                                         className="btn btn-primary w-75"
                                                                         onClick={() => handleApply("headline")}
-                                                                        disabled={AiResumeLoader || parsedResume.headline == AnalyseResumeData.headline.suggested_paragraph}>
+                                                                        disabled={AiResumeLoader || parsedResume.headline == AnalyseResumeData?.headline?.suggested_paragraph}>
                                                                         Apply Suggestion
                                                                     </button>
                                                                     <button
                                                                         className="btn btn-outline-primary w-25"
                                                                         onClick={() => handleUndoApply("headline")}
-                                                                        disabled={AiResumeLoader || parsedResume.headline != AnalyseResumeData.headline.suggested_paragraph}>
+                                                                        disabled={AiResumeLoader || parsedResume.headline != AnalyseResumeData?.headline?.suggested_paragraph}>
                                                                         Undo Suggestion
                                                                     </button>
                                                                 </div>
@@ -2790,13 +2820,13 @@ Cover Letter
                                                                     <button
                                                                         className="btn btn-primary w-75"
                                                                         onClick={() => handleApply("summary")}
-                                                                        disabled={AiResumeLoader || parsedResume.summary == AnalyseResumeData.summary.suggested_paragraph}>
+                                                                        disabled={AiResumeLoader || parsedResume?.summary == AnalyseResumeData?.summary?.suggested_paragraph}>
                                                                         Apply Suggestion
                                                                     </button>
                                                                     <button
                                                                         className="btn btn-primary w-25"
                                                                         onClick={() => handleUndoApply("summary")}
-                                                                        disabled={AiResumeLoader || parsedResume.summary != AnalyseResumeData.summary.suggested_paragraph}>
+                                                                        disabled={AiResumeLoader || parsedResume?.summary != AnalyseResumeData?.summary?.suggested_paragraph}>
                                                                         Undo Suggestion
                                                                     </button>
                                                                 </div>
@@ -2914,13 +2944,13 @@ Cover Letter
                                                                                                 className="btn btn-primary w-75"
                                                                                                 onClick={() => handleApplyWorkExp(index)}
                                                                                                 disabled={AiResumeLoader || 
-                                                                                                    parsedResume.workExperience[index]["workExperienceDescription"] == AnalyseResumeData.workExperience[index].suggested_paragraph}>
+                                                                                                    parsedResume?.workExperience[index]["workExperienceDescription"] == AnalyseResumeData?.workExperience[index]?.suggested_paragraph}>
                                                                                                 Apply Suggestion
                                                                                             </button>
                                                                                             <button
                                                                                                 className="btn btn-primary w-25"
                                                                                                 onClick={() => handleUndoWorkExp(index)}
-                                                                                                disabled={AiResumeLoader || parsedResume.workExperience[index]["workExperienceDescription"] != AnalyseResumeData.workExperience[index].suggested_paragraph}>
+                                                                                                disabled={AiResumeLoader || parsedResume?.workExperience[index]["workExperienceDescription"] != AnalyseResumeData?.workExperience[index]?.suggested_paragraph}>
                                                                                                 Undo Suggestion
                                                                                             </button>
                                                                                         </div>

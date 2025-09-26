@@ -56,7 +56,12 @@ export default function Activity({recentActivities }) {
                             </div>
                             <div className="col">
                                 <div className="timeline-item-content ps-6 ps-md-3">
-                                    {item.type != "interview" ? <> <h5 className="fs-9 lh-sm">Created a new CV for ‘{(item?.resume?.cv_resumejson?.candidateName[0]['firstName'] ?? "") + ' ' + (item?.resume?.cv_resumejson?.candidateName[0]['familyName'] ?? "")}’</h5>
+                                    {item.type != "interview" ? <> <h5 className="fs-9 lh-sm">
+    Created a new CV for ‘{
+        (item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || '') + 
+        (item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName ? ' ' + item.resume.cv_resumejson.candidateName[0].familyName : '')
+    }’
+</h5>
                                      <p className="fs-9"><Link className="fw-semibold" onClick={()=>{window.location.href = `/cv-generate/${item?.resume?.id}`}}>View in CV Builder</Link></p>
                                      <p className="fs-9 text-body-secondary mb-5">
   {item?.resume?.cv_resumejson?.headline 
