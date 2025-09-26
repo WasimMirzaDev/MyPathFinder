@@ -181,7 +181,7 @@ const Template11 = ({ resumeData }) => {
           <div key={index} style={styles.eduItem}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <strong style={styles.eduInstitution}>
-                {edu.educationAccreditation}
+                {edu.educationLevel.label}
                 {edu.educationAreaOfStudy && `, ${edu.educationAreaOfStudy}`}
               </strong>
               {edu.educationDates && (

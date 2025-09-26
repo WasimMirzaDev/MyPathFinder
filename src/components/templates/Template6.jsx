@@ -276,7 +276,7 @@ const Template6 = ({ resumeData }) => {
           {resumeData?.education?.length > 0 && !(resumeData?.educationDisabled) &&
             resumeData.education.map((edu, index) => (
               <div key={index} style={{ marginBottom: index === resumeData.education.length - 1 ? 0 : '30px' }}>
-                <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
+                <p style={styles.jobTitle}>{edu.educationLevel.label}</p>
                 <p style={styles.company}>{edu.educationOrganization}</p>
                 {edu.educationDescription && (
                   <p style={{ margin: '8px 0', fontSize: '14px', color: '#333', lineHeight: '1.6',

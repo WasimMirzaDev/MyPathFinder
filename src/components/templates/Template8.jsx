@@ -361,7 +361,7 @@ const Template8 = ({ resumeData }) => {
             {resumeData?.education?.map((edu, index) => (
               <div key={index} style={{ marginBottom: index === resumeData.education.length - 1 ? 0 : '20px' }}>
                 <div style={styles.jobHeader}>
-                  <h3 style={styles.jobTitle}>{edu.educationAccreditation}</h3>
+                  <h3 style={styles.jobTitle}>{edu.educationLevel.label}</h3>
                   <span style={styles.jobDate}>
                     {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
                   </span>

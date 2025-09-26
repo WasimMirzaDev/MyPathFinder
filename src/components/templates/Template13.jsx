@@ -205,7 +205,7 @@ const Template13 = ({ resumeData }) => {
             {resumeData.education.map((edu, index) => (
               <div key={index} style={{ marginBottom: '20px' }}>
                 <div style={styles.pagecontentfull}><strong>{edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}</strong></div>
-                <div style={styles.pagecontentfull}>{edu.educationAccreditation}</div>
+                <div style={styles.pagecontentfull}>{edu.educationLevel.label}</div>
                 {edu.achievedGrade ? <div style={styles.pagecontentfull}> <div style={{display:"flex", gap:"10px"}}> <span style={{fontSize:"17px" , fontWeight:"700"}}>Grade:</span>  {edu.achievedGrade}</div></div> : ""}
                 
                 <div style={styles.pagecontentfull}>{edu.educationOrganization}</div>

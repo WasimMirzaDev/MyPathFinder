@@ -457,7 +457,7 @@ export default function BuildingComponents() {
 
             {/* Additional Information */}
             <Form.Group className="mb-3">
-              <Form.Label>Additional Information (Optional)</Form.Label>
+              <Form.Label>Job Description (Optional)</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}

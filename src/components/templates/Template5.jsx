@@ -234,7 +234,7 @@ const Template5 = ({ resumeData }) => {
               {resumeData.education.map((edu, idx) => (
                 <div key={idx} style={styles.jobEntry}>
                   <p style={styles.jobTitle}>
-                    {edu.educationAccreditation}
+                    {edu.educationLevel.label}
                     <span style={styles.period}>{edu.educationDates?.start?.date} – {edu.educationDates?.end?.date}</span>
                   </p>
                   {edu.achievedGrade ? (
@@ -293,7 +293,6 @@ const Template5 = ({ resumeData }) => {
         default: width = '50%';
       }
 
-      // ✅ must return JSX
       return (
         lang.level == null ? null : (
           <div key={idx} style={styles.languageBar}>

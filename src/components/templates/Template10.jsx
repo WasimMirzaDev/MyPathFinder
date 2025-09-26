@@ -288,7 +288,7 @@ const Template10 = ({ resumeData }) => {
         <h2 style={styles.sectionTitle}>{resumeData?.educationTitle || "Education"}</h2>
         {resumeData?.education?.map((edu, index) => (
           <div key={index} style={styles.education}>
-            <strong>{edu.educationAccreditation}</strong>
+            <strong>{edu.educationLevel.label}</strong>
             <p style={styles.pagecontentfull}>
               {edu.educationOrganization}<br />
 

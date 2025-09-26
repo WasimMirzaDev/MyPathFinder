@@ -173,7 +173,7 @@ const Template12 = ({ resumeData }) => {
                   <p style={styles.date}>
                     {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
                   </p>
-                  <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
+                  <p style={styles.jobTitle}>{edu.educationLevel?.label}</p>
                   <p style={styles.jobInfo}>{edu.educationOrganization}</p>
                   {edu.achievedGrade ? <div style={styles.pagecontentfull}> <div style={{display:"flex", gap:"10px"}}> <span style={{fontSize:"17px" , fontWeight:"700"}}>Grade:</span>  {edu.achievedGrade}</div></div> : ""}
                   {edu.educationDescription && (

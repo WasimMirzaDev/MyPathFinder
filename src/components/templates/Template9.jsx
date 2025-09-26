@@ -238,7 +238,7 @@ const Template9 = ({ resumeData }) => {
                 <p style={styles.jobPeriod}>
                   {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
                 </p>
-                <p style={styles.jobTitle}>{edu.educationAccreditation}</p>
+                <p style={styles.jobTitle}>{edu.educationLevel.label}</p>
                 <p style={styles.company}>{edu.educationOrganization}</p>
                 {edu.achievedGrade? (
                 <p style={styles.company}>{edu.achievedGrade}</p>

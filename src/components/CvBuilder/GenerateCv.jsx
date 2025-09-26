@@ -656,7 +656,10 @@ export default function CVBuilder() {
                     date: eduFormData.eduEndDate
                 }
             },
-            achievedGrade: eduFormData.achievedGrade
+            achievedGrade: eduFormData.achievedGrade,
+            educationLevel: {
+                label: eduFormData.eduDegree
+            }
         }
 
 
@@ -681,7 +684,7 @@ export default function CVBuilder() {
         if (eduToEdit) {
             setEduCurrentForm(eduToEdit);
             setEduFormData({
-                eduDegree: eduToEdit.educationAccreditation,
+                eduDegree: eduToEdit.educationLevel.label,
                 eduInstitution: eduToEdit.educationOrganization,
                 eduStartDate: eduToEdit.educationDates.start.date,
                 eduEndDate: eduToEdit.educationDates.end.date,
@@ -707,6 +710,9 @@ export default function CVBuilder() {
                     end: {
                         date: eduFormData.eduEndDate
                     }
+                },
+                educationLevel: {
+                    label: eduFormData.eduDegree
                 },
                 achievedGrade: eduFormData.achievedGrade
             };
@@ -1430,7 +1436,7 @@ Cover Letter
                                                                                     </svg>
                                                                                 </div>
                                                                                 <div className="content-d">
-                                                                                    <h6 className="edu-degree mb-1">{eduItem.educationAccreditation}</h6>
+                                                                                    <h6 className="edu-degree mb-1">{eduItem.educationLevel.label}</h6>
                                                                                     <h6 className="edu-institute text-muted">{eduItem.educationOrganization}</h6>
                                                                                 </div>
                                                                             </div>
