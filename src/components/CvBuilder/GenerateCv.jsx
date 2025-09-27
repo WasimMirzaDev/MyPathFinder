@@ -40,7 +40,7 @@ const cardTemplate = [
     { name: 'Luxe', template: Template13, image: 'Luxe.png' },
     { name: 'Default', template: Template9, image: 'default1.png' },
     { name: 'Professional', template: Template5, image: 'professional.png', recommended: true },
-    { name: 'Chrono', template: Template6, image: 'chrono.png' },
+    // { name: 'Chrono', template: Template6, image: 'chrono.png' },
     { name: 'Elegant', template: Template7, image: 'elegant.png' },
     { name: 'Modern', template: Template8, image: 'modern.png', recommended: true },
     { name: 'Classic', template: Template12, image: 'classic.png' },
