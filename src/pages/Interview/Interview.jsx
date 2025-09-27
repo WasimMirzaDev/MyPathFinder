@@ -20,10 +20,11 @@ import {
 } from "react-bootstrap";
 
 import axios from "../../utils/axios"
+import { useNavigate } from "react-router-dom";
 
 const Interview = () => {
   const dispatch = useDispatch();
-  
+  const navigate = useNavigate();
   
   const { data } = useSelector((state) => state.user);
   const { history , filters , interviewQuestions} = useSelector((state) => state.interview);
@@ -71,6 +72,8 @@ const Interview = () => {
       const resultAction = await dispatch(getRandomQuestions());
       if (getRandomQuestions.fulfilled.match(resultAction)) {
         console.log("Successfully fetched random questions:", resultAction.payload);
+        const id = resultAction.payload[0]?.id
+        navigate(`/prepration/${id}`);
       } else if (getRandomQuestions.rejected.match(resultAction)) {
         console.error("Failed to fetch random questions:", resultAction.error);
       }

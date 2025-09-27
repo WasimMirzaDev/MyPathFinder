@@ -563,9 +563,9 @@ const VacanciesList = () => {
                 )}
 
               <div className="mb-3">
-                <h6>Apply Options</h6>
+                {/* <h6>Apply Options</h6> */}
                 <div className="d-grid gap-2">
-                  {selectedJob.apply_options &&
+                  {/* {selectedJob.apply_options &&
                     selectedJob.apply_options.map((option, index) => (
                       <Button
                         key={index}
@@ -575,7 +575,7 @@ const VacanciesList = () => {
                       >
                         Apply via {option.publisher}
                       </Button>
-                    ))}
+                    ))} */}
                   {selectedJob.job_apply_link && (
                     <Button
                       variant="primary"
