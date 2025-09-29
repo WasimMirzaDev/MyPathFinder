@@ -161,8 +161,8 @@ export default function CVBuilder() {
             if (parsedResume?.languageStyle) {
                 // setActiveTab("tabAnalysis");
                 console.log("I am here");
-                if(!(parsedResume?.analysingDone)){
-                    
+                if (!(parsedResume?.analysingDone)) {
+
                     try {
                         const returnAction = await dispatch(analyzeResumeAi({
                             languageStyle: parsedResume?.languageStyle ?? null,
@@ -170,74 +170,74 @@ export default function CVBuilder() {
                             summary: parsedResume?.summary,
                             workExperience: parsedResume?.workExperience?.map((item) => item.workExperienceDescription)
                         })).unwrap();
-    
+
                         if (returnAction?.data) {
                             // Create a single updated resume object with the new flag
-                            const updatedResume = { 
+                            const updatedResume = {
                                 ...parsedResume,
                                 analysingDone: true  // Add the flag here
                             };
-                            
+
                             // Update headline if exists in response
                             if (returnAction.data.headline?.suggested_paragraph) {
                                 updatedResume.headline = returnAction.data.headline.suggested_paragraph;
                             }
-                            
+
                             // Update summary if exists in response
                             if (returnAction.data.summary?.suggested_paragraph) {
                                 updatedResume.summary = returnAction.data.summary.suggested_paragraph;
                             }
-                            
+
                             // Update work experiences
                             if (Array.isArray(returnAction.data.workExperience)) {
                                 updatedResume.workExperience = (updatedResume.workExperience || []).map((item, index) => {
                                     const suggested = returnAction.data.workExperience[index]?.suggested_paragraph;
-                                    return suggested 
+                                    return suggested
                                         ? { ...item, workExperienceDescription: suggested }
                                         : item;
                                 });
                             }
-                            
+
                             // Dispatch the update
                             dispatch(setParsedResume(updatedResume));
-                            
+
                             // Save to the server
                             dispatch(updateResumeById({ id, parsedResume: updatedResume }));
                         }
                     } catch (error) {
                         console.error('Error analyzing resume:', error);
                     }
-                    
+
                 }
             }
         };
-    
+
         fetchData();
     }, [parsedResume.languageStyle]);
 
 
 
-useEffect(() => {
-    if (AiResumeLoader) {
-        Swal.fire({
-            title: 'Analyzing Resume',
-            html: 'Please wait while we analyze your resume...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-    } else {
-        Swal.close();
-    }
-}, [AiResumeLoader]);
+    useEffect(() => {
+        if (AiResumeLoader) {
+            Swal.fire({
+                title: 'Analyzing Resume',
+                html: 'Please wait while we analyze your resume...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        } else {
+            Swal.close();
+        }
+    }, [AiResumeLoader]);
 
 
-useEffect(() => {
-    return () => {
-        Swal.close();
-    };
-}, []);
+    useEffect(() => {
+        return () => {
+            Swal.close();
+        };
+    }, []);
 
 
     const zoomIn = () => {
@@ -500,30 +500,30 @@ useEffect(() => {
     const handleApplyWorkExp = (index, returnAction = null) => {
         // clone the parsedResume object
         const updatedResume = { ...parsedResume };
-    
+
         // Ensure workExperience exists and has the item at the given index
         if (!updatedResume.workExperience?.[index]) {
             console.error('Invalid work experience index or work experience not found');
             return;
         }
-    
+
         // Get the suggested paragraph from either returnAction or AnalyseResumeData
-        const suggestedParagraph = 
+        const suggestedParagraph =
             returnAction?.data?.workExperience?.[index]?.suggested_paragraph ||
             AnalyseResumeData?.workExperience?.[index]?.suggested_paragraph;
-    
+
         if (!suggestedParagraph) {
             console.error('No suggested paragraph found for work experience at index', index);
             return;
         }
-    
+
         // Update the work experience description
-        updatedResume.workExperience = updatedResume.workExperience.map((item, i) => 
-            i === index 
+        updatedResume.workExperience = updatedResume.workExperience.map((item, i) =>
+            i === index
                 ? { ...item, workExperienceDescription: suggestedParagraph }
                 : item
         );
-    
+
         // dispatch back to redux
         dispatch(setParsedResume(updatedResume));
     };
@@ -552,19 +552,19 @@ useEffect(() => {
 
     const handleApply = (type, returnAction = null) => {
         const updatedResume = { ...parsedResume };
-    
+
         if (type === "headline") {
-            const suggestedHeadline = returnAction?.data?.headline?.suggested_paragraph || 
-                                   (AnalyseResumeData?.headline?.suggested_paragraph ?? '');
+            const suggestedHeadline = returnAction?.data?.headline?.suggested_paragraph ||
+                (AnalyseResumeData?.headline?.suggested_paragraph ?? '');
             updatedResume.headline = suggestedHeadline;
         }
-    
+
         if (type === "summary") {
-            const suggestedSummary = returnAction?.data?.summary?.suggested_paragraph || 
-                                  (AnalyseResumeData?.summary?.suggested_paragraph ?? '');
+            const suggestedSummary = returnAction?.data?.summary?.suggested_paragraph ||
+                (AnalyseResumeData?.summary?.suggested_paragraph ?? '');
             updatedResume.summary = suggestedSummary;
         }
-    
+
         dispatch(setParsedResume(updatedResume));
     };
 
@@ -630,9 +630,9 @@ useEffect(() => {
         setProfilePic(null); // Clear the profile picture
         dispatch(updateField({ path: "profilePic", value: null }));
         if (fileInputRef.current) {
-          fileInputRef.current.value = ''; // Reset the file input
+            fileInputRef.current.value = ''; // Reset the file input
         }
-      };
+    };
     // Handle avatar upload
     const handleAvatarUpload = (e) => {
         // const file = e.target.files[0];
@@ -1031,27 +1031,27 @@ useEffect(() => {
                                     </button>
                                 </li> */}
                                 {/* <li className="nav-item" role="presentation">
-<button
-className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabMatching' ? 'active' : ''}`}
-onClick={() => setActiveTab('tabMatching')}
->
-<svg width={16} className="svg-inline--fa fa-link" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-<path fill="currentColor" d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"></path>
-</svg>
-Job Matching
-</button>
-</li> */}
+                                <button
+                                className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabMatching' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('tabMatching')}
+                                >
+                                <svg width={16} className="svg-inline--fa fa-link" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                <path fill="currentColor" d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"></path>
+                                </svg>
+                                Job Matching
+                                </button>
+                                </li> */}
                                 {/* <li className="nav-item" role="presentation">
-<button
-className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabCover' ? 'active' : ''}`}
-onClick={() => setActiveTab('tabCover')}
->
-<svg width={10} className="svg-inline--fa fa-file-lines" aria-hidden="true" focusable="false" data-prefix="far" data-icon="file-lines" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-<path fill="currentColor" d="M64 464c-8.8 0-16-7.2-16-16L48 64c0-8.8 7.2-16 16-16l160 0 0 80c0 17.7 14.3 32 32 32l80 0 0 288c0 8.8-7.2 16-16 16L64 464zM64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-293.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0L64 0zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0z"></path>
-</svg>
-Cover Letter
-</button>
-</li> */}
+                                <button
+                                className={`nav-link d-flex align-items-center gap-2 ${activeTab === 'tabCover' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('tabCover')}
+                                >
+                                <svg width={10} className="svg-inline--fa fa-file-lines" aria-hidden="true" focusable="false" data-prefix="far" data-icon="file-lines" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                <path fill="currentColor" d="M64 464c-8.8 0-16-7.2-16-16L48 64c0-8.8 7.2-16 16-16l160 0 0 80c0 17.7 14.3 32 32 32l80 0 0 288c0 8.8-7.2 16-16 16L64 464zM64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-293.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0L64 0zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0z"></path>
+                                </svg>
+                                Cover Letter
+                                </button>
+                                </li> */}
                             </ul>
                             <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume || saveChangesLoader}>{saveChangesLoader ? (<><FiLoader size={14} className="me-2 animate-spin" />Saving...</>) : "Save Changes"}</button>
                         </div>
@@ -1074,7 +1074,7 @@ Cover Letter
                                                     <h2 className="accordion-header" id="headingPersonal">
                                                         <div className="d-flex justify-content-between align-items-center w-100">
                                                             <div className="d-flex align-items-center w-100 gap-2">
-                                                                
+
                                                                 {parsedResume?.editingPersonalTitle ? (
                                                                     <div className="d-flex align-items-center">
                                                                         <input
@@ -1121,8 +1121,8 @@ Cover Letter
                                                                                 )
                                                                             }
                                                                         >
-                                                                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-check">
-                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M5 12l5 5l10 -10" />
                                                                             </svg>
                                                                         </span>
@@ -1148,8 +1148,8 @@ Cover Letter
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
-                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
                                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
                                                                                 <path d="M16 5l3 3" />
@@ -1170,85 +1170,85 @@ Cover Letter
                                                                 <div className="card border-0">
                                                                     {/* Avatar + Name/Headline */}
                                                                     <div className="row g-3 mb-3">
-                                                                    <div className="col-md-3 col-4">
-      <div className="border rounded d-flex flex-column justify-content-center align-items-center overflow-hidden" style={{ height: '120px' }}>
-        {profilePic || parsedResume?.profilePic ? (
-          <img
-            src={profilePic || parsedResume.profilePic}
-            alt="Profile"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
-          />
-        ) : (
-          <div className="text-muted">
-            <i className="bi bi-person-circle" style={{ fontSize: '3rem' }}></i>
-            <div className="small mt-1">Upload Photo</div>
-          </div>
-        )}
-        <input
-          id="avatarInput"
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="d-none"
-          onChange={handleAvatarUpload}
-        />
-      </div>
-      <div className="d-flex flex-column gap-2 mt-2">
-        <button
-          className="btn btn-outline-secondary btn-sm w-100"
-          type="button"
-          onClick={() => fileInputRef.current.click()}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="feather feather-upload me-1"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          Upload Photo
-        </button>
-        {(profilePic || parsedResume?.profilePic) && (
-          <button
-            className="btn btn-outline-danger btn-sm w-100"
-            type="button"
-            onClick={handleRemovePhoto}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="feather feather-trash-2 me-1"
-            >
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-            Remove Photo
-          </button>
-        )}
-      </div>
-    </div>
+                                                                        <div className="col-md-3 col-4">
+                                                                            <div className="border rounded d-flex flex-column justify-content-center align-items-center overflow-hidden" style={{ height: '120px' }}>
+                                                                                {profilePic || parsedResume?.profilePic ? (
+                                                                                    <img
+                                                                                        src={profilePic || parsedResume.profilePic}
+                                                                                        alt="Profile"
+                                                                                        style={{
+                                                                                            width: '100%',
+                                                                                            height: '100%',
+                                                                                            objectFit: 'cover',
+                                                                                        }}
+                                                                                    />
+                                                                                ) : (
+                                                                                    <div className="text-muted">
+                                                                                        <i className="bi bi-person-circle" style={{ fontSize: '3rem' }}></i>
+                                                                                        <div className="small mt-1">Upload Photo</div>
+                                                                                    </div>
+                                                                                )}
+                                                                                <input
+                                                                                    id="avatarInput"
+                                                                                    ref={fileInputRef}
+                                                                                    type="file"
+                                                                                    accept="image/*"
+                                                                                    className="d-none"
+                                                                                    onChange={handleAvatarUpload}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="d-flex flex-column gap-2 mt-2">
+                                                                                <button
+                                                                                    className="btn btn-outline-secondary btn-sm w-100"
+                                                                                    type="button"
+                                                                                    onClick={() => fileInputRef.current.click()}
+                                                                                >
+                                                                                    <svg
+                                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                                        width="24"
+                                                                                        height="24"
+                                                                                        viewBox="0 0 24 24"
+                                                                                        fill="none"
+                                                                                        stroke="currentColor"
+                                                                                        strokeWidth="2"
+                                                                                        strokeLinecap="round"
+                                                                                        strokeLinejoin="round"
+                                                                                        className="feather feather-upload me-1"
+                                                                                    >
+                                                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                                                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                                                    </svg>
+                                                                                    Upload Photo
+                                                                                </button>
+                                                                                {(profilePic || parsedResume?.profilePic) && (
+                                                                                    <button
+                                                                                        className="btn btn-outline-danger btn-sm w-100"
+                                                                                        type="button"
+                                                                                        onClick={handleRemovePhoto}
+                                                                                    >
+                                                                                        <svg
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            width="24"
+                                                                                            height="24"
+                                                                                            viewBox="0 0 24 24"
+                                                                                            fill="none"
+                                                                                            stroke="currentColor"
+                                                                                            strokeWidth="2"
+                                                                                            strokeLinecap="round"
+                                                                                            strokeLinejoin="round"
+                                                                                            className="feather feather-trash-2 me-1"
+                                                                                        >
+                                                                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                                                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                                                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                                                        </svg>
+                                                                                        Remove Photo
+                                                                                    </button>
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
                                                                         <div className="col-md-9 col-8">
                                                                             <div className="row g-3">
                                                                                 <div className="col-md-6">
@@ -1462,12 +1462,16 @@ Cover Letter
                                                                         )
                                                                     }
                                                                 >
-                                                                    <img
+                                                                    {/* <img
                                                                         src={toggleImage}
                                                                         alt="Complete icon"
                                                                         width="28"
                                                                         height="28"
-                                                                    />
+                                                                    /> */}
+                                                                    {!parsedResume?.educationDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    }
                                                                 </button>
                                                                 {parsedResume?.editingEducationTitle ? (
                                                                     <div className="d-flex align-items-center">
@@ -1744,12 +1748,16 @@ Cover Letter
                                                                         )
                                                                     }
                                                                 >
-                                                                    <img
+                                                                    {/* <img
                                                                         src={toggleImage}
                                                                         alt="Complete icon"
                                                                         width="28"
                                                                         height="28"
-                                                                    />
+                                                                    /> */}
+                                                                    {!parsedResume?.employmentDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    }
                                                                 </button>
                                                                 {parsedResume?.editingEmploymentTitle ? (
                                                                     <div className="d-flex align-items-center">
@@ -2043,12 +2051,16 @@ Cover Letter
                                                                         )
                                                                     }
                                                                 >
-                                                                    <img
+                                                                    {/* <img
                                                                         src={toggleImage}
                                                                         alt="Complete icon"
                                                                         width="28"
                                                                         height="28"
-                                                                    />
+                                                                    /> */}
+                                                                    {!parsedResume?.skillsDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    }
                                                                 </button>
                                                                 {parsedResume?.editingSkillsTitle ? (
                                                                     <div className="d-flex align-items-center">
@@ -2274,12 +2286,16 @@ Cover Letter
                                                                         )
                                                                     }
                                                                 >
-                                                                    <img
+                                                                    {/* <img
                                                                         src={toggleImage}
                                                                         alt="Complete icon"
                                                                         width="28"
                                                                         height="28"
-                                                                    />
+                                                                    /> */}
+                                                                    {!parsedResume?.languagesDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    }
                                                                 </button>
                                                                 {parsedResume?.editingLanguagesTitle ? (
                                                                     <div className="d-flex align-items-center">
@@ -2476,12 +2492,16 @@ Cover Letter
                                                                         )
                                                                     }
                                                                 >
-                                                                    <img
+                                                                    {/* <img
                                                                         src={toggleImage}
                                                                         alt="Complete icon"
                                                                         width="28"
                                                                         height="28"
-                                                                    />
+                                                                    /> */}
+                                                                    {!parsedResume?.hobbiesDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    }
                                                                 </button>
                                                                 {parsedResume?.editingHobbiesTitle ? (
                                                                     <div className="d-flex align-items-center">
@@ -2943,7 +2963,7 @@ Cover Letter
                                                                                             <button
                                                                                                 className="btn btn-primary w-75"
                                                                                                 onClick={() => handleApplyWorkExp(index)}
-                                                                                                disabled={AiResumeLoader || 
+                                                                                                disabled={AiResumeLoader ||
                                                                                                     parsedResume?.workExperience[index]["workExperienceDescription"] == AnalyseResumeData?.workExperience[index]?.suggested_paragraph}>
                                                                                                 Apply Suggestion
                                                                                             </button>

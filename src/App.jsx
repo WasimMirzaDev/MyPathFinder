@@ -26,6 +26,8 @@ import F2Verification from "./pages/Auth/F2Verification";
 import Welcome from "./pages/Welcome";
 import UploadProfile from "./pages/Auth/UploadProfile";
 
+import ProfilePage from "./pages/Profile/ProfilePage";
+
 import { useDispatch, useSelector } from "react-redux";
 import { login, getUser, logout } from "./features/user/userSlice";
 import SubscribePlan from "./pages/Subscription/SubscribePlan";
@@ -73,6 +75,7 @@ const protectedRoutes = [
   { path: '/get-started', element: <GetStarted /> },
   { path: '/payment-plans', element: <PaymentPlans /> },
   { path: '/support', element: <Support /> },
+  { path: '/profile', element: <ProfilePage /> },
 ];
 
 
