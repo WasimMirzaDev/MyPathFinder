@@ -108,18 +108,11 @@ export default function CVBuilder() {
     const handleNextTab = () => {
         if (activeTab == "tabPreview") {
             setActiveTab("tabDesign"); // toggle if same, else set new
-        } else if (activeTab == "tabDesign") {
-            setActiveTab("tabAnalysis"); // toggle if same, else set new
-            // if (!AnalyseResumeData || Object.keys(AnalyseResumeData).length === 0) {
-            //     handleAnalyze();
-            // }
-        }
+        } 
     }
 
     const handlePreviousTab = () => {
-        if (activeTab == "tabAnalysis") {
-            setActiveTab("tabDesign"); // toggle if same, else set new
-        } else if (activeTab == "tabDesign") {
+        if (activeTab == "tabDesign") {
             setActiveTab("tabPreview"); // toggle if same, else set new
         }
     }
@@ -3011,7 +3004,7 @@ export default function CVBuilder() {
                                         </button>
                                         <button type="button" className="btn btn-primary d-flex align-items-center gap-2"
                                             onClick={handleNextTab}
-                                            disabled={activeTab == "tabAnalysis"}
+                                            disabled={activeTab == "tabDesign"}
                                         >
                                             Next <span aria-hidden="true">→</span>
                                         </button>

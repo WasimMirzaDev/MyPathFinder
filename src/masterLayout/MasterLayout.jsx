@@ -332,7 +332,7 @@ const MasterLayout = ({ children }) => {
           </li>
           <li className="nav-item dropdown"><Link className="nav-link lh-1 pe-0" id="navbarDropdownUser" to="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
             <div className="avatar avatar-l ">
-              <img className="rounded-circle " src={favicon} alt="" />
+              <img className="rounded-circle " src={data?.profile_img_url || favicon} alt="" />
             </div>
           </Link>
             <div className="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border" aria-labelledby="navbarDropdownUser">
@@ -340,14 +340,14 @@ const MasterLayout = ({ children }) => {
                 <div className="card-body p-0">
                   <div className="text-center pt-4 pb-3">
                     <div className="avatar avatar-xl ">
-                      <img className="rounded-circle " src={favicon} alt="" />
+                      <img className="rounded-circle " src={data?.profile_img_url || favicon} alt="" />
                     </div>
                     <h6 className="mt-2 text-body-emphasis">{data?.name ?? "MPF Admin"}</h6>
                   </div>
                 </div>
                 <div className="overflow-auto scrollbar">
                   <ul className="nav d-flex flex-column mb-2 pb-1">
-                    <li className="nav-item"><Link className="nav-link px-3 d-block" to="#"> <span className="me-2 align-bottom" data-feather="user"></span><span>Profile</span></Link></li>
+                    <li className="nav-item"><Link className="nav-link px-3 d-block" to="/profile-settings"> <span className="me-2 align-bottom" data-feather="user"></span><span>Profile</span></Link></li>
                     <li className="nav-item"><Link className="nav-link px-3 d-block" to="/"><span className="me-2 align-bottom" data-feather="pie-chart"></span>Dashboard</Link></li>
                     <li className="nav-item"><Link className="nav-link px-3 d-block" to="#"> <span className="me-2 align-bottom" data-feather="settings"></span>Settings &amp; Privacy </Link></li>
                     <li className="nav-item"><Link className="nav-link px-3 d-block" to="#"> <span className="me-2 align-bottom" data-feather="help-circle"></span>Help Center</Link></li>

@@ -58,3 +58,12 @@ export const updateUserCompletedSteps = async (formData) => {
   });
   return response.data;
 }
+
+export const updateUserProfileSettings = async (formData) => {
+  const response = await axios.post('/profile-settings', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+}

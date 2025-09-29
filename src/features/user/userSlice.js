@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps } from "./userAPI";
+import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps , updateUserProfileSettings } from "./userAPI";
 import { REHYDRATE } from 'redux-persist';
 
 
@@ -40,6 +40,13 @@ export const updateCompletedSteps = createAsyncThunk(
   "user/update-completed-steps",  // Fixed typo: was "udpate"
   async (formData) => {
     return await updateUserCompletedSteps(formData);
+  }
+);
+
+export const updateProfileSettings = createAsyncThunk(
+  "user/update-profile-settings",  // Fixed typo: was "udpate"
+  async (formData) => {
+    return await updateUserProfileSettings(formData);
   }
 );
 
@@ -165,6 +172,19 @@ const userSlice = createSlice({
         state.success = "steps updated successfully";
       })
       .addCase(updateCompletedSteps.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(updateProfileSettings.pending, (state) => { 
+        // state.completedSteps = [];
+        state.loading = true;
+      })
+      .addCase(updateProfileSettings.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload.user;
+        state.success = "Profile updated successfully";
+      })
+      .addCase(updateProfileSettings.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
