@@ -173,7 +173,7 @@ const VacanciesList = () => {
         sortable: true,
         cell: (row) => (
           <div className="d-flex align-items-center cursor-pointer" onClick={() => { handleJobClick(row.full_job) }}>
-            {row.employer_logo && (
+            {/* {row.employer_logo && (
               <img
                 src={row.employer_logo}
                 alt={row.company}
@@ -185,7 +185,7 @@ const VacanciesList = () => {
                   borderRadius: '4px'
                 }}
               />
-            )}
+            )} */}
             <span className="fw-bold text-primary">
               {row.position.split(' ').length > 7
                 ? row.position.split(' ').slice(0, 7).join(' ') + '...'
@@ -279,7 +279,7 @@ const VacanciesList = () => {
                         <div className="avatar avatar-xl me-3">
                           <img
                             className="rounded-circle"
-                            src={Avatar}
+                            src={data?.profile_img_url || Avatar}
                             alt=""
                           />
                         </div>
@@ -296,20 +296,6 @@ const VacanciesList = () => {
                             </a>
                           </div>
                         </div>
-                      </div>
-                      <div>
-                        <span className="badge badge-phoenix badge-phoenix-secondary me-2">
-                          Skill 1
-                        </span>
-                        <span className="badge badge-phoenix badge-phoenix-secondary me-2">
-                          Skill 2
-                        </span>
-                        <span className="badge badge-phoenix badge-phoenix-secondary me-2">
-                          Skill 3
-                        </span>
-                        <span className="badge badge-phoenix badge-phoenix-secondary">
-                          Skill 4
-                        </span>
                       </div>
                     </div>
                   </div>
