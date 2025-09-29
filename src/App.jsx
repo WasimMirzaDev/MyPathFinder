@@ -25,6 +25,7 @@ import Verification from "./pages/Auth/Verification";
 import F2Verification from "./pages/Auth/F2Verification";
 import Welcome from "./pages/Welcome";
 import UploadProfile from "./pages/Auth/UploadProfile";
+import Feedback from "./pages/Feedback/Feedback";
 
 import ProfilePage from "./pages/Profile/ProfilePage";
 
@@ -66,6 +67,7 @@ const protectedRoutes = [
   { path: '/subscription', element:<SubscribePlan/> },
   { path: '/upload-profile', element: <UploadProfile /> },
   { path: '/question-feedback', element: <InterviewFeedback/>},
+  { path: '/feedback', element: <Feedback/>},
   { path: '/application-tracker', element: <ApplicationTracker /> },
   { path: '/cv-builder', element: <CvBuilder /> },
   { path: '/cv-generate/:id', element: <CvGenerate /> },
