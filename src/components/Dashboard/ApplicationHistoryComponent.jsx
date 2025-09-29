@@ -263,14 +263,14 @@ export default function ApplicationHistory() {
             ),
             minWidth: '250px'
         },
-        {
-            name: (<strong>ACTION</strong>),
-            allowOverflow: true,
-            button: true,
-            cell: row => <ActionDropdown row={row} />,
-            minWidth: '80px',
-            ignoreRowClick: true
-        }
+        // {
+        //     name: (<strong>ACTION</strong>),
+        //     allowOverflow: true,
+        //     button: true,
+        //     cell: row => <ActionDropdown row={row} />,
+        //     minWidth: '80px',
+        //     ignoreRowClick: true
+        // }
     ], [openDropdown]);
 
     const customStyles = {
