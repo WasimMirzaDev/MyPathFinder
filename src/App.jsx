@@ -77,7 +77,7 @@ const protectedRoutes = [
   { path: '/get-started', element: <GetStarted /> },
   { path: '/payment-plans', element: <PaymentPlans /> },
   { path: '/support', element: <Support /> },
-  { path: '/profile', element: <ProfilePage /> },
+  { path: '/profile-settings', element: <ProfilePage /> },
 ];
 
 
