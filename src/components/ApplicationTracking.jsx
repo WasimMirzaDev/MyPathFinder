@@ -1,183 +1,145 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import toggleImage from '../assets/images/P-solid-rgb.svg';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch, useSelector } from "react-redux";
-import { JobAppliedCreate } from "../features/job/jobSlice";
-
+import { fetchAppliedJobs, updateAppliedJob, setAppliedJobs } from "../features/job/jobSlice";
+import alertify from "alertifyjs";
+import "alertifyjs/build/css/alertify.css";
 
 export default function ApplicationTracking() {
-
     const dispatch = useDispatch();
+    const { appliedJobs } = useSelector((state) => state.job);
 
-    // const { data } = useSelector((state) => state.user);
-
-
-    const [data, setData] = useState([
-        {
-            id: 1,
-            position: "Senior Software Developer - Sample Job",
-            positionLink: "#",
-            applicationDate: "June 12, 2025",
-            company: "Vision Launch",
-            cvCreated: false,
-            interviewPractised: false,
-            applied: false,
-            status: "Preparing Application"
-        },
-        {
-            id: 2,
-            position: "IT Technician - Front Desk Support",
-            positionLink: "#",
-            applicationDate: "June 9, 2025",
-            company: "Virgin Media",
-            cvCreated: false,
-            interviewPractised: false,
-            applied: false,
-            status: "Preparing Application"
-        },
-        {
-            id: 3,
-            position: "Graphic Designer - Entry Level",
-            positionLink: "#",
-            applicationDate: "June 9, 2025",
-            company: "Microsoft",
-            cvCreated: false,
-            interviewPractised: false,
-            applied: false,
-            status: "Preparing Application"
-        },
-        {
-            id: 4,
-            position: "Frontend Developer",
-            positionLink: "#",
-            applicationDate: "June 15, 2025",
-            company: "Google",
-            cvCreated: true,
-            interviewPractised: false,
-            applied: true,
-            status: "Application Sent"
-        },
-        {
-            id: 5,
-            position: "Backend Engineer",
-            positionLink: "#",
-            applicationDate: "June 10, 2025",
-            company: "Amazon",
-            cvCreated: true,
-            interviewPractised: true,
-            applied: true,
-            status: "1st Stage Interview"
-        },
-        {
-            id: 6,
-            position: "Frontend Developer",
-            positionLink: "#",
-            applicationDate: "June 15, 2025",
-            company: "Google",
-            cvCreated: true,
-            interviewPractised: false,
-            applied: true,
-            status: "Application Sent"
-        },
-        {
-            id: 7,
-            position: "Backend Engineer",
-            positionLink: "#",
-            applicationDate: "June 10, 2025",
-            company: "Amazon",
-            cvCreated: true,
-            interviewPractised: true,
-            applied: true,
-            status: "1st Stage Interview"
-        }
-    ]);
-
-    const [openDropdown, setOpenDropdown] = useState(null);
-    const dropdownRefs = useRef({});
-
-    const statusOptions = [
-        "Preparing Application",
-        "Application Sent",
-        "Shortlisted",
-        "1st Stage Interview",
-        "2nd Stage Interview",
-        "Final Interview",
-        "On Hold / Awaiting Decision",
-        "Offer Accepted",
-        "Unsuccessful"
-    ];
-
-    const handleStatusChange = (id, newStatus) => {
-        setData(prevData =>
-            prevData.map(item =>
-                item.id === id ? { ...item, status: newStatus } : item
-            )
-        );
-    };
-
-    const handleToggle = (id, field) => {
-        setData(prevData =>
-            prevData.map(item =>
-                item.id === id ? { ...item, [field]: !item[field] } : item
-            )
-        );
-    };
-
-    // Close dropdown when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (openDropdown && dropdownRefs.current[openDropdown] &&
-                !dropdownRefs.current[openDropdown].contains(event.target)) {
-                setOpenDropdown(null);
+        const fetchData = async () => {
+            try {
+                const res = await dispatch(fetchAppliedJobs()).unwrap();
+                console.log("response ", res);
+            } catch (err) {
+                console.error("Failed to fetch applied jobs", err);
             }
         };
+        fetchData();
+    }, [dispatch]);
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [openDropdown]);
+    // ✅ Update job status
+    const handleStatusChange = async (id, newStatus) => {
+        try {
+            await dispatch(updateAppliedJob({ 
+                id, 
+                updates: { status: newStatus } 
+            })).unwrap();
+    
+            // dispatch(setAppliedJobs(prev => {
+            //     const jobsArray = Array.isArray(prev?.data) ? prev.data : Array.isArray(prev) ? prev : [];
+            //     const updated = jobsArray.map(item =>
+            //         item.id === id ? { ...item, status: newStatus } : item
+            //     );
+    
+            //     // Keep original structure if it's `{ data: [] }`
+            //     return Array.isArray(prev?.data) ? { ...prev, data: updated } : updated;
+            // }));
 
-    const ActionDropdown = ({ row }) => {
-        const dropdownRef = useRef(null);
+            const jobsArray = Array.isArray(appliedJobs?.data)
+  ? appliedJobs.data
+  : Array.isArray(appliedJobs)
+  ? appliedJobs
+  : [];
 
-        useEffect(() => {
-            dropdownRefs.current[row.id] = dropdownRef.current;
-            return () => delete dropdownRefs.current[row.id];
-        }, [row.id]);
+const updated = jobsArray.map(item =>
+  item.id === id ? { ...item, status: newStatus } : item
+);
 
-        return (
-            <div className="btn-reveal-trigger position-static" ref={dropdownRef}>
-                <Dropdown align="end"
-                    id="dropdown-menu-align-end">
-                    <Dropdown.Toggle id="example1" className="btn btn-sm dropdown-toggle dropdown-caret-none transition-none btn-reveal fs-10">
-                        <svg className="svg-inline--fa fa-ellipsis fs-10" width={10} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="ellipsis" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                            <path fill="currentColor" d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"></path>
-                        </svg>
-                    </Dropdown.Toggle>
+dispatch(setAppliedJobs(updated));   // ✅ payload is plain array
 
-                    <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1" >
-                            Action
-                        </Dropdown.Item>
-                        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
-            </div>
-        );
+    
+            alertify.success("Status updated successfully ✅");
+        } catch (error) {
+            console.error('Failed to update status:', error);
+            alertify.error("Failed to update status ❌");
+        }
     };
+    
+
+    // ✅ Toggle fields (cvCreated, interviewPractised, applied)
+    const handleToggle = async (id, field) => {
+        try {
+            // First, ensure we have the jobs array
+            const jobsArray = Array.isArray(appliedJobs?.data) 
+                ? appliedJobs.data 
+                : Array.isArray(appliedJobs) 
+                    ? appliedJobs 
+                    : [];
+    
+            // Find the current value from the jobs array
+            const currentItem = jobsArray.find(item => item.id === id);
+            if (!currentItem) {
+                throw new Error('Job not found');
+            }
+    
+            const currentValue = currentItem[field];
+            const newValue = !currentValue;
+    
+            const backendField = {
+                'cvCreated': 'cv_created',
+                'interviewPractised': 'interview_practice',
+                'applied': 'applied'
+            }[field] || field;
+    
+            await dispatch(updateAppliedJob({ 
+                id, 
+                updates: { [backendField]: newValue } 
+            })).unwrap();
+    
+            // Update the Redux state
+            const updated = jobsArray.map(item =>
+                item.id === id ? { 
+                    ...item, 
+                    [field]: newValue,
+                    [backendField]: newValue
+                } : item
+            );
+            
+            dispatch(setAppliedJobs(updated));
+    
+            alertify.success(`${field} updated successfully ✅`);
+        } catch (error) {
+            console.error(`Failed to update ${field}:`, error);
+            alertify.error(`Failed to update ${field} ❌`);
+        }
+    };
+
+    // ✅ Format jobs safely
+    const formattedJobs = useMemo(() => {
+        const jobsArray = Array.isArray(appliedJobs?.data) 
+            ? appliedJobs.data 
+            : Array.isArray(appliedJobs) 
+                ? appliedJobs 
+                : [];
+
+        return jobsArray.map(job => ({
+            id: job.id,
+            position: job.title || job.position || 'No Title',
+            company: job.company || 'No Company',
+            positionLink: job.job?.job_apply_link || job.positionLink || '#',
+            applicationDate: job.created_at 
+                ? new Date(job.created_at).toLocaleDateString() 
+                : job.applicationDate || 'N/A',
+            cvCreated: Boolean(job.cv_created ?? job.cvCreated),
+            interviewPractised: Boolean(job.interview_practice ?? job.interviewPractised),
+            applied: Boolean(job.applied),
+            status: job.status || 'prep'
+        }));
+    }, [appliedJobs]);
 
     const columns = useMemo(() => [
         {
             name: (<strong>JOB POSITION</strong>),
-            selector: row => row.position,
+            selector: row => row?.position,
             sortable: true,
             cell: row => (
-                <a className="fw-bold text-primary text-decoration-none" href={row.positionLink}>
-                    {row.position}
+                <a className="fw-bold text-primary text-decoration-none" href={row?.positionLink}>
+                    {row?.position}
                 </a>
             ),
             minWidth: '300px',
@@ -185,24 +147,24 @@ export default function ApplicationTracking() {
         },
         {
             name: (<strong>APPLICATION</strong>),
-            selector: row => row.applicationDate,
+            selector: row => row?.applicationDate,
             sortable: true,
             cell: row => (
-                <p className="mb-0 fs-9 text-body">{row.applicationDate}</p>
+                <p className="mb-0 fs-9 text-body">{row?.applicationDate}</p>
             ),
             minWidth: '120px'
         },
         {
             name: (<strong>COMPANY</strong>),
-            selector: row => row.company,
+            selector: row => row?.company,
             sortable: true,
             cell: row => (
-                <p className="mb-0 fs-9 text-body">{row.company}</p>
+                <p className="mb-0 fs-9 text-body">{row?.company}</p>
             ),
             minWidth: '120px'
         },
         {
-            name: (<strong>CV CREATED</strong>),
+            name: <strong>CV CREATED</strong>,
             center: true,
             cell: row => (
                 <button
@@ -210,7 +172,6 @@ export default function ApplicationTracking() {
                     type="button"
                     aria-pressed={row.cvCreated}
                     onClick={() => handleToggle(row.id, 'cvCreated')}
-                    title="Mark as complete"
                 >
                     <img
                         src={toggleImage}
@@ -231,11 +192,10 @@ export default function ApplicationTracking() {
             center: true,
             cell: row => (
                 <button
-                    className={`icon-toggle border-0 bg-transparent ${row.interviewPractised ? 'is-active' : ''}`}
+                    className={`icon-toggle border-0 bg-transparent ${row?.interviewPractised ? 'is-active' : ''}`}
                     type="button"
-                    aria-pressed={row.interviewPractised}
-                    onClick={() => handleToggle(row.id, 'interviewPractised')}
-                    title="Mark as complete"
+                    aria-pressed={row?.interviewPractised}
+                    onClick={() => handleToggle(row?.id, 'interviewPractised')}
                 >
                     <img
                         src={toggleImage}
@@ -243,7 +203,7 @@ export default function ApplicationTracking() {
                         width="28"
                         height="28"
                         style={{
-                            opacity: row.interviewPractised ? 1 : 0.3,
+                            opacity: row?.interviewPractised ? 1 : 0.3,
                             transition: 'opacity 0.2s ease'
                         }}
                     />
@@ -256,11 +216,10 @@ export default function ApplicationTracking() {
             center: true,
             cell: row => (
                 <button
-                    className={`icon-toggle border-0 bg-transparent ${row.applied ? 'is-active' : ''}`}
+                    className={`icon-toggle border-0 bg-transparent ${row?.applied ? 'is-active' : ''}`}
                     type="button"
-                    aria-pressed={row.applied}
-                    onClick={() => handleToggle(row.id, 'applied')}
-                    title="Mark as complete"
+                    aria-pressed={row?.applied}
+                    onClick={() => handleToggle(row?.id, 'applied')}
                 >
                     <img
                         src={toggleImage}
@@ -268,7 +227,7 @@ export default function ApplicationTracking() {
                         width="28"
                         height="28"
                         style={{
-                            opacity: row.applied ? 1 : 0.3,
+                            opacity: row?.applied ? 1 : 0.3,
                             transition: 'opacity 0.2s ease'
                         }}
                     />
@@ -277,7 +236,7 @@ export default function ApplicationTracking() {
             minWidth: '100px'
         },
         {
-            name: (<strong>STATUS</strong>),
+            name: <strong>STATUS</strong>,
             cell: row => (
                 <select
                     className="form-select form-select-sm"
@@ -286,52 +245,27 @@ export default function ApplicationTracking() {
                     style={{ minWidth: '200px' }}
                 >
                     {statusOptions.map(option => (
-                        <option key={option} value={option}>
-                            {option}
+                        <option key={option.value} value={option.value}>
+                            {option.label}
                         </option>
                     ))}
                 </select>
             ),
             minWidth: '250px'
-        },
-        // {
-        //     name: (<strong>ACTION</strong>),
-        //     allowOverflow: true,
-        //     button: true,
-        //     cell: row => <ActionDropdown row={row} />,
-        //     minWidth: '80px',
-        //     ignoreRowClick: true
-        // }
-    ], [openDropdown]);
+        }
+    ], [appliedJobs]);
 
-    const customStyles = {
-        headRow: {
-            style: {
-                fontWeight: 'bold',
-                minHeight: '52px',
-            },
-        },
-        headCells: {
-            style: {
-                paddingLeft: '12px',
-                paddingRight: '12px',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-            },
-        },
-        cells: {
-            style: {
-                fontSize: '0.875rem',
-                padding: '16px'
-            },
-        },
-        pagination: {
-            style: {
-                borderBottomLeftRadius: '0.375rem',
-                borderBottomRightRadius: '0.375rem',
-            },
-        },
-    };
+    const statusOptions = [
+        { value: 'prep', label: 'Preparing Application' },
+        { value: 'appSent', label: 'Application Sent' },
+        { value: 'shortListed', label: 'Shortlisted' },
+        { value: '1stInterview', label: '1st Stage Interview' },
+        { value: '2ndInterview', label: '2nd Stage Interview' },
+        { value: 'finalInterview', label: 'Final Interview' },
+        { value: 'onHold', label: 'On Hold' },
+        { value: 'OfferAcctepted', label: 'Offer Accepted' },
+        { value: 'UnSuccessful', label: 'Unsuccessful' }
+    ];
 
     return (
         <div className="row mt-3">
@@ -339,7 +273,7 @@ export default function ApplicationTracking() {
                 <div className="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis pt-6 border-top">
                     <DataTable
                         columns={columns}
-                        data={data}
+                        data={formattedJobs}
                         pagination
                         paginationPerPage={5}
                         paginationRowsPerPageOptions={[5, 10, 25, 50]}
@@ -349,7 +283,6 @@ export default function ApplicationTracking() {
                             </div>
                         }
                         responsive
-                        customStyles={customStyles}
                         className="border-top border-translucent"
                     />
                 </div>

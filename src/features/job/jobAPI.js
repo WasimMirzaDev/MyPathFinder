@@ -16,3 +16,18 @@ export const UserJobAppliedCreate = async (formData) => {
   });
   return response.data;
 }
+
+
+export const fetchUserAppliedJobs = async () => {
+  const response = await axios.get("/applied-jobs"); // e.g. /me endpoint
+  return response.data;
+};
+
+export const UserJobAppliedUpdate = async (id, updates) => {
+  const response = await axios.put(`/update-applied-app/${id}`, updates, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return response.data;
+}

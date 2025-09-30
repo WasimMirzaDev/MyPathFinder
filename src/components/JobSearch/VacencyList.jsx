@@ -89,8 +89,6 @@ const VacanciesList = () => {
 
 
   const handleJobClick = (job) => {
-    
-    dispatch(JobAppliedCreate(formData));
     setSelectedJob(job);
     setShowModal(true);
   };
@@ -101,22 +99,23 @@ const VacanciesList = () => {
     setSelectedJob(null);
   };
 
-  const handleJobRedirect = async (link) => {
+  const handleJobRedirect = async (job, link) => {
     try {
+      // Create a new object with proper boolean values
       const jobData = {
         job: job,
-        title: job.title || 'No Title',
-        company: job.company || 'No Company',
-        cv_created: false,
-        interview_practice: false,
-        applied: false,
-        status: 'prep'
+        title: job.job_title || 'No Title',
+        company: job.employer_name || 'No Company',
+        status: 'prep' // Update status to reflect application sent
       };
       
-      await dispatch(JobAppliedCreate(jobData)).unwrap();
+      // Convert to JSON and back to ensure proper typing
+      const sanitizedData = JSON.parse(JSON.stringify(jobData));
+      
+      await dispatch(JobAppliedCreate(sanitizedData)).unwrap();
     } catch (error) {
       console.error('Error saving job application:', error);
-      // Still show the modal even if saving fails
+      // Still proceed with the redirect even if saving fails
     }
     try {
       const formData = new FormData();
@@ -582,7 +581,7 @@ const VacanciesList = () => {
                   {selectedJob.job_apply_link && (
                     <Button
                       variant="primary"
-                      onClick={() => handleJobRedirect(selectedJob.job_apply_link)}
+                      onClick={() => handleJobRedirect(selectedJob,selectedJob.job_apply_link)}
                     >
                       Apply Now
                     </Button>

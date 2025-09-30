@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus, FiLoader, FiDownload } from "react-icons/fi";
 import Swal from 'sweetalert2';
-import avatar from '../../assets/images/team/150x150/57.webp'
+import avatar from '../../assets/images/default_avatar.jpeg'
 import {
     ModernTemplate,
     ClassicTemplate,
