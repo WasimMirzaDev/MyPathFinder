@@ -4,10 +4,9 @@ import Avatar from '../../assets/images/MPF-180x180.png'
 import { Button, Modal, Badge } from "react-bootstrap";
 import { FiSearch } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchJobs, setfilteredJobs } from "../../features/job/jobSlice";
+import { fetchJobs, setfilteredJobs , JobAppliedCreate } from "../../features/job/jobSlice";
 import { PulseLoader } from "react-spinners";
 import { updateCompletedSteps } from "../../features/user/userSlice";
-
 const VacanciesList = () => {
   const dispatch = useDispatch();
 
@@ -90,6 +89,8 @@ const VacanciesList = () => {
 
 
   const handleJobClick = (job) => {
+    
+    dispatch(JobAppliedCreate(formData));
     setSelectedJob(job);
     setShowModal(true);
   };
@@ -101,6 +102,22 @@ const VacanciesList = () => {
   };
 
   const handleJobRedirect = async (link) => {
+    try {
+      const jobData = {
+        job: job,
+        title: job.title || 'No Title',
+        company: job.company || 'No Company',
+        cv_created: false,
+        interview_practice: false,
+        applied: false,
+        status: 'prep'
+      };
+      
+      await dispatch(JobAppliedCreate(jobData)).unwrap();
+    } catch (error) {
+      console.error('Error saving job application:', error);
+      // Still show the modal even if saving fails
+    }
     try {
       const formData = new FormData();
       formData.append("applied_job", "true"); // Send as string "true"

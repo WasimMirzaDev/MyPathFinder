@@ -129,7 +129,7 @@ const ProfileHeader = ({ userData }) => (
           <div className="profile-info">
             <h1 className="profile-name">{userData.firstName} {userData.lastName}</h1>
             <p className="profile-email">{userData.email}</p>
-            <div className="profile-stats">
+            {/* <div className="profile-stats">
               <div className="stat-item">
                 <div className="stat-value">245</div>
                 <div className="stat-label">Followers</div>
@@ -142,7 +142,7 @@ const ProfileHeader = ({ userData }) => (
                 <div className="stat-value">42</div>
                 <div className="stat-label">Posts</div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -399,7 +399,7 @@ const SubscriptionCard = ({
   primaryAction, 
   secondaryAction 
   }) => (
-  <div className={`subscription-card ${badgeType || ''}`}>
+  <div className={`subscription-card premium`}>
     <div className="d-flex justify-content-between align-items-center mb-3">
       <div>
         <span className="subscription-title">{title}</span>

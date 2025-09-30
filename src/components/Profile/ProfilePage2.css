@@ -213,7 +213,6 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  border-top: 4px solid var(--phoenix-primary);
 }
 
 .subscription-card:hover {
@@ -294,7 +293,6 @@
 }
 
 .card-header {
-  border-top: 4px solid var(--phoenix-primary);
   /* color: white; */
   border-radius: var(--radius) var(--radius) 0 0 !important;
   padding: 15px 20px;

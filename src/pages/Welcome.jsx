@@ -11,12 +11,12 @@ export default function Welcome() {
                 <div className="row gy-3 mb-4 justify-content-between">
                     <div className="col-md-12 col-auto pb-3">
                         <div className="d-flex flex-center text-decoration-none mb-4">
-                            <img src={logo} alt="Mypathfinder logo" width="200" />
+                            <img src={logo} alt="MyPathfinder logo" width="200" />
                         </div>
                         <div className="card-body position-relative">
                             <h1 className="mb-2 fw-semibold text-white text-center">Where do you want to start?</h1>
                             <h3 className="text-white fs-7 fw-normal lh-lg text-center">
-                                Mypathfinder curates job opportunities that match your profile, allowing you to apply
+                                MyPathfinder curates job opportunities that match your profile, allowing you to apply
                                 quickly and efficiently.
                             </h3>
                         </div>

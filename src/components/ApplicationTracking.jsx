@@ -3,8 +3,17 @@ import DataTable from "react-data-table-component";
 import toggleImage from '../assets/images/P-solid-rgb.svg';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from "react-redux";
+import { JobAppliedCreate } from "../features/job/jobSlice";
+
 
 export default function ApplicationTracking() {
+
+    const dispatch = useDispatch();
+
+    // const { data } = useSelector((state) => state.user);
+
+
     const [data, setData] = useState([
         {
             id: 1,

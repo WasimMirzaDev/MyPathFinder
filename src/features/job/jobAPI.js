@@ -7,3 +7,12 @@ export const fetchUserJobs = async (formData) => {
 //   console.log("request hit",response.data);
   return response.data;
 };
+
+export const UserJobAppliedCreate = async (formData) => {
+  const response = await axios.post('/apply-job', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+}
