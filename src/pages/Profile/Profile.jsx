@@ -1,12 +1,12 @@
 import React from "react";
 import MasterLayout from "../../masterLayout/MasterLayout";
-import ProfileComponent from "../../components/Profile/Profile";
+import ProfilePage from "../../components/Profile/ProfilePage";
 
 const Profile = () => {
   return (
     <>
       <MasterLayout>
-        <ProfileComponent />
+        <ProfilePage />
       </MasterLayout>
     </>
   );

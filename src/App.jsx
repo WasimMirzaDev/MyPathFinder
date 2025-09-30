@@ -27,7 +27,8 @@ import Welcome from "./pages/Welcome";
 import UploadProfile from "./pages/Auth/UploadProfile";
 import Feedback from "./pages/Feedback/Feedback";
 
-import ProfilePage from "./pages/Profile/ProfilePage";
+import ProfileSetting from "./pages/Profile/ProfileSetting";
+import ProfilePage from "./pages/Profile/Profile";
 
 import { useDispatch, useSelector } from "react-redux";
 import { login, getUser, logout } from "./features/user/userSlice";
@@ -77,7 +78,8 @@ const protectedRoutes = [
   { path: '/get-started', element: <GetStarted /> },
   { path: '/payment-plans', element: <PaymentPlans /> },
   { path: '/support', element: <Support /> },
-  { path: '/profile-settings', element: <ProfilePage /> },
+  { path: '/profile-settings', element: <ProfileSetting /> },
+  { path: '/profile', element: <ProfilePage /> },
 ];
 
 
