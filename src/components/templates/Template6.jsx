@@ -120,6 +120,9 @@ const Template6 = ({ resumeData }) => {
               <p style={styles.date}>
                   {job.workExperienceDates?.start?.date} - {job.workExperienceDates?.end?.date || 'Present'}
               </p>
+              <p style={styles.profile}>
+                {job.workExperienceDescription}
+              </p>
                 {job.highlights?.items?.length > 0 && (
                <ul style={styles.bulletList}>
                    {job.highlights.items.map((point, i) => (
