@@ -2255,7 +2255,7 @@ onClick={() => {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.skillsDisabled ? (
-                                                                <div className="card border-0">
+                                                                <div className="card border-0 p-2">
                                                                     <div className="border rounded p-3">
                                                                         <label className="form-label">Add Skills (one per line)</label>
                                                                         <div className='d-flex'>
