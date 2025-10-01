@@ -92,8 +92,7 @@ const Template6 = ({ resumeData }) => {
       {/* Profile */}
       <h2 style={styles.sectionTitle}>Profile</h2>
       <p style={styles.profile}>
-        {resumeData?.summary ||
-          "Results-focused partnerships professional with 6+ years’ experience..."}
+        {resumeData?.summary?.paragraph}
       </p>
 
       {/* Two Column Layout */}
@@ -102,45 +101,32 @@ const Template6 = ({ resumeData }) => {
         <div style={styles.leftColumn}>
           <h2 style={styles.sectionTitle}>Key Skills</h2>
           <ul style={styles.bulletList}>
-            {(resumeData?.skills || [
-              "Strategic Account Growth & Retention",
-              "SaaS & Recruitment Technology Solutions",
-              "Client Success & Stakeholder Engagement",
-              "Business Development & Contract Negotiation",
-              "Team Leadership & Coaching",
-              "Revenue Expansion & Partnership Management",
-            ]).map((skill, i) => (
-              <li key={i}>{skill}</li>
-            ))}
+            {(resumeData?.skill).map((skill, index) => (
+          <li key={index} style={styles.sidebarListItem}>
+             {skill.name || skill}
+          </li>
+        ))}
           </ul>
         </div>
 
         {/* Right Column */}
         <div style={styles.rightColumn}>
           <h2 style={styles.sectionTitle}>Experience</h2>
-          {(resumeData?.workExperience || [
-            {
-              jobTitle: "Head of Partnerships",
-              organization: "Genius Group",
-              start: "Dec 2022",
-              end: "Present",
-              description: `Oversaw business development and account growth across 60+ clients within SaaS recruitment and employee engagement solutions.\nDefined and implemented growth strategies post-merger, ensuring seamless client transitions.`,
-            },
-          ]).map((job, index) => (
+          {(resumeData?.workExperience).map((job, index) => (
             <div key={index} style={{ marginBottom: "20px" }}>
               <p style={styles.jobTitle}>
-                {job.jobTitle} | {job.organization}
+                {job.workExperienceJobTitle} | {job.workExperienceOrganization}
               </p>
               <p style={styles.date}>
-                {job.start} – {job.end || "Present"}
+                  {job.workExperienceDates?.start?.date} - {job.workExperienceDates?.end?.date || 'Present'}
               </p>
-              {job.description && (
-                <ul style={styles.bulletList}>
-                  {job.description.split("\n").map((line, i) => (
-                    <li key={i}>{line}</li>
-                  ))}
-                </ul>
-              )}
+                {job.highlights?.items?.length > 0 && (
+               <ul style={styles.bulletList}>
+                   {job.highlights.items.map((point, i) => (
+                      <li key={i} style={styles.bulletItem}>{point.bullet}</li>
+                    ))}
+                 </ul>
+                )}
             </div>
           ))}
         </div>
