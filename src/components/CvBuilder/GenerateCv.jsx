@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus, FiLoader, FiDownload } from "react-icons/fi";
 import Swal from 'sweetalert2';
+import BulletPointsEditor from './BulletPointsEditor';
 import avatar from '../../assets/images/default_avatar.jpeg'
 import {
     ModernTemplate,
@@ -149,64 +150,64 @@ export default function CVBuilder() {
     }
 
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (parsedResume?.languageStyle) {
-                // setActiveTab("tabAnalysis");
-                console.log("I am here");
-                if (!(parsedResume?.analysingDone)) {
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         if (parsedResume?.languageStyle) {
+    //             // setActiveTab("tabAnalysis");
+    //             console.log("I am here");
+    //             if (!(parsedResume?.analysingDone)) {
 
-                    try {
-                        const returnAction = await dispatch(analyzeResumeAi({
-                            languageStyle: parsedResume?.languageStyle ?? null,
-                            headline: parsedResume?.headline,
-                            summary: parsedResume?.summary,
-                            workExperience: parsedResume?.workExperience?.map((item) => item.workExperienceDescription)
-                        })).unwrap();
+    //                 try {
+    //                     const returnAction = await dispatch(analyzeResumeAi({
+    //                         languageStyle: parsedResume?.languageStyle ?? null,
+    //                         headline: parsedResume?.headline,
+    //                         summary: parsedResume?.summary,
+    //                         workExperience: parsedResume?.workExperience?.map((item) => item.workExperienceDescription)
+    //                     })).unwrap();
 
-                        if (returnAction?.data) {
-                            // Create a single updated resume object with the new flag
-                            const updatedResume = {
-                                ...parsedResume,
-                                analysingDone: true  // Add the flag here
-                            };
+    //                     if (returnAction?.data) {
+    //                         // Create a single updated resume object with the new flag
+    //                         const updatedResume = {
+    //                             ...parsedResume,
+    //                             analysingDone: true  // Add the flag here
+    //                         };
 
-                            // Update headline if exists in response
-                            if (returnAction.data.headline?.suggested_paragraph) {
-                                updatedResume.headline = returnAction.data.headline.suggested_paragraph;
-                            }
+    //                         // Update headline if exists in response
+    //                         if (returnAction.data.headline?.suggested_paragraph) {
+    //                             updatedResume.headline = returnAction.data.headline.suggested_paragraph;
+    //                         }
 
-                            // Update summary if exists in response
-                            if (returnAction.data.summary?.suggested_paragraph) {
-                                updatedResume.summary = returnAction.data.summary.suggested_paragraph;
-                            }
+    //                         // Update summary if exists in response
+    //                         if (returnAction.data.summary?.suggested_paragraph) {
+    //                             updatedResume.summary = returnAction.data.summary.suggested_paragraph;
+    //                         }
 
-                            // Update work experiences
-                            if (Array.isArray(returnAction.data.workExperience)) {
-                                updatedResume.workExperience = (updatedResume.workExperience || []).map((item, index) => {
-                                    const suggested = returnAction.data.workExperience[index]?.suggested_paragraph;
-                                    return suggested
-                                        ? { ...item, workExperienceDescription: suggested }
-                                        : item;
-                                });
-                            }
+    //                         // Update work experiences
+    //                         if (Array.isArray(returnAction.data.workExperience)) {
+    //                             updatedResume.workExperience = (updatedResume.workExperience || []).map((item, index) => {
+    //                                 const suggested = returnAction.data.workExperience[index]?.suggested_paragraph;
+    //                                 return suggested
+    //                                     ? { ...item, workExperienceDescription: suggested }
+    //                                     : item;
+    //                             });
+    //                         }
 
-                            // Dispatch the update
-                            dispatch(setParsedResume(updatedResume));
+    //                         // Dispatch the update
+    //                         dispatch(setParsedResume(updatedResume));
 
-                            // Save to the server
-                            dispatch(updateResumeById({ id, parsedResume: updatedResume }));
-                        }
-                    } catch (error) {
-                        console.error('Error analyzing resume:', error);
-                    }
+    //                         // Save to the server
+    //                         dispatch(updateResumeById({ id, parsedResume: updatedResume }));
+    //                     }
+    //                 } catch (error) {
+    //                     console.error('Error analyzing resume:', error);
+    //                 }
 
-                }
-            }
-        };
+    //             }
+    //         }
+    //     };
 
-        fetchData();
-    }, [parsedResume.languageStyle]);
+    //     fetchData();
+    // }, [parsedResume.languageStyle]);
 
 
 
@@ -255,7 +256,7 @@ export default function CVBuilder() {
         dispatch(analyzeResumeAi({
             languageStyle: parsedResume?.languageStyle ?? null,
             headline: parsedResume?.headline,
-            summary: parsedResume?.summary,
+            summary: parsedResume?.summary?.paragraph,
             workExperience: parsedResume?.workExperience?.map((item) => item.workExperienceDescription)
         }));
     };
@@ -543,38 +544,38 @@ export default function CVBuilder() {
     };
 
 
-    const handleApply = (type, returnAction = null) => {
-        const updatedResume = { ...parsedResume };
+    // const handleApply = (type, returnAction = null) => {
+    //     const updatedResume = { ...parsedResume };
 
-        if (type === "headline") {
-            const suggestedHeadline = returnAction?.data?.headline?.suggested_paragraph ||
-                (AnalyseResumeData?.headline?.suggested_paragraph ?? '');
-            updatedResume.headline = suggestedHeadline;
-        }
+    //     if (type === "headline") {
+    //         const suggestedHeadline = returnAction?.data?.headline?.suggested_paragraph ||
+    //             (AnalyseResumeData?.headline?.suggested_paragraph ?? '');
+    //         updatedResume.headline = suggestedHeadline;
+    //     }
 
-        if (type === "summary") {
-            const suggestedSummary = returnAction?.data?.summary?.suggested_paragraph ||
-                (AnalyseResumeData?.summary?.suggested_paragraph ?? '');
-            updatedResume.summary = suggestedSummary;
-        }
+    //     if (type === "summary") {
+    //         const suggestedSummary = returnAction?.data?.summary?.suggested_paragraph ||
+    //             (AnalyseResumeData?.summary?.suggested_paragraph ?? '');
+    //         updatedResume.summary?.paragraph = suggestedSummary;
+    //     }
 
-        dispatch(setParsedResume(updatedResume));
-    };
+    //     dispatch(setParsedResume(updatedResume));
+    // };
 
 
-    const handleUndoApply = (type) => {
-        const updatedResume = { ...parsedResume };
+    // const handleUndoApply = (type) => {
+    //     const updatedResume = { ...parsedResume };
 
-        if (type === "headline") {
-            updatedResume.headline = AnalyseResumeData.headline.original;
-        }
+    //     if (type === "headline") {
+    //         updatedResume.headline = AnalyseResumeData.headline.original;
+    //     }
 
-        if (type === "summary") {
-            updatedResume.summary = AnalyseResumeData.summary.original;
-        }
+    //     if (type === "summary") {
+    //         updatedResume.summary = AnalyseResumeData.summary.original;
+    //     }
 
-        dispatch(setParsedResume(updatedResume));
-    };
+    //     dispatch(setParsedResume(updatedResume));
+    // };
 
 
     // State for form fields
@@ -866,13 +867,13 @@ export default function CVBuilder() {
     const expHandleAddExperience = () => {
         // Check if there's already an incomplete form
         const hasIncomplete = expItems.some(item => !item.expIsComplete);
-
+    
         if (hasIncomplete) {
             toast.error('Please complete the current experience form before adding a new one');
             return;
         }
-
-        // Create a new incomplete experience item
+    
+        // Create a new incomplete experience item with highlights
         const expNewItem = {
             expId: Date.now(),
             expJobTitle: '',
@@ -880,27 +881,29 @@ export default function CVBuilder() {
             expStartDate: '',
             expEndDate: '',
             expDescription: '',
+            expIsComplete: false,
+            highlights: {
+                items: []
+            }
+        };
+    
+        const dispatchExperienceList = {
+            workExperienceJobTitle: expNewItem.expJobTitle,
+            workExperienceOrganization: expNewItem.expCompany,
+            workExperienceDates: {
+                start: { date: expNewItem.expStartDate },
+                end: { date: expNewItem.expEndDate }
+            },
+            highlights: {
+                items: []
+            },
             expIsComplete: false
         };
-
-
-        const dispatchExperienceList = {
-            workExperienceDescription: expNewItem.expDescription,
-            workExperienceDates: {
-                start: {
-                    date: expNewItem.expStartDate
-                },
-                end: {
-                    date: expNewItem.expEndDate
-                }
-            },
-            workExperienceOrganization: expNewItem.expCompany,
-            workExperienceJobTitle: expNewItem.expJobTitle
-        }
-
-        dispatch(updateField({ path: "workExperience", value: [...parsedResume.workExperience, dispatchExperienceList] }));
-
-        // setExpItems([...expItems, expNewItem]);
+    
+        dispatch(updateField({ 
+            path: "workExperience", 
+            value: [...parsedResume.workExperience, dispatchExperienceList] 
+        }));
     };
 
     // Handle input changes for incomplete items
@@ -1405,11 +1408,11 @@ export default function CVBuilder() {
                                                                                 className="form-control"
                                                                                 placeholder="Describe your professional background, key skills, achievements, and career goals. Be specific about technologies, methodologies, and results..."
                                                                                 name="summary"
-                                                                                value={parsedResume?.summary || ''}
+                                                                                value={parsedResume?.summary?.paragraph || ''}
                                                                                 onChange={(e) =>
                                                                                     dispatch(
                                                                                         updateField({
-                                                                                            path: "summary",
+                                                                                            path: "summary.paragraph",
                                                                                             value: e.target.value
                                                                                         })
                                                                                     )
@@ -1959,15 +1962,120 @@ export default function CVBuilder() {
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div className="mb-2">
-                                                                                        <label className="form-label">Description (Optional)</label>
-                                                                                        <textarea
-                                                                                            rows="5"
-                                                                                            className="form-control"
-                                                                                            value={expItem.workExperienceDescription}
-                                                                                            onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceDescription', value: e.target.value }))}
-                                                                                        ></textarea>
-                                                                                    </div>
+                                                                                    <div className="mb-3">
+                                                                                    <div className="mb-3">
+        <label className="form-label">Additional Notes (Optional)</label>
+        <textarea
+            rows="3"
+            className="form-control"
+            value={expItem.workExperienceDescription || ''}
+            onChange={(e) => dispatch(updateField({ 
+                path: 'workExperience.' + expIndex + '.workExperienceDescription', 
+                value: e.target.value 
+            }))}
+            placeholder="Any additional details about this role"
+        ></textarea>
+    </div>
+    <div className="d-flex justify-content-between align-items-center mb-2">
+        <label className="form-label">Key Achievements</label>
+        <button 
+            type="button" 
+            className="btn btn-sm btn-outline-primary"
+// Update the onClick handler for adding a new bullet point
+onClick={() => {
+    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
+        if (idx === expIndex) {
+            // Create a new work experience item with updated highlights
+            return {
+                ...item,
+                highlights: {
+                    ...item.highlights,
+                    items: [
+                        ...(item.highlights?.items || []),
+                        { id: Date.now(), bullet: '' }
+                    ]
+                }
+            };
+        }
+        return item;
+    });
+
+    dispatch(updateField({
+        path: 'workExperience',
+        value: updatedExperience
+    }));
+}}
+        >
+            <FiPlus size={14} className="me-1" /> Add Bullet Point
+        </button>
+    </div>
+    
+    {expItem.highlights?.items?.map((bullet, bulletIndex) => (
+        <div key={bullet.id || bulletIndex} className="d-flex align-items-start mb-2">
+            <span className="me-2 mt-2">•</span>
+            <div className="flex-grow-1">
+                <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    value={bullet.bullet}
+                   // Update the onChange handler for editing a bullet point
+onChange={(e) => {
+    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
+        if (idx === expIndex) {
+            return {
+                ...item,
+                highlights: {
+                    ...item.highlights,
+                    items: item.highlights.items.map((b, i) => 
+                        i === bulletIndex 
+                            ? { ...b, bullet: e.target.value }
+                            : b
+                    )
+                }
+            };
+        }
+        return item;
+    });
+
+    dispatch(updateField({
+        path: 'workExperience',
+        value: updatedExperience
+    }));
+}}
+                    placeholder="Enter achievement or responsibility"
+                />
+            </div>
+            <button
+                type="button"
+                className="btn btn-sm btn-link text-danger ms-2"
+// Update the onClick handler for removing a bullet point
+onClick={() => {
+    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
+        if (idx === expIndex) {
+            return {
+                ...item,
+                highlights: {
+                    ...item.highlights,
+                    items: item.highlights.items.filter((_, i) => i !== bulletIndex)
+                }
+            };
+        }
+        return item;
+    });
+
+    dispatch(updateField({
+        path: 'workExperience',
+        value: updatedExperience
+    }));
+}}
+            >
+                <FiTrash2 size={14} />
+            </button>
+        </div>
+    ))}
+
+
+</div>
                                                                                     <div className="d-flex align-items-center justify-content-end gap-2 mt-3">
                                                                                         <button
                                                                                             type="button"
@@ -3080,7 +3188,7 @@ export default function CVBuilder() {
                                                 ...(parsedResume || {
                                                     candidateName: [{ firstName: '', familyName: '' }],
                                                     headline: '',
-                                                    summary: '',
+                                                    summary: [{ paragraph: '' }],
                                                     phoneNumber: [{ formattedNumber: '' }],
                                                     email: [''],
                                                     location: { formatted: '' },

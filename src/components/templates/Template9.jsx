@@ -1,5 +1,5 @@
 import React from 'react';
-import demo_profile from '../../assets/demo_profile.avif';
+import demo_profile from '../../assets/images/default_avatar.jpeg';
 
 const Template9 = ({ resumeData }) => {
   const styles = {
@@ -199,7 +199,7 @@ const Template9 = ({ resumeData }) => {
         {/* Profile Summary */}
         <h2 style={styles.sectionTitle}>Profile</h2>
         <p style={styles.profileText}>
-          {resumeData?.summary || 'Professional summary goes here...'}
+          {resumeData?.summary?.paragraph || 'Professional summary goes here...'}
         </p>
 
         {/* Employment History */}
@@ -215,10 +215,12 @@ const Template9 = ({ resumeData }) => {
                 </p>
                 <p style={styles.jobTitle}>{job.workExperienceJobTitle}</p>
                 <p style={styles.company}>{job.workExperienceOrganization}</p>
-                {job.workExperienceDescription && (
+                <p>{job.workExperienceDescription ?? ""}</p>
+                <h5>Key Achievements</h5>
+                {job.highlights?.items?.length > 0 && (
                   <ul style={styles.bulletList}>
-                    {job.workExperienceDescription.split('\n').map((item, i) => (
-                      <li key={i} style={styles.bulletItem}>{item}</li>
+                    {job.highlights.items.map((item, i) => (
+                      <li key={i} style={styles.bulletItem}>{item.bullet}</li>
                     ))}
                   </ul>
                 )}
@@ -226,6 +228,8 @@ const Template9 = ({ resumeData }) => {
             ))}
           </>
         )}
+
+
 
         {/* Education */}
         {resumeData?.education?.length > 0 && !(resumeData?.educationDisabled) && (
@@ -253,6 +257,23 @@ const Template9 = ({ resumeData }) => {
               </div>
             ))}
           </>
+        )}
+
+        {!(resumeData?.skillsDisabled) && (
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.skillsTitle || 'Skills'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {(resumeData?.skill || [])
+                .filter(skill => skill.selected)
+                .map((skill, index) => (
+                  <li key={index} style={styles.sidebarListItem}>
+                     {skill.name || skill}
+                  </li>
+                ))}
+            </ul>
+          </div>
         )}
       </div>
     </div>

@@ -303,23 +303,31 @@ const isNextDisabled = () => {
                                     {currentStep === 1 ? 'Cancel' : 'Back'}
                                 </Button>
 
-                                {(currentStep == 1 || currentStep < 3) && filters?.questionType?.slug == "IND" ? (
-                                    <Button 
-                                        variant="primary" 
-                                        onClick={handleNextStep}
-                                        disabled={isNextDisabled() || isLoading}
-                                    >
-                                        Next
-                                    </Button>
-                                ) : (
-                                    <Button 
-                                        variant="success" 
-                                        onClick={handleFinish}
-                                        disabled={isNextDisabled() || isLoading}
-                                    >
-                                        Start Practicing
-                                    </Button>
-                                )}
+{(currentStep === 1 || currentStep === 2) && filters?.questionType?.slug === "IND" ? (
+    <Button 
+        variant="primary" 
+        onClick={handleNextStep}
+        disabled={isNextDisabled() || isLoading}
+    >
+        Next
+    </Button>
+) : currentStep === 1 ? (
+    <Button 
+        variant="primary" 
+        onClick={handleNextStep}
+        disabled={isNextDisabled() || isLoading}
+    >
+        Next
+    </Button>
+) : (
+    <Button 
+        variant="success" 
+        onClick={handleFinish}
+        disabled={isNextDisabled() || isLoading}
+    >
+        Start Practicing
+    </Button>
+)}
                             </div>
 
                             <div className="text-center mt-3 text-muted">

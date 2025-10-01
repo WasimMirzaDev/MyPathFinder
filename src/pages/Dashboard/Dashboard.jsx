@@ -6,6 +6,7 @@ import DashboardComponents from '../../components/Dashboard/ControlComponents';
 import InterviewHistory from '../../components/Dashboard/InterviewHistoryComponent';
 import Activity from '../../components/Dashboard/Activity';
 import ApplicationHistory from '../../components/Dashboard/ApplicationHistoryComponent';
+import ApplicationTracking from "../../components/ApplicationTracking";
 import axios from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -94,7 +95,7 @@ const handleRedirectActivity = (activity) => {
           </div>
         </div>
 
-        <ApplicationHistory />
+        <ApplicationTracking />
 
       </MasterLayout>
     </>

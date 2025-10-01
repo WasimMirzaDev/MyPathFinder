@@ -705,7 +705,6 @@ export default function Prepration() {
                                         ref={videoRef}
                                         src={`${baseUrl}/videos/MPF Interview Questions/${currentQuestion?.question?.title.replace(/\?+$/, '_')}.mp4`}
                                         autoPlay
-                                        muted
                                         playsInline
                                         controls={false}
                                         disablePictureInPicture
@@ -723,7 +722,6 @@ export default function Prepration() {
                                         ref={videoRef}
                                         src={`${baseUrl}/videos/MPF Interview Filler/Avatar ${currentQuestion?.question?.avatar} FILLER.mp4`}
                                         autoPlay
-                                        muted
                                         playsInline
                                         controls={false}
                                         disablePictureInPicture
