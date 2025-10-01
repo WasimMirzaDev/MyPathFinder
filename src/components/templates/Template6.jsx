@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+import demo_profile from '../../assets/demo_profile.avif';
 
 const Template6 = ({ resumeData }) => {
   const styles = {

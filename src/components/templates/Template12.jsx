@@ -1,5 +1,5 @@
 import React from 'react';
-import demo_profile from '../../assets/demo_profile.avif';
+import demo_profile from '../../assets/images/default_avatar.jpeg';
 
 const Template12 = ({ resumeData }) => {
   const styles = {
@@ -158,7 +158,7 @@ const Template12 = ({ resumeData }) => {
         <section style={styles.section}>
           <div style={styles.sectionTitle}>Profile</div>
           <div style={styles.sectionContent}>
-            <p>{resumeData?.summary || 'Professional summary goes here...'}</p>
+            <p>{resumeData?.summary?.paragraph || 'Professional summary goes here...'}</p>
           </div>
         </section>
         </>
@@ -175,6 +175,7 @@ const Template12 = ({ resumeData }) => {
                   </p>
                   <p style={styles.jobTitle}>{edu.educationLevel?.label}</p>
                   <p style={styles.jobInfo}>{edu.educationOrganization}</p>
+                  
                   {edu.achievedGrade ? <div style={styles.pagecontentfull}> <div style={{display:"flex", gap:"10px"}}> <span style={{fontSize:"17px" , fontWeight:"700"}}>Grade:</span>  {edu.achievedGrade}</div></div> : ""}
                   {edu.educationDescription && (
                     <ul style={styles.ul}>
@@ -201,10 +202,12 @@ const Template12 = ({ resumeData }) => {
                   </p>
                   <p style={styles.jobTitle}>{job.workExperienceJobTitle}</p>
                   <p style={styles.jobInfo}>{job.workExperienceOrganization}</p>
-                  {job.workExperienceDescription && (
+                  <p>{job.workExperienceDescription ?? ""}</p>
+                  <h5>Key Achievements</h5>
+                  {job.highlights?.items?.length > 0 && (
                     <ul style={styles.ul}>
-                      {job.workExperienceDescription.split('\n').map((desc, i) => (
-                        <li key={i} style={styles.li}>{desc}</li>
+                      {job.highlights.items.map((point, i) => (
+                        <li key={i} style={styles.li}>{point.bullet}</li>
                       ))}
                     </ul>
                   )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import demo_profile from '../../assets/demo_profile.avif';
+import demo_profile from '../../assets/images/default_avatar.jpeg';
 
 const Template8 = ({ resumeData }) => {
   const styles = {
@@ -323,7 +323,7 @@ const Template8 = ({ resumeData }) => {
         <div style={styles.contentSection}>
           <h2 style={styles.contentTitle}>Professional Summary</h2>
           <p style={styles.contentText}>
-            {resumeData?.summary || 'Professional summary goes here...'}
+            {resumeData?.summary?.paragraph || 'Professional summary goes here...'}
           </p>
         </div>
 
@@ -341,10 +341,12 @@ const Template8 = ({ resumeData }) => {
                   </span>
                 </div>
                 <div style={styles.companyName}>{job.workExperienceOrganization}</div>
-                {job.workExperienceDescription && (
+                <p>{job.workExperienceDescription ?? ""}</p>
+                <h5>Key Achievements</h5>
+                {job.highlights?.items?.length > 0 && (
                   <ul style={styles.bulletList}>
-                    {job.workExperienceDescription.split('\n').map((item, i) => (
-                      <li key={i} style={styles.bulletItem}>{item}</li>
+                    {job.highlights.items.map((point, i) => (
+                      <li key={i} style={styles.bulletItem}>{point.bullet}</li>
                     ))}
                   </ul>
                 )}

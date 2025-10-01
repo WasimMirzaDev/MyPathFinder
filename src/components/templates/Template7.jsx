@@ -1,5 +1,5 @@
 import React from 'react';
-import demo_profile from '../../assets/demo_profile.avif';
+import demo_profile from '../../assets/images/default_avatar.jpeg';
 import { color } from 'framer-motion';
 
 const Template7 = ({ resumeData }) => {
@@ -209,7 +209,7 @@ const Template7 = ({ resumeData }) => {
           <div>
             <h2 style={styles.sectionTitle}>{resumeData?.profileTitle?.toUpperCase() || 'PROFILE'}</h2>
             <p style={styles.sectionText}>
-              {resumeData?.summary || 'Professional summary goes here...'}
+              {resumeData?.summary?.paragraph || 'Professional summary goes here...'}
             </p>
           </div>
         )}
@@ -227,10 +227,12 @@ const Template7 = ({ resumeData }) => {
                   </span>
                 </div>
                 <span style={styles.company}>{job.workExperienceOrganization}</span>
-                {job.workExperienceDescription && (
+                <p>{job.workExperienceDescription ?? ""}</p>
+                <h5>Key Achievements</h5>
+                {job.highlights?.items?.length > 0 && (
                   <ul style={styles.bulletList}>
-                    {job.workExperienceDescription.split('\n').map((item, i) => (
-                      <li key={i}>{item}</li>
+                    {job.highlights.items.map((point, i) => (
+                      <li key={i} style={styles.bulletItem}>{point.bullet}</li>
                     ))}
                   </ul>
                 )}

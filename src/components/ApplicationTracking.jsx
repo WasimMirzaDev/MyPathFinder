@@ -53,10 +53,10 @@ const updated = jobsArray.map(item =>
 dispatch(setAppliedJobs(updated));   // ✅ payload is plain array
 
     
-            alertify.success("Status updated successfully ✅");
+            // alertify.success("Status updated successfully ✅");
         } catch (error) {
             console.error('Failed to update status:', error);
-            alertify.error("Failed to update status ❌");
+            // alertify.error("Failed to update status ❌");
         }
     };
     
@@ -102,10 +102,10 @@ dispatch(setAppliedJobs(updated));   // ✅ payload is plain array
             
             dispatch(setAppliedJobs(updated));
     
-            alertify.success(`${field} updated successfully ✅`);
+            // alertify.success(`${field} updated successfully ✅`);
         } catch (error) {
             console.error(`Failed to update ${field}:`, error);
-            alertify.error(`Failed to update ${field} ❌`);
+            // alertify.error(`Failed to update ${field} ❌`);
         }
     };
 

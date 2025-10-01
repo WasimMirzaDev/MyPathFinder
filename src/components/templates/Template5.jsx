@@ -1,5 +1,5 @@
 import React from 'react';
-import demo_profile from '../../assets/demo_profile.avif';
+import demo_profile from '../../assets/images/default_avatar.jpeg';
 
 const Template5 = ({ resumeData }) => {
   console.log(resumeData);
@@ -203,10 +203,10 @@ const Template5 = ({ resumeData }) => {
         {/* Left Section */}
         <div style={styles.leftSection}>
           {/* Profile Summary */}
-          {!(resumeData?.profileDisabled) && resumeData?.summary && (
+          {!(resumeData?.profileDisabled) && resumeData?.summary?.paragraph && (
             <section style={styles.section}>
               <h2 style={styles.sectionTitle}>{resumeData?.profileTitle || 'Profile'}</h2>
-              <p style={styles.sectionText}>{resumeData.summary}</p>
+              <p style={styles.sectionText}>{resumeData.summary?.paragraph}</p>
             </section>
           )}
 
@@ -221,7 +221,15 @@ const Template5 = ({ resumeData }) => {
                     <span style={styles.period}>{job.workExperienceDates?.start?.date} – {job.workExperienceDates?.end?.date || 'Present'}</span>
                   </p>
                   <p style={styles.company}>{job.workExperienceOrganization}</p>
-                  <p style={styles.sectionText}>{job.workExperienceDescription}</p>
+                  <p>{job.workExperienceDescription ?? ""}</p>
+                  <h5>Key Achievements</h5>
+                  <p style={styles.sectionText}>{job.highlights?.items?.length > 0 && (
+                    <ul style={styles.bulletList}>
+                      {job.highlights.items.map((point, i) => (
+                        <li key={i} style={styles.bulletItem}>{point.bullet}</li>
+                      ))}
+                    </ul>
+                  )}</p>
                 </div>
               ))}
             </section>
