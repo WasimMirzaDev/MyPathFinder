@@ -34,11 +34,17 @@ const Template6 = ({ resumeData }) => {
       fontWeight: "600",
       color: "#2585E0",
       margin: "20px 0 8px",
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     profile: {
       fontSize: "14px",
       color: "#333",
       marginBottom: "20px",
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     leftColumn: {
       width: "100%",
@@ -51,24 +57,41 @@ const Template6 = ({ resumeData }) => {
       padding: 0,
       fontSize: "14px",
       color: "#333",
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     jobTitle: {
       fontSize: "14px",
       fontWeight: "600",
       color: "#2585E0",
       margin: "0 0 2px",
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     company: {
       fontSize: "14px",
       fontWeight: "500",
       color: "#000",
       margin: "0 0 6px",
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
     date: {
       fontSize: "13px",
       color: "#777",
       marginBottom: "8px",
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
     },
+    pagecontentfull: {
+      pageBreakInside: "avoid",
+      pageBreakBefore: "auto",
+      pageBreakAfter: "auto",
+    }
   };
 
   return (
@@ -105,7 +128,7 @@ const Template6 = ({ resumeData }) => {
           <li key={index} style={styles.sidebarListItem}>
              {skill.name || skill}
           </li>
-        ))}
+             ))}
           </ul>
         </div>
 
@@ -130,6 +153,36 @@ const Template6 = ({ resumeData }) => {
                     ))}
                  </ul>
                 )}
+            </div>
+          ))}
+        </div>
+        <div style={styles.rightColumn}>
+          <h2 style={styles.sectionTitle}>Education</h2>
+          {(resumeData?.education).map((edu, index) => (
+            <div key={index} style={{ marginBottom: "20px" }}>
+              <p style={styles.jobTitle}>
+                {edu.educationLevel.label} | {edu.educationOrganization}
+              </p>
+              {edu.achievedGrade ? (
+                <>
+                  <div className='d-flex' style={styles.pagecontentfull}>
+                    <div>
+                     <strong> Grade: </strong>
+                    </div>
+                    <div className='ms-1'>
+                      {edu.achievedGrade}
+                    </div>
+                  </div>
+                  {/* <br /> */}
+                </>
+              ) : ""}
+              
+              <p style={styles.date}>
+                  {edu.educationDates?.start?.date} - {edu.educationDates?.end?.date}
+              </p>
+              <p style={styles.profile}>
+                {edu.educationDescription}
+              </p>
             </div>
           ))}
         </div>
