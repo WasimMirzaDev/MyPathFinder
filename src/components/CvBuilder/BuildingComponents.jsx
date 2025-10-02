@@ -410,75 +410,131 @@ useEffect(() => {
         </div>
 
         {/* Recent CVs Section */}
-        {Array.isArray(recentCVs) && recentCVs.length > 0 && (
-          <div className="col-12 col-xl-6">
-            <Card className="border h-100 w-100 overflow-hidden position-relative">
-              <Card.Body className="position-relative">
-                <h5 className="mb-3">Recent CVs</h5>
-                <div className="table-responsive">
-                  <table className="table table-hover align-middle mb-0 cv-table">
-                    <thead className="table-light">
-                      <tr>
-                        <th scope="col" className="text-start ps-0 bg-white">CV Title</th>
-                        <th scope="col" className="bg-white">Date Created</th>
-                        <th scope="col" className="bg-white text-end">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recentCVs.map((item, index) => (
-                        <tr key={index}>
-                          <td className="text-start">
-                            {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
-                            {/* ... existing code ... */}
-{item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
-{item?.resume?.cv_resumejson?.headline ? (
-  " | " + 
-  item.resume.cv_resumejson.headline
-    .split(' ')
-    .slice(0, 5)
-    .join(' ') + 
-  (item.resume.cv_resumejson.headline.split(' ').length > 5 ? '...' : '')
-) : ""}
-{/* ... existing code ... */}
-                          </td>
-                          <td>
-                            {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
-                          </td>
-                          <td className="text-end">
-                            <Button
-                              variant="outline-primary"
-                              size="sm"
-                              className="me-2"
-                              href={`/cv-generate/${item?.resume?.id}`}
-                            >
-                              View
-                            </Button>
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              className="me-2"
-                              href={`/cv-generate/${item?.resume?.id}?download=true`}
-                              target="_blank"
-                            >
-                              Download
-                            </Button>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              onClick={() => handleDeleteCv(item?.resume?.id)}
-                              disabled={delResumeLoader}
-                            >
-                              {delResumeLoader ? "Deleting..." : "Delete"}
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Card.Body>
-            </Card>
+        {Array.isArray(recentCVs?.data) && recentCVs?.data?.length > 0 && (
+           
+<>
+{/* Recent CVs Section */}
+{recentCVs?.data?.length > 0 ? (
+  <div className="col-12 col-xl-6">
+    <Card className="border h-100 w-100 overflow-hidden position-relative">
+      <Card.Body className="position-relative">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0">Recent CVs</h5>
+         
+        </div>
+        
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0 cv-table">
+            <thead className="table-light">
+              <tr>
+                <th scope="col" className="text-start ps-0 bg-white">CV Title</th>
+                <th scope="col" className="bg-white">Date Created</th>
+                <th scope="col" className="bg-white text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentCVs?.data.map((item, index) => (
+                <tr key={index}>
+                  <td className="text-start">
+                    {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
+                    {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
+                    {item?.resume?.cv_resumejson?.headline ? (
+                      " | " + 
+                      item.resume.cv_resumejson.headline
+                        .split(' ')
+                        .slice(0, 5)
+                        .join(' ') + 
+                      (item.resume.cv_resumejson.headline.split(' ').length > 5 ? '...' : '')
+                    ) : ""}
+                  </td>
+                  <td>
+                    {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
+                  </td>
+                  <td className="text-end">
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      className="me-2"
+                      href={`/cv-generate/${item?.resume?.id}`}
+                    >
+                      View
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="me-2"
+                      href={`/cv-generate/${item?.resume?.id}?download=true`}
+                      target="_blank"
+                    >
+                      Download
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDeleteCv(item?.resume?.id)}
+                      disabled={delResumeLoader}
+                    >
+                      {delResumeLoader ? "Deleting..." : "Delete"}
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {recentCVs.last_page > 1 && (
+          <div className="d-flex justify-content-center mt-3">
+            <Pagination className="mb-0">
+              <Pagination.First 
+                onClick={() => setCurrentPage(1)} 
+                disabled={currentPage === 1} 
+              />
+              <Pagination.Prev 
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                disabled={currentPage === 1} 
+              />
+              
+              {Array.from({ length: Math.min(5, recentCVs.last_page) }, (_, i) => {
+                let pageNum;
+                if (recentCVs.last_page <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= recentCVs.last_page - 2) {
+                  pageNum = recentCVs.last_page - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+
+                return (
+                  <Pagination.Item 
+                    key={pageNum} 
+                    active={pageNum === currentPage}
+                    onClick={() => setCurrentPage(pageNum)}
+                  >
+                    {pageNum}
+                  </Pagination.Item>
+                );
+              })}
+              
+              <Pagination.Next 
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs.last_page))} 
+                disabled={currentPage === recentCVs.last_page} 
+              />
+              <Pagination.Last 
+                onClick={() => setCurrentPage(recentCVs.last_page)} 
+                disabled={currentPage === recentCVs.last_page} 
+              />
+            </Pagination>
           </div>
+        )}
+      </Card.Body>
+    </Card>
+  </div>
+) : null}
+</>
         )}
       </div>
 

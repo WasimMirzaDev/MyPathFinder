@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
 import Avatar from '../../assets/images/MPF-180x180.png'
-import { Button, Modal, Badge } from "react-bootstrap";
+import { Button, Modal, Badge , Form} from "react-bootstrap";
 import { FiSearch } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchJobs, setfilteredJobs , JobAppliedCreate } from "../../features/job/jobSlice";
@@ -10,6 +10,8 @@ import { getrecentCvsCreated, delCreatedCv , createEmptyResume } from '../../fea
 import { updateCompletedSteps } from "../../features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Pagination } from 'react-bootstrap';
+
 
 const VacanciesList = () => {
   const dispatch = useDispatch();
@@ -146,6 +148,73 @@ const VacanciesList = () => {
     setShowModal(false);
     setSelectedJob(null);
   };
+
+
+
+    // Add these states at the top of your component
+const [currentPage, setCurrentPage] = useState(1);
+const [itemsPerPage, setItemsPerPage] = useState(5); // Default items per page
+
+// Update your useEffect that fetches the data
+useEffect(() => {
+  dispatch(getrecentCvsCreated({ page: currentPage, perPage: itemsPerPage }));
+}, [dispatch, currentPage, itemsPerPage]);
+
+// In your component's return, add the pagination controls
+<div className="d-flex justify-content-between align-items-center mt-3">
+  <div className="d-flex align-items-center">
+    <span className="me-2">Show:</span>
+    <Form.Select 
+      size="sm" 
+      style={{ width: '80px' }} 
+      value={itemsPerPage}
+      onChange={(e) => setItemsPerPage(Number(e.target.value))}
+    >
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+    </Form.Select>
+  </div>
+  
+  <Pagination>
+    <Pagination.First 
+      onClick={() => setCurrentPage(1)} 
+      disabled={currentPage === 1} 
+    />
+    <Pagination.Prev 
+      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+      disabled={currentPage === 1} 
+    />
+    
+    {Array.from({ length: Math.min(5, recentCVs.last_page || 1) }, (_, i) => {
+      const pageNum = Math.max(1, 
+        Math.min(
+          (recentCVs.last_page || 1) - 4,
+          Math.max(1, currentPage - 2)
+        ) + i
+      );
+      return (
+        <Pagination.Item 
+          key={pageNum} 
+          active={pageNum === currentPage}
+          onClick={() => setCurrentPage(pageNum)}
+        >
+          {pageNum}
+        </Pagination.Item>
+      );
+    })}
+    
+    <Pagination.Next 
+      onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs.last_page || 1))} 
+      disabled={currentPage === (recentCVs.last_page || 1)} 
+    />
+    <Pagination.Last 
+      onClick={() => setCurrentPage(recentCVs.last_page || 1)} 
+      disabled={currentPage === (recentCVs.last_page || 1)} 
+    />
+  </Pagination>
+</div>
 
   const handleJobRedirect = async (job, link) => {
     try {
@@ -646,75 +715,141 @@ const VacanciesList = () => {
           </>
         )}
       </Modal>
-      {Array.isArray(recentCVs) && recentCVs.length > 0 && (
+      {Array.isArray(recentCVs?.data) && recentCVs?.data.length > 0 && (
           <div className="col-12">
 
             
-            <Modal 
-              show={showModalMPFCV} 
-              onHide={() => setShowModalMPFCV(false)}
-              size="lg"
-              aria-labelledby="recent-cvs-modal"
-              centered
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>Your Recent CVs</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <div className="table-responsive">
-                  <table className="table table-hover align-middle mb-0 cv-table">
-                    <thead className="table-light">
-                      <tr>
-                        <th scope="col" className="text-start ps-0">CV Title</th>
-                        <th scope="col">Date Created</th>
-                        <th scope="col" className="text-end">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recentCVs.map((item, index) => (
-                        <tr key={index}>
-                          <td className="text-start">
-                            {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
-                            {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
-                          </td>
-                          <td>
-                            {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
-                          </td>
-                          <td className="text-end">
-                            <Button
-                              variant="outline-primary"
-                              size="sm"
-                              className="me-2 mb-1"
-                              href={`/cv-generate/${item?.resume?.id}`}
-                            >
-                              View
-                            </Button>
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              className="me-2 mb-1"
-                              href={`/cv-generate/${item?.resume?.id}?download=true`}
-                              target="_blank"
-                            >
-                              Download
-                            </Button>
-                            
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button onClick={handleManualCV}>
-                  Create new CV
-                </Button>
-                <Button variant="secondary" onClick={() => setShowModalMPFCV(false)}>
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
+<Modal 
+  show={showModalMPFCV} 
+  onHide={() => setShowModalMPFCV(false)}
+  size="lg"
+  aria-labelledby="recent-cvs-modal"
+  centered
+>
+  <Modal.Header closeButton>
+    <Modal.Title>Your Recent CVs</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <div className="container-fluid">
+      <div className="row">
+        {recentCVs?.data?.length > 0 ? (
+          <div className="col-12">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0 cv-table">
+                <thead className="table-light">
+                  <tr>
+                    <th scope="col" className="text-start ps-0">CV Title</th>
+                    <th scope="col">Date Created</th>
+                    <th scope="col" className="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentCVs?.data?.map((item, index) => (
+                    <tr key={index}>
+                      <td className="text-start">
+                        {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
+                        {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
+                        {item?.resume?.cv_resumejson?.headline && (
+                          <>
+                            {" | "}
+                            {item.resume.cv_resumejson.headline
+                              .split(' ')
+                              .slice(0, 5)
+                              .join(' ')}
+                            {item.resume.cv_resumejson.headline.split(' ').length > 5 ? '...' : ''}
+                          </>
+                        )}
+                      </td>
+                      <td>
+                        {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
+                      </td>
+                      <td className="text-end">
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          className="me-2"
+                          href={`/cv-generate/${item?.resume?.id}`}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          className="me-2"
+                          href={`/cv-generate/${item?.resume?.id}?download=true`}
+                          target="_blank"
+                        >
+                          Download
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            {recentCVs?.last_page > 1 && (
+              <div className="d-flex justify-content-center mt-3">
+                <Pagination className="mb-0">
+                  <Pagination.First 
+                    onClick={() => setCurrentPage(1)} 
+                    disabled={currentPage === 1} 
+                  />
+                  <Pagination.Prev 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                    disabled={currentPage === 1} 
+                  />
+                  
+                  {Array.from({ length: Math.min(5, recentCVs?.last_page) }, (_, i) => {
+                    let pageNum;
+                    if (recentCVs?.last_page <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= recentCVs?.last_page - 2) {
+                      pageNum = recentCVs?.last_page - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <Pagination.Item 
+                        key={pageNum} 
+                        active={pageNum === currentPage}
+                        onClick={() => setCurrentPage(pageNum)}
+                      >
+                        {pageNum}
+                      </Pagination.Item>
+                    );
+                  })}
+                  
+                  <Pagination.Next 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs?.last_page))} 
+                    disabled={currentPage === recentCVs?.last_page} 
+                  />
+                  <Pagination.Last 
+                    onClick={() => setCurrentPage(recentCVs?.last_page)} 
+                    disabled={currentPage === recentCVs?.last_page} 
+                  />
+                </Pagination>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="col-12 text-center py-4">
+            <p>No recent CVs found</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button onClick={handleManualCV}>
+      Create New CV
+    </Button>
+  </Modal.Footer>
+</Modal>
           </div>
         )}
     </div>
