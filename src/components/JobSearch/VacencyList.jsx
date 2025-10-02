@@ -697,15 +697,7 @@ const VacanciesList = () => {
                             >
                               Download
                             </Button>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              className="mb-1"
-                              onClick={() => handleDeleteCv(item?.resume?.id)}
-                              disabled={delResumeLoader}
-                            >
-                              {delResumeLoader ? "Deleting..." : "Delete"}
-                            </Button>
+                            
                           </td>
                         </tr>
                       ))}
