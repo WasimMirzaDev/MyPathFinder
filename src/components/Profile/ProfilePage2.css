@@ -198,9 +198,9 @@
   align-items: center;
 }
 
-.section-title i {
+.section-title svg {
   margin-right: 10px;
-  background: var(--phoenix-primary);
+  stroke: var(--phoenix-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

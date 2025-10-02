@@ -74,31 +74,31 @@ const ProfilePage = () => {
     <div className="profile-page">
       {/* Profile Header */}
       <ProfileHeader userData={userData} />
-      
+
       <div className="container">
         {/* Tab Navigation */}
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-        
+
         {/* Tab Content */}
         <div className="tab-content">
           {activeTab === 'personal' && (
             <PersonalInfoTab userData={userData} />
           )}
-          
+
           {activeTab === 'settings' && (
-            <SettingsTab 
-              settings={settings} 
+            <SettingsTab
+              settings={settings}
               onSettingsChange={handleSettingsChange}
               onSubmit={(e) => handleSubmit(e, 'settings')}
             />
           )}
-          
+
           {activeTab === 'subscription' && (
             <SubscriptionTab />
           )}
-          
+
           {activeTab === 'edit' && (
-            <EditProfileTab 
+            <EditProfileTab
               userData={userData}
               passwordData={passwordData}
               onInputChange={handleInputChange}
@@ -108,7 +108,7 @@ const ProfilePage = () => {
           )}
         </div>
       </div>
-    
+
     </div>
   );
 };
@@ -120,10 +120,10 @@ const ProfileHeader = ({ userData }) => (
       <div className="row justify-content-center">
         <div className="col-12 text-center">
           <div className="profile-image-container">
-            <img 
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
-              alt="Profile" 
-              className="profile-image" 
+            <img
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+              alt="Profile"
+              className="profile-image"
             />
           </div>
           <div className="profile-info">
@@ -153,10 +153,10 @@ const ProfileHeader = ({ userData }) => (
 // Tab Navigation Component
 const TabNavigation = ({ activeTab, setActiveTab }) => {
   const tabs = [
-    { id: 'personal', label: 'Personal Info', icon: 'fa-user-circle' },
-    { id: 'settings', label: 'Settings', icon: 'fa-cog' },
-    { id: 'subscription', label: 'Subscription', icon: 'fa-credit-card' },
-    { id: 'edit', label: 'Edit Profile', icon: 'fa-edit' }
+    { id: 'personal', label: 'Personal Info', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05" /></svg>) },
+    { id: 'settings', label: 'Settings', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-adjustments-horizontal"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 6l8 0" /><path d="M16 6l4 0" /><path d="M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 12l2 0" /><path d="M10 12l10 0" /><path d="M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 18l11 0" /><path d="M19 18l1 0" /></svg>) },
+    { id: 'subscription', label: 'Subscription', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-credit-card-pay"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 19h-6a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v4.5" /><path d="M3 10h18" /><path d="M16 19h6" /><path d="M19 16l3 3l-3 3" /><path d="M7.005 15h.005" /><path d="M11 15h2" /></svg>) },
+    { id: 'edit', label: 'Edit Profile', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 9a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M8 16a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2" /></svg> }
   ];
 
   return (
@@ -168,7 +168,7 @@ const TabNavigation = ({ activeTab, setActiveTab }) => {
             onClick={() => setActiveTab(tab.id)}
             type="button"
           >
-            <i className={`fas ${tab.icon}`}></i> {tab.label}
+            {tab.icon} {tab.label}
           </button>
         </li>
       ))}
@@ -178,17 +178,20 @@ const TabNavigation = ({ activeTab, setActiveTab }) => {
 
 // #BA67EF
 
-const userIcon = (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#BA67EF"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05" /></svg>)
-const emailIcon = (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#BA67EF"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg>)
-const phoneIcon = (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#BA67EF"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-phone"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /></svg>)
-const BDIcon = (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#BA67EF"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-cake"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 20h18v-8a3 3 0 0 0 -3 -3h-12a3 3 0 0 0 -3 3v8z" /><path d="M3 14.803c.312 .135 .654 .204 1 .197a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1c.35 .007 .692 -.062 1 -.197" /><path d="M12 4l1.465 1.638a2 2 0 1 1 -3.015 .099l1.55 -1.737z" /></svg>);
-const addressIcon = (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#BA67EF"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" /></svg>);
-const memberIcon = (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#BA67EF"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-week"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M7 14h.013" /><path d="M10.01 14h.005" /><path d="M13.01 14h.005" /><path d="M16.015 14h.005" /><path d="M13.015 17h.005" /><path d="M7.01 17h.005" /><path d="M10.01 17h.005" /></svg>);
+const userIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05" /></svg>)
+const emailIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg>)
+const phoneIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-phone"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /></svg>)
+const BDIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cake"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 20h18v-8a3 3 0 0 0 -3 -3h-12a3 3 0 0 0 -3 3v8z" /><path d="M3 14.803c.312 .135 .654 .204 1 .197a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1c.35 .007 .692 -.062 1 -.197" /><path d="M12 4l1.465 1.638a2 2 0 1 1 -3.015 .099l1.55 -1.737z" /></svg>);
+const addressIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" /></svg>);
+const memberIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-week"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M7 14h.013" /><path d="M10.01 14h.005" /><path d="M13.01 14h.005" /><path d="M16.015 14h.005" /><path d="M13.015 17h.005" /><path d="M7.01 17h.005" /><path d="M10.01 17h.005" /></svg>);
 
 // Personal Info Tab Component
 const PersonalInfoTab = ({ userData }) => (
   <div className="tab-pane active">
-    <h3 className="section-title"><i className="fas fa-user"></i> Personal Information</h3>
+    <h3 className="section-title">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05" /></svg>
+      Personal Information
+    </h3>
     <div className="row">
       <div className="col-md-6">
         <InfoItem icon={userIcon} label="Full Name" value={`${userData.firstName} ${userData.lastName}`} />
@@ -201,9 +204,12 @@ const PersonalInfoTab = ({ userData }) => (
         <InfoItem icon={memberIcon} label="Member Since" value="March 2020" />
       </div>
     </div>
-    
+
     <div className="mt-5">
-      <h3 className="section-title"><i className="fas fa-chart-bar"></i> Activity Overview</h3>
+      <h3 className="section-title ">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-menu-3"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 6h10" /><path d="M4 12h16" /><path d="M7 12h13" /><path d="M4 18h10" /></svg>
+        Activity Overview
+      </h3>
       <div className="row">
         <div className="col-md-6">
           <div className="card mb-4">
@@ -246,13 +252,16 @@ const InfoItem = ({ icon, label, value }) => (
 // Settings Tab Component
 const SettingsTab = ({ settings, onSettingsChange, onSubmit }) => (
   <div className="tab-pane">
-    <h3 className="section-title"><i className="fas fa-cog"></i> Account Settings</h3>
+    <h3 className="section-title">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-adjustments-horizontal"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 6l8 0" /><path d="M16 6l4 0" /><path d="M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 12l2 0" /><path d="M10 12l10 0" /><path d="M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 18l11 0" /><path d="M19 18l1 0" /></svg>
+      Account Settings
+    </h3>
     <form onSubmit={onSubmit}>
       <div className="row">
         <div className="col-md-6">
           <div className="mb-4">
             <label className="form-label">Language</label>
-            <select 
+            <select
               className="form-select"
               value={settings.language}
               onChange={(e) => onSettingsChange('language', e.target.value)}
@@ -265,7 +274,7 @@ const SettingsTab = ({ settings, onSettingsChange, onSubmit }) => (
           </div>
           <div className="mb-4">
             <label className="form-label">Time Zone</label>
-            <select 
+            <select
               className="form-select"
               value={settings.timezone}
               onChange={(e) => onSettingsChange('timezone', e.target.value)}
@@ -278,7 +287,7 @@ const SettingsTab = ({ settings, onSettingsChange, onSubmit }) => (
           </div>
           <div className="mb-4">
             <label className="form-label">Theme</label>
-            <select 
+            <select
               className="form-select"
               value={settings.theme}
               onChange={(e) => onSettingsChange('theme', e.target.value)}
@@ -332,8 +341,8 @@ const ToggleSetting = ({ label, description, checked, onChange }) => (
       <div className="text-muted small">{description}</div>
     </div>
     <label className="toggle-switch">
-      <input 
-        type="checkbox" 
+      <input
+        type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
       />
@@ -345,7 +354,10 @@ const ToggleSetting = ({ label, description, checked, onChange }) => (
 // Subscription Tab Component
 const SubscriptionTab = () => (
   <div className="tab-pane">
-    <h3 className="section-title"><i className="fas fa-credit-card"></i> Subscription Details</h3>
+    <h3 className="section-title">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-credit-card-pay"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 19h-6a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v4.5" /><path d="M3 10h18" /><path d="M16 19h6" /><path d="M19 16l3 3l-3 3" /><path d="M7.005 15h.005" /><path d="M11 15h2" /></svg>
+      Subscription Details
+    </h3>
     <div className="row">
       <div className="col-lg-8">
         <SubscriptionCard
@@ -365,7 +377,7 @@ const SubscriptionTab = () => (
           primaryAction="Upgrade Plan"
           secondaryAction="Cancel Subscription"
         />
-        
+
         <SubscriptionCard
           title="Basic Plan"
           price="$9.99"
@@ -388,17 +400,17 @@ const SubscriptionTab = () => (
 );
 
 // Subscription Card Component
-const SubscriptionCard = ({ 
-  title, 
-  price, 
-  period, 
-  badge, 
-  badgeType, 
-  features, 
-  renewDate, 
-  primaryAction, 
-  secondaryAction 
-  }) => (
+const SubscriptionCard = ({
+  title,
+  price,
+  period,
+  badge,
+  badgeType,
+  features,
+  renewDate,
+  primaryAction,
+  secondaryAction
+}) => (
   <div className={`subscription-card premium`}>
     <div className="d-flex justify-content-between align-items-center mb-3">
       <div>
@@ -471,7 +483,10 @@ const EditProfileTab = ({ userData, passwordData, onInputChange, onPasswordChang
   <div className="tab-pane">
     {/* Edit User Details Form */}
     <div className="form-section">
-      <h3 className="section-title"><i className="fas fa-user-edit"></i> Edit Personal Information</h3>
+      <h3 className="section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 9a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M8 16a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2" /></svg>
+        Edit Personal Information
+      </h3>
       <form onSubmit={(e) => onSubmit(e, 'profile')}>
         <div className="row">
           <div className="col-md-6">
@@ -563,7 +578,10 @@ const EditProfileTab = ({ userData, passwordData, onInputChange, onPasswordChang
 
     {/* Change Password Form */}
     <div className="form-section">
-      <h3 className="section-title"><i className="fas fa-lock"></i> Change Password</h3>
+      <h3 className="section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-password-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 17v4" /><path d="M10 20l4 -2" /><path d="M10 18l4 2" /><path d="M5 17v4" /><path d="M3 20l4 -2" /><path d="M3 18l4 2" /><path d="M19 17v4" /><path d="M17 20l4 -2" /><path d="M17 18l4 2" /><path d="M9 6a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M7 14a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2" /></svg>
+        Change Password
+      </h3>
       <form onSubmit={(e) => onSubmit(e, 'password')}>
         <div className="mb-3">
           <label htmlFor="currentPassword" className="form-label">Current Password</label>
