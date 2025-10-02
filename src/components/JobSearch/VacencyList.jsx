@@ -6,10 +6,20 @@ import { FiSearch } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchJobs, setfilteredJobs , JobAppliedCreate } from "../../features/job/jobSlice";
 import { PulseLoader } from "react-spinners";
+import { getrecentCvsCreated, delCreatedCv , createEmptyResume } from '../../features/resume/resumeSlice';
 import { updateCompletedSteps } from "../../features/user/userSlice";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 const VacanciesList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+    const {
+      recentCVsLoader,
+      recentCVs,
+      delResumeLoader
+    } = useSelector((state) => state.resume);
   const [searchQuery, setSearchQuery] = useState("frontend developer");
   const [location, setLocation] = useState("uk");
   const [country, setCountry] = useState("uk");
@@ -18,7 +28,44 @@ const VacanciesList = () => {
   const { filteredJobs, jobs, loading, error } = useSelector((state) => state.job);
   const [selectedJob, setSelectedJob] = useState(null);
   const { data } = useSelector((state) => state.user);
+    // Initialize component
+    useEffect(() => {
+      dispatch(getrecentCvsCreated());
+    }, [dispatch]);
   const [showModal, setShowModal] = useState(false);
+
+
+
+    const handleManualCV = async () => {
+      const emptyResume = {
+        candidateName: [{ firstName: '', familyName: '' }],
+        headline: '',
+        summary: '',
+        phoneNumber: [{ formattedNumber: '' }],
+        email: [''],
+        location: { formatted: '' },
+        workExperience: [],
+        education: [],
+        skill: [],
+        profilePic: null,
+        website: [''],
+        certifications: [],
+        languages: [],
+        hobbies: []
+      };
+  
+      try {
+        const resultAction = await dispatch(createEmptyResume(emptyResume)).unwrap();
+  
+        if (resultAction?.data?.id) {
+          navigate(`/cv-generate/${resultAction.data.id}`);
+          toast.success('Empty resume created successfully! Start editing your CV.');
+        }
+      } catch (error) {
+        console.error('Error creating empty resume:', error);
+        toast.error(error?.message || "Failed to create empty resume. Please try again.");
+      }
+    };
 
   const ukCities = [
     "All",
@@ -251,23 +298,24 @@ const VacanciesList = () => {
 
             {/* Apply with MPF */}
             {row.applyWithMpf.startsWith("#") ? (
-              <a
+              <button
                 className="badge"
                 style={{ backgroundColor: "#ece5fc", color: "#BA67EF" }}
-                href="#"
                 data-bs-toggle="modal"
                 data-bs-target={row.applyWithMpf}
+                onClick={() => setShowModal(true)}
               >
                 Apply with MPF CV
-              </a>
+              </button>
             ) : (
-              <a
+              <button
                 className="badge"
                 style={{ backgroundColor: "#ece5fc", color: "#BA67EF" }}
                 href={row.applyWithMpf}
+                onClick={() => setShowModal(true)}
               >
                 Apply with MPF CV
-              </a>
+              </button>
             )}
           </div>
         ),
@@ -597,6 +645,77 @@ const VacanciesList = () => {
           </>
         )}
       </Modal>
+      {Array.isArray(recentCVs) && recentCVs.length > 0 && (
+          <div className="col-12">
+
+            
+            <Modal 
+              show={showModal} 
+              onHide={() => setShowModal(false)}
+              size="lg"
+              aria-labelledby="recent-cvs-modal"
+              centered
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Your Recent CVs</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="table-responsive">
+                  <table className="table table-hover align-middle mb-0 cv-table">
+                    <thead className="table-light">
+                      <tr>
+                        <th scope="col" className="text-start ps-0">CV Title</th>
+                        <th scope="col">Date Created</th>
+                        <th scope="col" className="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentCVs.map((item, index) => (
+                        <tr key={index}>
+                          <td className="text-start">
+                            {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
+                            {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
+                          </td>
+                          <td>
+                            {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
+                          </td>
+                          <td className="text-end">
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              className="me-2 mb-1"
+                              href={`/cv-generate/${item?.resume?.id}`}
+                            >
+                              View
+                            </Button>
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              className="me-2 mb-1"
+                              href={`/cv-generate/${item?.resume?.id}?download=true`}
+                              target="_blank"
+                            >
+                              Download
+                            </Button>
+                            
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={handleManualCV}>
+                  Create new CV
+                </Button>
+                <Button variant="secondary" onClick={() => setShowModal(false)}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </div>
+        )}
     </div>
   );
 };
