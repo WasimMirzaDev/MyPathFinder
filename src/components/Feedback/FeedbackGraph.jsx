@@ -1,8 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import { merge } from 'lodash';
+import { useNavigate } from 'react-router-dom';
+import { percent } from 'framer-motion';
+import { FaPercentage } from 'react-icons/fa';
 
-const ChartComponent = () => {
+const ChartComponent = ({parsedFeedback}) => {
+
+  const Percentage = (achieved, total) => {
+    if (!total) return 0;
+    if (achieved == 0) return 0;
+    return Math.round((achieved / total) * 100);
+  }
+  const navigate = useNavigate();
   const gaugeRef = useRef(null);
   const radarCustomizedRef = useRef(null);
   const radarFourLabelsRef = useRef(null);
@@ -198,7 +208,7 @@ const ChartComponent = () => {
           type: 'radar',
           data: [
             {
-              value: [62.5, 80, 40, 66, 66, 100],
+              value: [Percentage(parsedFeedback?.evaluation?.breakdown?.competencies?.critical_thinking?.score,8), Percentage(parsedFeedback?.evaluation?.breakdown?.competencies?.teamwork_balance?.score,5), Percentage(parsedFeedback?.evaluation?.breakdown?.competencies?.goal_orientation?.score, 5), Percentage(parsedFeedback?.evaluation?.breakdown?.competencies?.emotional_intelligence?.score,6), Percentage(parsedFeedback?.evaluation?.breakdown?.competencies?.structural_coherence?.score,3), Percentage(parsedFeedback?.evaluation?.breakdown?.competencies?.question_relevance?.score,3)],
               name: 'Assessment',
               symbol: 'rect',
               symbolSize: 10,
@@ -284,7 +294,7 @@ const ChartComponent = () => {
           type: 'radar',
           data: [
             {
-              value: [50, 60, 75, 90],
+              value: [Percentage(parsedFeedback?.evaluation?.breakdown?.star_method?.situation?.score,10), Percentage(parsedFeedback?.evaluation?.breakdown?.star_method?.task?.score,10), Percentage(parsedFeedback?.evaluation?.breakdown?.star_method?.action?.score,20), Percentage(parsedFeedback?.evaluation?.breakdown?.star_method?.result?.score,10)],
               name: 'STAR Assessment',
               symbol: 'rect',
               symbolSize: 10,
@@ -370,7 +380,7 @@ const ChartComponent = () => {
           type: 'radar',
           data: [
             {
-              value: [62.5, 75, 50, 25],
+              value: [Percentage(parsedFeedback?.evaluation?.breakdown?.communication?.clarity?.score,8), Percentage(parsedFeedback?.evaluation?.breakdown?.communication?.professional_language?.score,4), Percentage(parsedFeedback?.evaluation?.breakdown?.communication?.confidence?.score,4), Percentage(parsedFeedback?.evaluation?.breakdown?.communication?.filler_words?.score,4)],
               name: 'Communication Assessment',
               symbol: 'rect',
               symbolSize: 10,
@@ -466,7 +476,7 @@ const ChartComponent = () => {
 
     setTimeout(() => {
       chart.setOption({
-        series: [{ data: [{ value: 67, name: 'Competent' }] }]
+        series: [{ data: [{ value: parsedFeedback?.evaluation?.breakdown?.total?.score ?? 0, name: 'Competent' }] }]
       });
     }, 200);
 
@@ -513,9 +523,9 @@ const ChartComponent = () => {
           </div>
           <div className="card-body pt-2">
             <div ref={gaugeRef} className="echart-gauge-competency" style={{ minHeight: '200px' }}></div>
-            <a href="#" className="stretched-link btn btn-primary w-100 mt-3">
+            <button onClick={() => navigate('/prepration/' + parsedFeedback?.question?.id)} className="stretched-link btn btn-primary w-100 mt-3">
               Retry Question
-            </a>
+            </button>
           </div>
         </div>
       </div>

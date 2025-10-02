@@ -34,6 +34,7 @@ const VacanciesList = () => {
     }, [dispatch]);
   const [showModal, setShowModal] = useState(false);
 
+  const [showModalMPFCV, setShowModalMPFCV] = useState(false);
 
 
     const handleManualCV = async () => {
@@ -303,7 +304,7 @@ const VacanciesList = () => {
                 style={{ backgroundColor: "#ece5fc", color: "#BA67EF" }}
                 data-bs-toggle="modal"
                 data-bs-target={row.applyWithMpf}
-                onClick={() => setShowModal(true)}
+                onClick={() => setShowModalMPFCV(true)}
               >
                 Apply with MPF CV
               </button>
@@ -312,7 +313,7 @@ const VacanciesList = () => {
                 className="badge"
                 style={{ backgroundColor: "#ece5fc", color: "#BA67EF" }}
                 href={row.applyWithMpf}
-                onClick={() => setShowModal(true)}
+                onClick={() => setShowModalMPFCV(true)}
               >
                 Apply with MPF CV
               </button>
@@ -650,8 +651,8 @@ const VacanciesList = () => {
 
             
             <Modal 
-              show={showModal} 
-              onHide={() => setShowModal(false)}
+              show={showModalMPFCV} 
+              onHide={() => setShowModalMPFCV(false)}
               size="lg"
               aria-labelledby="recent-cvs-modal"
               centered
@@ -709,7 +710,7 @@ const VacanciesList = () => {
                 <Button onClick={handleManualCV}>
                   Create new CV
                 </Button>
-                <Button variant="secondary" onClick={() => setShowModal(false)}>
+                <Button variant="secondary" onClick={() => setShowModalMPFCV(false)}>
                   Close
                 </Button>
               </Modal.Footer>

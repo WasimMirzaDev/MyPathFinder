@@ -1,12 +1,20 @@
 import React from "react";
 import "./Feedback.css";
 import FeedbackGraph from "./FeedbackGraph";
+import { useSelector , useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 
 const FeedbackComponent = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+
+  const { parsedFeedback } = useSelector((state) => state.interview);
+  const { data } = useSelector((state) => state.interview);
   return (
     <>
-      <FeedbackGraph />  
+      <FeedbackGraph parsedFeedback={parsedFeedback} />  
 
       <div className="row mt-2 gx-2 mb-4">
         <div className="col-6">
@@ -22,21 +30,28 @@ const FeedbackComponent = () => {
             <div className="card-body p-4">
               <div className="feedback-checklist p-0">
 
+
+              {/* {parsedFeedback?.evaluation?.top_improvements?.map((issue, index) => (
+                                <li key={index}>
+                                    <strong>{issue.title}</strong><br />
+                                    {issue.description}
+                                </li> */}
+                            
+ {parsedFeedback?.evaluation?.top_improvements?.map((issue, index) => (
                 <div className="item d-flex align-items-start gap-3">
                   <div className="icon flex-shrink-0">
                     <svg className="svg-inline--fa fa-check text-success" width={12} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg>
                   </div>
                   <div>
-                    <h5 className="mb-1">Provide a Clear Situation</h5>
+                    <h5 className="mb-1">{issue.title}</h5>
                     <p>
-                      Describe a specific time and context where you had to perform under
-                      pressure.
+                    {issue.description}
                     </p>
                   </div>
                 </div>
+))}
 
-
-                <div className="item d-flex align-items-start gap-3">
+                {/* <div className="item d-flex align-items-start gap-3">
                   <div className="icon flex-shrink-0">
                     <svg className="svg-inline--fa fa-check text-success" width={12} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg>
                   </div>
@@ -103,7 +118,7 @@ const FeedbackComponent = () => {
                     <h5 className="mb-1">Detail Your Actions</h5>
                     <p>Explain the specific actions you took to address the pressure.</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -125,19 +140,14 @@ const FeedbackComponent = () => {
                 <div className="chat-row">
                   <div className="meta">Question asked by <strong>MyPathfinder</strong></div>
                   <div className="bubble bubble--mpf">
-                    Can you think of a time when you had to perform under pressure? What
-                    happened?
+                  {parsedFeedback?.question?.speech ?? "NAN"}
                   </div>
                 </div>
 
                 <div className="chat-row right">
                   <div className="meta">Your response</div>
                   <div className="bubble bubble--user">
-
-                    In a past role, we had a client presentation coming up and the team was
-                    running late. I reminded everyone about the deadline and worked extra hours
-                    to help get things done. In the end, we managed to finish the presentation
-                    and the client seemed satisfied.
+                    {parsedFeedback?.transcription ?? "NAN"}
                   </div>
                 </div>
 
@@ -145,13 +155,7 @@ const FeedbackComponent = () => {
                 <div className="chat-row">
                   <div className="meta">Ideal Response by <strong>MyPathfinder</strong></div>
                   <div className="bubble bubble--ideal">
-                    In my previous role as a project manager, I faced a tight deadline for a
-                    major client presentation. The situation was stressful as the team was
-                    behind schedule. My task was to ensure that we delivered a polished
-                    presentation on time. I organized a series of focused meetings to prioritize
-                    tasks and delegated responsibilities effectively. As a result, we completed
-                    the presentation a day early, received positive feedback from the client,
-                    and I learned the importance of clear communication under pressure.
+                    {parsedFeedback?.evaluation?.ideal_response ?? "NAN"}
                   </div>
                 </div>
               </section>
