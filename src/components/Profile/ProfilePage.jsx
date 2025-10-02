@@ -1,8 +1,38 @@
 // ProfilePage.jsx
 import React, { useState } from 'react';
 import './ProfilePage2.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateProfileSettings } from '../../features/user/userSlice';
+import favicon from '../../assets/images/MPF-180x180.png';
+import { data } from 'react-router-dom';
+
 
 const ProfilePage = () => {
+  const dispatch = useDispatch();
+
+  const {
+    loading,
+    data
+  } = useSelector((state) => state.user);
+
+
+    const [imagePreview, setImagePreview] = useState(null);
+  
+    const handleImageChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+        setEditedUser(prev => ({
+          ...prev,
+          profile_img: file
+        }));
+      }
+    };
+
   const [activeTab, setActiveTab] = useState('personal');
   const [userData, setUserData] = useState({
     firstName: 'Johnathan',
@@ -73,7 +103,7 @@ const ProfilePage = () => {
   return (
     <div className="profile-page">
       {/* Profile Header */}
-      <ProfileHeader userData={userData} />
+      <ProfileHeader userData={data} imagePreview={imagePreview} />
 
       <div className="container">
         {/* Tab Navigation */}
@@ -82,7 +112,7 @@ const ProfilePage = () => {
         {/* Tab Content */}
         <div className="tab-content">
           {activeTab === 'personal' && (
-            <PersonalInfoTab userData={userData} />
+            <PersonalInfoTab userData={data} />
           )}
 
           {activeTab === 'settings' && (
@@ -114,21 +144,21 @@ const ProfilePage = () => {
 };
 
 // Profile Header Component
-const ProfileHeader = ({ userData }) => (
+const ProfileHeader = ({ userData , imagePreview}) => (
   <div className="profile-header">
     <div className="container">
       <div className="row justify-content-center">
         <div className="col-12 text-center">
           <div className="profile-image-container">
             <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+               src={imagePreview || userData?.profile_img_url || favicon} 
               alt="Profile"
               className="profile-image"
             />
           </div>
           <div className="profile-info">
-            <h1 className="profile-name">{userData.firstName} {userData.lastName}</h1>
-            <p className="profile-email">{userData.email}</p>
+            <h1 className="profile-name">{userData?.name}</h1>
+            <p className="profile-email">{userData?.email}</p>
             {/* <div className="profile-stats">
               <div className="stat-item">
                 <div className="stat-value">245</div>
@@ -194,14 +224,14 @@ const PersonalInfoTab = ({ userData }) => (
     </h3>
     <div className="row">
       <div className="col-md-6">
-        <InfoItem icon={userIcon} label="Full Name" value={`${userData.firstName} ${userData.lastName}`} />
-        <InfoItem icon={emailIcon} label="Email" value={userData.email} />
-        <InfoItem icon={phoneIcon} label="Phone" value={userData.phone} />
+        <InfoItem icon={userIcon} label="Full Name" value={`${userData?.name}`} />
+        <InfoItem icon={emailIcon} label="Email" value={userData?.email} />
+        <InfoItem icon={phoneIcon} label="Phone" value={userData?.phone} />
       </div>
       <div className="col-md-6">
-        <InfoItem icon={BDIcon} label="Date of Birth" value="January 15, 1990" />
-        <InfoItem icon={addressIcon} label="Address" value={userData.address} />
-        <InfoItem icon={memberIcon} label="Member Since" value="March 2020" />
+        <InfoItem icon={BDIcon} label="Date of Birth" value={userData?.dob} />
+        <InfoItem icon={addressIcon} label="Address" value={userData?.address} />
+        <InfoItem icon={memberIcon} label="Member Since" value={userData?.created_at} />
       </div>
     </div>
 
@@ -211,7 +241,7 @@ const PersonalInfoTab = ({ userData }) => (
         Activity Overview
       </h3>
       <div className="row">
-        <div className="col-md-6">
+        {/* <div className="col-md-6">
           <div className="card mb-4">
             <div className="card-body">
               <h5 className="card-title">Profile Completion</h5>
@@ -221,7 +251,7 @@ const PersonalInfoTab = ({ userData }) => (
               <p className="card-text">Your profile is 85% complete. Add more information to get better recommendations.</p>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="col-md-6">
           <div className="card mb-4">
             <div className="card-body">
