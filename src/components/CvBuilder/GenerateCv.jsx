@@ -143,12 +143,152 @@ export default function CVBuilder() {
     }, [id])
 
 
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [isNavigating, setIsNavigating] = useState(false);
+
+    // Check if there are unsaved changes
+    useEffect(() => {
+        setHasUnsavedChanges(parsedResume !== prevParsedResume);
+    }, [parsedResume, prevParsedResume]);
+
+    useEffect(() => {
+        const handleClick = (e) => {
+            // If we're already processing navigation or no unsaved changes, allow the click
+            if (isNavigating || !hasUnsavedChanges || saveChangesLoader) return;
+    
+            const link = e.target.closest('a');
+            if (link && link.href) {
+                // Check if it's an external link or different route
+                const currentUrl = window.location.href;
+                const targetUrl = link.href;
+                
+                // Only intercept if it's a different page
+                if (currentUrl !== targetUrl && !targetUrl.includes('#')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    Swal.fire({
+                        title: 'Unsaved Changes',
+                        text: 'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, leave page',
+                        cancelButtonText: 'Stay on page',
+                        allowOutsideClick: false,
+                        backdrop: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Set a flag in sessionStorage to prevent the beforeunload alert
+                            sessionStorage.setItem('allowNavigation', 'true');
+                            setIsNavigating(true);
+                            window.location.href = targetUrl;
+                        }
+                    });
+                }
+            }
+        };
+    
+        // Use capture phase to catch all clicks
+        document.addEventListener('click', handleClick, true);
+        return () => document.removeEventListener('click', handleClick, true);
+    }, [hasUnsavedChanges, saveChangesLoader, isNavigating]);
+    
+    // Update the beforeunload handler to check the flag
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            // Check if navigation was explicitly allowed
+            if (sessionStorage.getItem('allowNavigation') === 'true') {
+                sessionStorage.removeItem('allowNavigation');
+                return;
+            }
+            
+            if (hasUnsavedChanges && !saveChangesLoader) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                return 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        };
+    
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [hasUnsavedChanges, saveChangesLoader]);
+
+    // Safe navigation function for programmatic navigation
+    const safeNavigate = useCallback((path, options = {}) => {
+        if (hasUnsavedChanges && !saveChangesLoader && !isNavigating) {
+            Swal.fire({
+                title: 'Unsaved Changes',
+                text: 'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, leave page',
+                cancelButtonText: 'Stay on page',
+                allowOutsideClick: false,
+                backdrop: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setIsNavigating(true);
+                    navigate(path, options);
+                }
+            });
+        } else {
+            navigate(path, options);
+        }
+    }, [hasUnsavedChanges, saveChangesLoader, isNavigating, navigate]);
+
+    // Update your save function
     const handleSaveChanges = () => {
         if (parsedResume != prevParsedResume) {
-            dispatch(updateResumeById({ id, parsedResume }));
+            dispatch(updateResumeById({ id, parsedResume })).then(() => {
+                setHasUnsavedChanges(false);
+                toast.success('Changes saved successfully!');
+            }).catch((error) => {
+                toast.error('Failed to save changes');
+            });
         }
-    }
+    };
 
+
+
+      // Add visual indicator in your save button
+      const renderSaveButton = () => (
+        <button 
+            className="btn btn-primary btn-sm position-relative" 
+            onClick={handleSaveChanges} 
+            disabled={parsedResume == prevParsedResume || saveChangesLoader}
+        >
+            {saveChangesLoader ? (
+                <><FiLoader size={14} className="me-2 animate-spin" />Saving...</>
+            ) : (
+                <>
+                    Save Changes
+                    {hasUnsavedChanges && (
+                        <span 
+                            className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                            title="Unsaved changes"
+                            style={{ fontSize: '6px' }}
+                        >
+                            <span className="visually-hidden">Unsaved changes</span>
+                        </span>
+                    )}
+                </>
+            )}
+        </button>
+    );
+
+    // Reset navigation flag when component unmounts or changes occur
+    useEffect(() => {
+        return () => {
+            setIsNavigating(false);
+        };
+    }, []);
 
     // useEffect(() => {
     //     const fetchData = async () => {
@@ -1521,323 +1661,7 @@ const handleAddEducation = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Education */}
-                                                <div className="accordion-item">
-                                                    <h2 className="accordion-header" id="headingEducation">
-                                                        <div className="d-flex justify-content-between align-items-center w-100">
-                                                            <div className="d-flex align-items-center w-100 gap-2">
 
-                                                                <button
-                                                                    className={`icon-toggle border-0 bg-transparent ${!parsedResume?.educationDisabled ? 'is-active' : ''}`}
-                                                                    type="button"
-                                                                    onClick={() =>
-                                                                        dispatch(
-                                                                            updateField({
-                                                                                path: "educationDisabled",
-                                                                                value: !parsedResume?.educationDisabled
-                                                                            })
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    {/* <img
-                                                                        src={toggleImage}
-                                                                        alt="Complete icon"
-                                                                        width="28"
-                                                                        height="28"
-                                                                    /> */}
-                                                                    {!parsedResume?.educationDisabled ? 
-                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
-                                                                    }
-                                                                </button>
-                                                                {parsedResume?.editingEducationTitle ? (
-                                                                    <div className="d-flex align-items-center">
-                                                                        <input
-                                                                            type="text"
-                                                                            className="form-control form-control-sm me-2"
-                                                                            style={{ width: '200px' }}
-                                                                            value={parsedResume?.educationTitle || "Education"}
-                                                                            onChange={(e) =>
-                                                                                dispatch(
-                                                                                    updateField({
-                                                                                        path: "educationTitle",
-                                                                                        value: e.target.value
-                                                                                    })
-                                                                                )
-                                                                            }
-                                                                            onBlur={() =>
-                                                                                dispatch(
-                                                                                    updateField({
-                                                                                        path: "editingEducationTitle",
-                                                                                        value: false
-                                                                                    })
-                                                                                )
-                                                                            }
-                                                                            onKeyDown={(e) => {
-                                                                                if (e.key === 'Enter') {
-                                                                                    dispatch(
-                                                                                        updateField({
-                                                                                            path: "editingEducationTitle",
-                                                                                            value: false
-                                                                                        })
-                                                                                    );
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                        <span
-                                                                            type="button"
-                                                                            onClick={() =>
-                                                                                dispatch(
-                                                                                    updateField({
-                                                                                        path: "editingEducationTitle",
-                                                                                        value: false
-                                                                                    })
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
-                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                                                <path d="M5 12l5 5l10 -10" />
-                                                                            </svg>
-                                                                        </span>
-                                                                    </div>
-                                                                ) : (
-                                                                    <button
-                                                                        className={`accordion-button flex-grow-1 w-100 gap-2 d-flex ${openSections.education ? '' : 'collapsed'} ${parsedResume?.educationDisabled ? 'text-muted' : ''}`}
-                                                                        type="button"
-                                                                        onClick={() => toggleSection('education')}
-                                                                        style={{ background: 'none', border: 'none', textAlign: 'left' }}
-                                                                    >
-                                                                        {parsedResume?.educationTitle || "Education"}
-                                                                        <span
-                                                                            type="button"
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                dispatch(
-                                                                                    updateField({
-                                                                                        path: "editingEducationTitle",
-                                                                                        value: true
-                                                                                    })
-                                                                                );
-                                                                            }}
-                                                                        >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
-                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
-                                                                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
-                                                                                <path d="M16 5l3 3" />
-                                                                            </svg>
-                                                                        </span>
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </h2>
-                                                    <div
-                                                        id="collapseEducation"
-                                                        className={`accordion-collapse collapse ${openSections.education ? 'show' : ''}`}
-                                                        aria-labelledby="headingEducation"
-                                                    >
-                                                        <div className="accordion-body">
-                                                            {!parsedResume?.educationDisabled ? (
-                                                                <div className="card border-0">
-                                                                    {parsedResume.education?.map((eduItem, eduIndex) => (
-                                                                        <div key={eduIndex} className="mb-3 p-3 border rounded">
-                                                                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                                                                <small className="fw-bold text-muted">Education #{eduIndex + 1}</small>
-                                                                                <button
-                                                                                    type="button"
-                                                                                    className="btn btn-sm btn-outline-danger"
-                                                                                    onClick={() => eduHandleDeleteEducation(eduIndex)}
-                                                                                    title="Delete education entry"
-                                                                                >
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                                                                                        <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                                                                                    </svg>
-                                                                                </button>
-                                                                            </div>
-                                                                            <div className="d-flex gap-2 align-items-start">
-                                                                                <div className="icon-span text-primary">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                                                        <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"></path>
-                                                                                        <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"></path>
-                                                                                    </svg>
-                                                                                </div>
-                                                                                <div className="content-d">
-                                                                                    <h6 className="edu-degree mb-1">{eduItem.educationLevel.label}</h6>
-                                                                                    <h6 className="edu-institute text-muted">{eduItem.educationOrganization}</h6>
-                                                                                </div>
-                                                                            </div>
-                                                                            <small className="edu-time text-muted">
-                                                                                <em>{eduItem.educationDates.start.date} / {eduItem.educationDates.end.date}</em>
-                                                                            </small>
-                                                                            <div className="d-flex justify-content-end align-items-center gap-2 mt-2">
-                                                                                <button
-                                                                                    type="button"
-                                                                                    className="content-confirm-btn btn btn-outline-secondary btn-sm"
-                                                                                    onClick={() => eduHandleEditEducation(eduIndex)}
-                                                                                >
-                                                                                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                                                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                                                                                    </svg>
-                                                                                    Edit
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    ))}
-
-
-                                                                    {/* Current form for adding/editing */}
-                                                                    {eduCurrentForm && (
-                                                                        <div className="mb-3 p-3 border rounded">
-                                                                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                                                                <small className="fw-bold text-muted">
-                                                                                    {eduList.length > 0 ? `Education #${eduList.length + 1}` : 'Education #1'}
-                                                                                </small>
-                                                                            </div>
-                                                                            <div className="mb-2">
-                                                                                <label className="form-label">Degree/Qualification</label>
-                                                                                <input
-                                                                                    className="form-control"
-                                                                                    name="eduDegree"
-                                                                                    value={eduFormData.eduDegree}
-                                                                                    onChange={eduHandleInputChange}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="mb-2">
-                                                                                <label className="form-label">Institution</label>
-                                                                                <input
-                                                                                    className="form-control"
-                                                                                    name="eduInstitution"
-                                                                                    value={eduFormData.eduInstitution}
-                                                                                    onChange={eduHandleInputChange}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="row">
-                                                                                <div className="col-md-6">
-                                                                                    <div className="mb-2">
-                                                                                        <label className="form-label">Start Date</label>
-                                                                                        <input
-                                                                                            placeholder="2017"
-                                                                                            className="form-control"
-                                                                                            type="text"
-                                                                                            name="eduStartDate"
-                                                                                            value={eduFormData.eduStartDate}
-                                                                                            onChange={eduHandleInputChange}
-                                                                                        />
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="col-md-6">
-                                                                                    <div className="mb-2">
-                                                                                        <label className="form-label">End Date</label>
-                                                                                        <input
-                                                                                            placeholder="2018"
-                                                                                            className="form-control"
-                                                                                            type="text"
-                                                                                            name="eduEndDate"
-                                                                                            value={eduFormData.eduEndDate}
-                                                                                            onChange={eduHandleInputChange}
-                                                                                        />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            {/* Inside your education form, add this section after the achieved grade field */}
-<div className="mb-3">
-    <label className="form-label">Major(s)</label>
-    {eduFormData.educationMajor.map((major, index) => (
-        <div key={index} className="input-group mb-2">
-            <input
-                type="text"
-                className="form-control"
-                value={major}
-                onChange={(e) => handleMajorChange(index, e.target.value)}
-                placeholder={`Major ${index + 1}`}
-            />
-            {eduFormData.educationMajor.length > 1 && (
-                <button
-                    type="button"
-                    className="btn btn-outline-danger"
-                    onClick={() => handleRemoveMajor(index)}
-                >
-                    <FiTrash2 />
-                </button>
-            )}
-        </div>
-    ))}
-    <button
-        type="button"
-        className="btn btn-sm btn-outline-secondary mt-2"
-        onClick={handleAddMajor}
-    >
-        <FiPlus /> Add Another Major
-    </button>
-</div>
-                                                                            <div className="mb-2">
-                                                                                <label className="form-label">Grade Achieved</label>
-                                                                                <input
-                                                                                    className="form-control"
-                                                                                    name="achievedGrade"
-                                                                                    value={eduFormData.achievedGrade}
-                                                                                    onChange={eduHandleInputChange}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="d-flex align-items-center justify-content-end gap-2 mt-2">
-                                                                                <button
-                                                                                    type="button"
-                                                                                    className="btn btn-outline-danger"
-                                                                                    onClick={eduHandleCancelEdit}
-                                                                                >
-                                                                                    Cancel
-                                                                                </button>
-                                                                                <button
-                                                                                    type="button"
-                                                                                    className="content-confirm-btn btn btn-outline-primary"
-                                                                                    onClick={eduHandleSaveEducation}
-                                                                                >
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                                                        <path d="M5 12l5 5l10 -10"></path>
-                                                                                    </svg>
-                                                                                    Done
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    )}
-
-                                                                    {/* Add Education Button */}
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-outline-secondary btn-sm mt-2"
-                                                                        style={{ maxWidth: 'fit-content' }}
-                                                                        onClick={eduHandleAddEducation}
-                                                                    >
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                                        </svg>
-                                                                        Add Education
-                                                                    </button>
-                                                                </div>
-                                                            ) : (
-                                                                <div className="text-muted text-center py-3 d-flex flex-column gap-2">
-                                                                    <span
-                                                                        className={`icon-toggle border-0 bg-transparent`}
-                                                                    >
-                                                                        <img
-                                                                            src={toggleImage}
-                                                                            alt="Complete icon"
-                                                                            width="36"
-                                                                            height="36"
-                                                                        />
-                                                                    </span>
-                                                                    This section is disabled
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
 
                                                 {/* Employment */}
                                                 <div className="accordion-item">
@@ -2225,6 +2049,323 @@ onClick={() => {
                                                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                                                         </svg>
                                                                         Add Experience
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="text-muted text-center py-3 d-flex flex-column gap-2">
+                                                                    <span
+                                                                        className={`icon-toggle border-0 bg-transparent`}
+                                                                    >
+                                                                        <img
+                                                                            src={toggleImage}
+                                                                            alt="Complete icon"
+                                                                            width="36"
+                                                                            height="36"
+                                                                        />
+                                                                    </span>
+                                                                    This section is disabled
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                                                                {/* Education */}
+                                                                                                <div className="accordion-item">
+                                                    <h2 className="accordion-header" id="headingEducation">
+                                                        <div className="d-flex justify-content-between align-items-center w-100">
+                                                            <div className="d-flex align-items-center w-100 gap-2">
+
+                                                                <button
+                                                                    className={`icon-toggle border-0 bg-transparent ${!parsedResume?.educationDisabled ? 'is-active' : ''}`}
+                                                                    type="button"
+                                                                    onClick={() =>
+                                                                        dispatch(
+                                                                            updateField({
+                                                                                path: "educationDisabled",
+                                                                                value: !parsedResume?.educationDisabled
+                                                                            })
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {/* <img
+                                                                        src={toggleImage}
+                                                                        alt="Complete icon"
+                                                                        width="28"
+                                                                        height="28"
+                                                                    /> */}
+                                                                    {!parsedResume?.educationDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    }
+                                                                </button>
+                                                                {parsedResume?.editingEducationTitle ? (
+                                                                    <div className="d-flex align-items-center">
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control form-control-sm me-2"
+                                                                            style={{ width: '200px' }}
+                                                                            value={parsedResume?.educationTitle || "Education"}
+                                                                            onChange={(e) =>
+                                                                                dispatch(
+                                                                                    updateField({
+                                                                                        path: "educationTitle",
+                                                                                        value: e.target.value
+                                                                                    })
+                                                                                )
+                                                                            }
+                                                                            onBlur={() =>
+                                                                                dispatch(
+                                                                                    updateField({
+                                                                                        path: "editingEducationTitle",
+                                                                                        value: false
+                                                                                    })
+                                                                                )
+                                                                            }
+                                                                            onKeyDown={(e) => {
+                                                                                if (e.key === 'Enter') {
+                                                                                    dispatch(
+                                                                                        updateField({
+                                                                                            path: "editingEducationTitle",
+                                                                                            value: false
+                                                                                        })
+                                                                                    );
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                        <span
+                                                                            type="button"
+                                                                            onClick={() =>
+                                                                                dispatch(
+                                                                                    updateField({
+                                                                                        path: "editingEducationTitle",
+                                                                                        value: false
+                                                                                    })
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                                <path d="M5 12l5 5l10 -10" />
+                                                                            </svg>
+                                                                        </span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <button
+                                                                        className={`accordion-button flex-grow-1 w-100 gap-2 d-flex ${openSections.education ? '' : 'collapsed'} ${parsedResume?.educationDisabled ? 'text-muted' : ''}`}
+                                                                        type="button"
+                                                                        onClick={() => toggleSection('education')}
+                                                                        style={{ background: 'none', border: 'none', textAlign: 'left' }}
+                                                                    >
+                                                                        {parsedResume?.educationTitle || "Education"}
+                                                                        <span
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                dispatch(
+                                                                                    updateField({
+                                                                                        path: "editingEducationTitle",
+                                                                                        value: true
+                                                                                    })
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                                                                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                                                                                <path d="M16 5l3 3" />
+                                                                            </svg>
+                                                                        </span>
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </h2>
+                                                    <div
+                                                        id="collapseEducation"
+                                                        className={`accordion-collapse collapse ${openSections.education ? 'show' : ''}`}
+                                                        aria-labelledby="headingEducation"
+                                                    >
+                                                        <div className="accordion-body">
+                                                            {!parsedResume?.educationDisabled ? (
+                                                                <div className="card border-0">
+                                                                    {parsedResume.education?.map((eduItem, eduIndex) => (
+                                                                        <div key={eduIndex} className="mb-3 p-3 border rounded">
+                                                                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                                <small className="fw-bold text-muted">Education #{eduIndex + 1}</small>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-sm btn-outline-danger"
+                                                                                    onClick={() => eduHandleDeleteEducation(eduIndex)}
+                                                                                    title="Delete education entry"
+                                                                                >
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                                                        <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                                                    </svg>
+                                                                                </button>
+                                                                            </div>
+                                                                            <div className="d-flex gap-2 align-items-start">
+                                                                                <div className="icon-span text-primary">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                                        <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"></path>
+                                                                                        <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"></path>
+                                                                                    </svg>
+                                                                                </div>
+                                                                                <div className="content-d">
+                                                                                    <h6 className="edu-degree mb-1">{eduItem.educationLevel.label}</h6>
+                                                                                    <h6 className="edu-institute text-muted">{eduItem.educationOrganization}</h6>
+                                                                                </div>
+                                                                            </div>
+                                                                            <small className="edu-time text-muted">
+                                                                                <em>{eduItem.educationDates.start.date} / {eduItem.educationDates.end.date}</em>
+                                                                            </small>
+                                                                            <div className="d-flex justify-content-end align-items-center gap-2 mt-2">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="content-confirm-btn btn btn-outline-secondary btn-sm"
+                                                                                    onClick={() => eduHandleEditEducation(eduIndex)}
+                                                                                >
+                                                                                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                                                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                                                                    </svg>
+                                                                                    Edit
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+
+
+                                                                    {/* Current form for adding/editing */}
+                                                                    {eduCurrentForm && (
+                                                                        <div className="mb-3 p-3 border rounded">
+                                                                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                                <small className="fw-bold text-muted">
+                                                                                    {eduList.length > 0 ? `Education #${eduList.length + 1}` : 'Education #1'}
+                                                                                </small>
+                                                                            </div>
+                                                                            <div className="mb-2">
+                                                                                <label className="form-label">Degree/Qualification</label>
+                                                                                <input
+                                                                                    className="form-control"
+                                                                                    name="eduDegree"
+                                                                                    value={eduFormData.eduDegree}
+                                                                                    onChange={eduHandleInputChange}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="mb-2">
+                                                                                <label className="form-label">Institution</label>
+                                                                                <input
+                                                                                    className="form-control"
+                                                                                    name="eduInstitution"
+                                                                                    value={eduFormData.eduInstitution}
+                                                                                    onChange={eduHandleInputChange}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="row">
+                                                                                <div className="col-md-6">
+                                                                                    <div className="mb-2">
+                                                                                        <label className="form-label">Start Date</label>
+                                                                                        <input
+                                                                                            placeholder="2017"
+                                                                                            className="form-control"
+                                                                                            type="text"
+                                                                                            name="eduStartDate"
+                                                                                            value={eduFormData.eduStartDate}
+                                                                                            onChange={eduHandleInputChange}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6">
+                                                                                    <div className="mb-2">
+                                                                                        <label className="form-label">End Date</label>
+                                                                                        <input
+                                                                                            placeholder="2018"
+                                                                                            className="form-control"
+                                                                                            type="text"
+                                                                                            name="eduEndDate"
+                                                                                            value={eduFormData.eduEndDate}
+                                                                                            onChange={eduHandleInputChange}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            {/* Inside your education form, add this section after the achieved grade field */}
+                                                                            <div className="mb-3">
+                                                                                <label className="form-label">Major(s)</label>
+                                                                                {eduFormData.educationMajor.map((major, index) => (
+                                                                                    <div key={index} className="input-group mb-2">
+                                                                                        <input
+                                                                                            type="text"
+                                                                                            className="form-control"
+                                                                                            value={major}
+                                                                                            onChange={(e) => handleMajorChange(index, e.target.value)}
+                                                                                            placeholder={`Major ${index + 1}`}
+                                                                                        />
+                                                                                        {eduFormData.educationMajor.length > 1 && (
+                                                                                            <button
+                                                                                                type="button"
+                                                                                                className="btn btn-outline-danger"
+                                                                                                onClick={() => handleRemoveMajor(index)}
+                                                                                            >
+                                                                                                <FiTrash2 />
+                                                                                            </button>
+                                                                                        )}
+                                                                                    </div>
+                                                                                ))}
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-sm btn-outline-secondary mt-2"
+                                                                                    onClick={handleAddMajor}
+                                                                                >
+                                                                                    <FiPlus /> Add Another Major
+                                                                                </button>
+                                                                            </div>
+                                                                            <div className="mb-2">
+                                                                                <label className="form-label">Grade Achieved</label>
+                                                                                <input
+                                                                                    className="form-control"
+                                                                                    name="achievedGrade"
+                                                                                    value={eduFormData.achievedGrade}
+                                                                                    onChange={eduHandleInputChange}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="d-flex align-items-center justify-content-end gap-2 mt-2">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-outline-danger"
+                                                                                    onClick={eduHandleCancelEdit}
+                                                                                >
+                                                                                    Cancel
+                                                                                </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="content-confirm-btn btn btn-outline-primary"
+                                                                                    onClick={eduHandleSaveEducation}
+                                                                                >
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                                        <path d="M5 12l5 5l10 -10"></path>
+                                                                                    </svg>
+                                                                                    Done
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Add Education Button */}
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-outline-secondary btn-sm mt-2"
+                                                                        style={{ maxWidth: 'fit-content' }}
+                                                                        onClick={eduHandleAddEducation}
+                                                                    >
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus me-1">
+                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                                        </svg>
+                                                                        Add Education
                                                                     </button>
                                                                 </div>
                                                             ) : (

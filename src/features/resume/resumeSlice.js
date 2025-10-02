@@ -81,11 +81,12 @@ export const generateCoverLetter = createAsyncThunk("coverletter/generate-cover-
   }
 );
 
-export const getrecentCvsCreated = createAsyncThunk("resume/recent-created-cvs", 
-  async (_, { rejectWithValue }) => {
+export const getrecentCvsCreated = createAsyncThunk(
+  "resume/recent-created-cvs", 
+  async ({ page = 1, perPage = 10 }, { rejectWithValue }) => {
     try {
-      const response = await recentUserCvsCreated();
-      return response;
+      const response = await recentUserCvsCreated({ page, perPage });
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }

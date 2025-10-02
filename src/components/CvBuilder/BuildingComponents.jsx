@@ -12,6 +12,7 @@ import {
 } from '../../features/resume/resumeSlice';
 import { toast } from 'react-toastify';
 import { FiLoader, FiFile, FiX } from "react-icons/fi";
+import { Pagination } from 'react-bootstrap';
 
 export default function BuildingComponents() {
   const dispatch = useDispatch();
@@ -65,6 +66,71 @@ export default function BuildingComponents() {
     setSelectedFile(file);
     setShowUploadModal(true);
   };
+
+  // Add these states at the top of your component
+const [currentPage, setCurrentPage] = useState(1);
+const [itemsPerPage, setItemsPerPage] = useState(5); // Default items per page
+
+// Update your useEffect that fetches the data
+useEffect(() => {
+  dispatch(getrecentCvsCreated({ page: currentPage, perPage: itemsPerPage }));
+}, [dispatch, currentPage, itemsPerPage]);
+
+// In your component's return, add the pagination controls
+<div className="d-flex justify-content-between align-items-center mt-3">
+  <div className="d-flex align-items-center">
+    <span className="me-2">Show:</span>
+    <Form.Select 
+      size="sm" 
+      style={{ width: '80px' }} 
+      value={itemsPerPage}
+      onChange={(e) => setItemsPerPage(Number(e.target.value))}
+    >
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+    </Form.Select>
+  </div>
+  
+  <Pagination>
+    <Pagination.First 
+      onClick={() => setCurrentPage(1)} 
+      disabled={currentPage === 1} 
+    />
+    <Pagination.Prev 
+      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+      disabled={currentPage === 1} 
+    />
+    
+    {Array.from({ length: Math.min(5, recentCVs.last_page || 1) }, (_, i) => {
+      const pageNum = Math.max(1, 
+        Math.min(
+          (recentCVs.last_page || 1) - 4,
+          Math.max(1, currentPage - 2)
+        ) + i
+      );
+      return (
+        <Pagination.Item 
+          key={pageNum} 
+          active={pageNum === currentPage}
+          onClick={() => setCurrentPage(pageNum)}
+        >
+          {pageNum}
+        </Pagination.Item>
+      );
+    })}
+    
+    <Pagination.Next 
+      onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs.last_page || 1))} 
+      disabled={currentPage === (recentCVs.last_page || 1)} 
+    />
+    <Pagination.Last 
+      onClick={() => setCurrentPage(recentCVs.last_page || 1)} 
+      disabled={currentPage === (recentCVs.last_page || 1)} 
+    />
+  </Pagination>
+</div>
 
   // Manual CV creation
   const handleManualCV = async () => {
@@ -363,7 +429,17 @@ export default function BuildingComponents() {
                         <tr key={index}>
                           <td className="text-start">
                             {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
-                            {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
+                            {/* ... existing code ... */}
+{item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
+{item?.resume?.cv_resumejson?.headline ? (
+  " | " + 
+  item.resume.cv_resumejson.headline
+    .split(' ')
+    .slice(0, 5)
+    .join(' ') + 
+  (item.resume.cv_resumejson.headline.split(' ').length > 5 ? '...' : '')
+) : ""}
+{/* ... existing code ... */}
                           </td>
                           <td>
                             {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
@@ -434,7 +510,7 @@ export default function BuildingComponents() {
 
             {/* File Type Selection */}
             <Form.Group className="mb-3">
-              <Form.Label>Language Style</Form.Label>
+              <Form.Label>Select your style</Form.Label>
               <Form.Select
                 value={uploadFormData.languageStyle}
                 onChange={(e) => setUploadFormData({

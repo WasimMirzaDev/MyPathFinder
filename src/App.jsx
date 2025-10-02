@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { ToastContainer } from 'react-toastify';
 import PrivateRoute from "./components/PrivateRoute";
+// If you're using createBrowserRouter
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // Pages
 import ErrorPage from "./pages/ErrorPage";
