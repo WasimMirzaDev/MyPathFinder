@@ -129,7 +129,7 @@ const ProfilePage = () => {
 
           {activeTab === 'edit' && (
             <EditProfileTab
-              userData={userData}
+              userData={data}
               passwordData={passwordData}
               onInputChange={handleInputChange}
               onPasswordChange={handlePasswordChange}
@@ -518,9 +518,7 @@ const EditProfileTab = ({ userData, passwordData, onInputChange, onPasswordChang
         Edit Personal Information
       </h3>
       <form onSubmit={(e) => onSubmit(e, 'profile')}>
-        <div className="row">
-          <div className="col-md-6">
-            <div className="mb-3">
+        <div className="mb-3">
               <label htmlFor="firstName" className="form-label">First Name</label>
               <input
                 type="text"
@@ -531,21 +529,6 @@ const EditProfileTab = ({ userData, passwordData, onInputChange, onPasswordChang
                 onChange={onInputChange}
               />
             </div>
-          </div>
-          <div className="col-md-6">
-            <div className="mb-3">
-              <label htmlFor="lastName" className="form-label">Last Name</label>
-              <input
-                type="text"
-                className="form-control"
-                id="lastName"
-                name="lastName"
-                value={userData.lastName}
-                onChange={onInputChange}
-              />
-            </div>
-          </div>
-        </div>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Email Address</label>
           <input
