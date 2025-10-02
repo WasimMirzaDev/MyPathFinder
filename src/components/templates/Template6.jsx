@@ -8,7 +8,6 @@ const Template6 = ({ resumeData }) => {
       margin: "0 auto",
       padding: "40px",
       fontFamily: "'Segoe UI', Tahoma, sans-serif",
-      border: "1px solid #e0e0e0",
       background: "#fff",
       lineHeight: "1.6",
     },
@@ -121,8 +120,9 @@ const Template6 = ({ resumeData }) => {
       {/* Two Column Layout */}
       <div style={styles.twoColumn}>
         {/* Left Column */}
+        {resumeData?.skill?.length > 0 && !(resumeData?.skillsDisabled) && (
         <div style={styles.leftColumn}>
-          <h2 style={styles.sectionTitle}>Key Skills</h2>
+          <h2 style={styles.sectionTitle}>{resumeData?.skillsTitle || 'Key Skills'}</h2>
           <ul style={styles.bulletList}>
             {(resumeData?.skill).map((skill, index) => (
           <li key={index} style={styles.sidebarListItem}>
@@ -131,10 +131,12 @@ const Template6 = ({ resumeData }) => {
              ))}
           </ul>
         </div>
+        )}
 
         {/* Right Column */}
+        {resumeData?.workExperience?.length > 0 && !(resumeData?.employmentDisabled) && (
         <div style={styles.rightColumn}>
-          <h2 style={styles.sectionTitle}>Experience</h2>
+          <h2 style={styles.sectionTitle}>{resumeData?.employmentTitle || 'Experience'}</h2>
           {(resumeData?.workExperience).map((job, index) => (
             <div key={index} style={{ marginBottom: "20px" }}>
               <p style={styles.jobTitle}>
@@ -156,18 +158,35 @@ const Template6 = ({ resumeData }) => {
             </div>
           ))}
         </div>
+        )}
+        {resumeData?.education?.length > 0 && !(resumeData?.educationDisabled) && (
         <div style={styles.rightColumn}>
-          <h2 style={styles.sectionTitle}>Education</h2>
+          <h2 style={styles.sectionTitle}>{resumeData?.educationTitle || 'Education'}</h2>
           {(resumeData?.education).map((edu, index) => (
             <div key={index} style={{ marginBottom: "20px" }}>
               <p style={styles.jobTitle}>
                 {edu.educationLevel.label} | {edu.educationOrganization}
               </p>
+              {edu.educationMajor.length > 0 ? (
+                <>
+                  <div className='d-flex' style={styles.pagecontentfull}>
+                    <div>
+                       Subjects : 
+                    </div>
+                    <div className='ms-1'>
+                      {edu.educationMajor.map((major, i) => (
+                        <span key={i}> {i > 0 ? ', ' : ''}{major}</span>
+                      ))}
+                    </div>
+                  </div>
+                  {/* <br /> */}
+                </>
+              ) : ""}
               {edu.achievedGrade ? (
                 <>
                   <div className='d-flex' style={styles.pagecontentfull}>
                     <div>
-                     <strong> Grade: </strong>
+                      Grade : 
                     </div>
                     <div className='ms-1'>
                       {edu.achievedGrade}
@@ -186,6 +205,7 @@ const Template6 = ({ resumeData }) => {
             </div>
           ))}
         </div>
+        )}
       </div>
     </div>
   );

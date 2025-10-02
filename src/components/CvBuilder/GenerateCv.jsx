@@ -670,22 +670,77 @@ export default function CVBuilder() {
     const [eduList, setEduList] = useState([]);
     const [eduListdispatch, setEduListdispatch] = useState([]);
     const [eduCurrentForm, setEduCurrentForm] = useState(null);
-    const [eduFormData, setEduFormData] = useState({
+
+
+// Update the education form state to include educationMajor
+const [eduFormData, setEduFormData] = useState({
+    eduDegree: '',
+    eduInstitution: '',
+    eduStartDate: '',
+    eduEndDate: '',
+    achievedGrade: '',
+    educationMajor: [''] // Add educationMajor as an array to store multiple majors
+});
+
+// Add a function to handle adding/removing major fields
+const handleAddMajor = () => {
+    setEduFormData(prev => ({
+        ...prev,
+        educationMajor: [...prev.educationMajor, '']
+    }));
+};
+
+const handleRemoveMajor = (index) => {
+    setEduFormData(prev => ({
+        ...prev,
+        educationMajor: prev.educationMajor.filter((_, i) => i !== index)
+    }));
+};
+
+const handleMajorChange = (index, value) => {
+    const newMajors = [...eduFormData.educationMajor];
+    newMajors[index] = value;
+    setEduFormData(prev => ({
+        ...prev,
+        educationMajor: newMajors
+    }));
+};
+
+// Update the form submission to include educationMajor
+const handleAddEducation = () => {
+    if (!eduFormData.eduDegree || !eduFormData.eduInstitution) {
+        toast.error('Please fill in all required fields');
+        return;
+    }
+
+    const newEducation = {
+        educationLevel: { label: eduFormData.eduDegree },
+        educationOrganization: eduFormData.eduInstitution,
+        educationDates: {
+            start: { date: eduFormData.eduStartDate },
+            end: { date: eduFormData.eduEndDate || null }
+        },
+        educationMajor: eduFormData.educationMajor.filter(major => major.trim() !== ''),
+        achievedGrade: eduFormData.achievedGrade || null
+    };
+
+    dispatch(updateField({
+        path: 'education',
+        value: [...(parsedResume.education || []), newEducation]
+    }));
+
+    // Reset form
+    setEduFormData({
         eduDegree: '',
         eduInstitution: '',
         eduStartDate: '',
         eduEndDate: '',
-        achievedGrade: ''
+        achievedGrade: '',
+        educationMajor: ['']
     });
-
-    const eduHandleInputChange = (e) => {
-        const { name, value } = e.target;
-        setEduFormData({
-            ...eduFormData,
-            [name]: value
-        });
-    };
-
+    setShowEducationForm(false);
+};
+    
     const eduHandleAddEducation = () => {
         // Check if there's already an empty form
         if (eduCurrentForm) {
@@ -727,8 +782,18 @@ export default function CVBuilder() {
             eduDegree: '',
             eduInstitution: '',
             eduStartDate: '',
-            achievedGrade: "",
-            eduEndDate: ''
+            eduEndDate: '',
+            achievedGrade: '',
+            educationMajor: ['']
+        });
+    };
+
+
+    const eduHandleInputChange = (e) => {
+        const { name, value } = e.target;
+        setEduFormData({
+            ...eduFormData,
+            [name]: value
         });
     };
 
@@ -749,6 +814,17 @@ export default function CVBuilder() {
         // };
 
 
+        // const newEducation = {
+        //     educationLevel: { label: eduFormData.eduDegree },
+        //     educationOrganization: eduFormData.eduInstitution,
+        //     educationDates: {
+        //         start: { date: eduFormData.eduStartDate },
+        //         end: { date: eduFormData.eduEndDate || null }
+        //     },
+        //     educationMajor: eduFormData.educationMajor.filter(major => major.trim() !== ''),
+        //     achievedGrade: eduFormData.achievedGrade || null
+        // };
+
         const dispatcheducationList = {
             educationOrganization: eduFormData.eduInstitution,
             educationAccreditation: eduFormData.eduDegree,
@@ -760,6 +836,7 @@ export default function CVBuilder() {
                     date: eduFormData.eduEndDate
                 }
             },
+            educationMajor: eduFormData.educationMajor.filter(major => major.trim() !== ''),
             achievedGrade: eduFormData.achievedGrade,
             educationLevel: {
                 label: eduFormData.eduDegree
@@ -776,7 +853,8 @@ export default function CVBuilder() {
             eduInstitution: '',
             eduStartDate: '',
             eduEndDate: '',
-            achievedGrade: ""
+            achievedGrade: "",
+            educationMajor: ['']
         });
 
 
@@ -792,7 +870,8 @@ export default function CVBuilder() {
                 eduInstitution: eduToEdit.educationOrganization,
                 eduStartDate: eduToEdit.educationDates.start.date,
                 eduEndDate: eduToEdit.educationDates.end.date,
-                achievedGrade: eduToEdit.achievedGrade
+                achievedGrade: eduToEdit.achievedGrade,
+                educationMajor: eduToEdit.educationMajor
             });
 
             // Remove from displayed list while editing
@@ -818,7 +897,8 @@ export default function CVBuilder() {
                 educationLevel: {
                     label: eduFormData.eduDegree
                 },
-                achievedGrade: eduFormData.achievedGrade
+                achievedGrade: eduFormData.achievedGrade,
+                educationMajor: eduFormData.educationMajor
             };
 
             dispatch(updateField({ path: "education", value: [...parsedResume.education, eduNewEducation] }));
@@ -830,7 +910,8 @@ export default function CVBuilder() {
             eduInstitution: '',
             eduStartDate: '',
             eduEndDate: '',
-            achievedGrade: ""
+            achievedGrade: "",
+            educationMajor: ['']
         });
     };
 
@@ -1662,6 +1743,37 @@ export default function CVBuilder() {
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+                                                                            {/* Inside your education form, add this section after the achieved grade field */}
+<div className="mb-3">
+    <label className="form-label">Major(s)</label>
+    {eduFormData.educationMajor.map((major, index) => (
+        <div key={index} className="input-group mb-2">
+            <input
+                type="text"
+                className="form-control"
+                value={major}
+                onChange={(e) => handleMajorChange(index, e.target.value)}
+                placeholder={`Major ${index + 1}`}
+            />
+            {eduFormData.educationMajor.length > 1 && (
+                <button
+                    type="button"
+                    className="btn btn-outline-danger"
+                    onClick={() => handleRemoveMajor(index)}
+                >
+                    <FiTrash2 />
+                </button>
+            )}
+        </div>
+    ))}
+    <button
+        type="button"
+        className="btn btn-sm btn-outline-secondary mt-2"
+        onClick={handleAddMajor}
+    >
+        <FiPlus /> Add Another Major
+    </button>
+</div>
                                                                             <div className="mb-2">
                                                                                 <label className="form-label">Grade Achieved</label>
                                                                                 <input

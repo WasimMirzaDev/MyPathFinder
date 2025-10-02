@@ -245,11 +245,26 @@ const Template5 = ({ resumeData }) => {
                     {edu.educationLevel.label}
                     <span style={styles.period}>{edu.educationDates?.start?.date} – {edu.educationDates?.end?.date}</span>
                   </p>
+                  {edu.educationMajor.length > 0 ? (
+                <>
+                  <div className='d-flex' style={styles.pagecontentfull}>
+                    <div>
+                       Subjects : 
+                    </div>
+                    <div className='ms-1'>
+                      {edu.educationMajor.map((major, i) => (
+                        <span key={i}> {i > 0 ? ', ' : ''}{major}</span>
+                      ))}
+                    </div>
+                  </div>
+                  {/* <br /> */}
+                </>
+              ) : ""}
                   {edu.achievedGrade ? (
                     <>
                       <div className='d-flex'>
                         <div>
-                         <strong> Grade: </strong>
+                          Grade : 
                         </div>
                         <div className='ms-1'>
                           {edu.achievedGrade}

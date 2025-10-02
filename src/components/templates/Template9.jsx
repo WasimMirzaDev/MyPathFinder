@@ -244,8 +244,23 @@ const Template9 = ({ resumeData }) => {
                 </p>
                 <p style={styles.jobTitle}>{edu.educationLevel.label}</p>
                 <p style={styles.company}>{edu.educationOrganization}</p>
+                {edu.educationMajor.length > 0 ? (
+                <>
+                  <div className='d-flex' style={styles.pagecontentfull}>
+                    <div>
+                       Subjects : 
+                    </div>
+                    <div className='ms-1'>
+                      {edu.educationMajor.map((major, i) => (
+                        <span key={i}> {i > 0 ? ', ' : ''}{major}</span>
+                      ))}
+                    </div>
+                  </div>
+                  {/* <br /> */}
+                </>
+              ) : ""}
                 {edu.achievedGrade? (
-                <p style={styles.company}>{edu.achievedGrade}</p>
+                <p style={styles.company}>Grade : {edu.achievedGrade}</p>
                 ) : ""}
                 {edu.educationDescription && (
                   <ul style={styles.bulletList}>
