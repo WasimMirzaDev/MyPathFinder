@@ -533,17 +533,17 @@ const ChartComponent = ({parsedFeedback}) => {
         <div className="row gx-2 align-items-stretch h-100">
           <div className="col-12 col-xl-4">
             <div className="card h-100">
-              <div ref={radarCustomizedRef} className="echart-radar-customized-chart-example" style={{ minHeight: '350px' }}></div>
+              <div ref={radarCustomizedRef} className="echart-radar-customized-chart-example" style={{ minHeight: '420px' }}></div>
             </div>
           </div>
           <div className="col-12 col-xl-4">
-            <div className="px-4 card h-100">
-              <div ref={radarFourLabelsRef} className="echart-radar-four-labels" style={{ minHeight: '350px' }}></div>
+            <div className="px-0 card h-100">
+              <div ref={radarFourLabelsRef} className="echart-radar-four-labels" style={{ minHeight: '420px' }}></div>
             </div>
           </div>
           <div className="col-12 col-xl-4">
-            <div className="px-4 card h-100">
-              <div ref={radarCommunicationRef} className="echart-radar-communication" style={{ minHeight: '350px' }}></div>
+            <div className="px-0 card h-100">
+              <div ref={radarCommunicationRef} className="echart-radar-communication" style={{ minHeight: '420px' }}></div>
             </div>
           </div>
         </div>
