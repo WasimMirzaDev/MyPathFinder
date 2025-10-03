@@ -265,6 +265,27 @@ useEffect(() => {
       autoClose: 5000,
       position: 'bottom-center'
     });
+    // Schedule sequential toasts
+setTimeout(() => {
+  toast.info('Parsing your CV content...', {
+    autoClose: 5000,
+    position: 'bottom-center'
+  });
+  
+  setTimeout(() => {
+    toast.info(`Analyzing your CV in ${uploadFormData.languageStyle || 'standard'} style...`, {
+      autoClose: 5000,
+      position: 'bottom-center'
+    });
+    
+    setTimeout(() => {
+      toast.info('Finalizing your CV...', {
+        autoClose: 20000,
+        position: 'bottom-center'
+      });
+    }, 9000); // 7 seconds after the second toast (12s total)
+  }, 9000); // 7 seconds after the first toast (7s total)
+}, 20000); // 20 seconds after initial toast
 
     try {
       const uploadResult = await dispatch(uploadExistingResume(formData)).unwrap();

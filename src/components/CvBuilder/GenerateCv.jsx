@@ -109,7 +109,7 @@ export default function CVBuilder() {
     const handleNextTab = () => {
         if (activeTab == "tabPreview") {
             setActiveTab("tabDesign"); // toggle if same, else set new
-        } 
+        }
     }
 
     const handlePreviousTab = () => {
@@ -155,18 +155,18 @@ export default function CVBuilder() {
         const handleClick = (e) => {
             // If we're already processing navigation or no unsaved changes, allow the click
             if (isNavigating || !hasUnsavedChanges || saveChangesLoader) return;
-    
+
             const link = e.target.closest('a');
             if (link && link.href) {
                 // Check if it's an external link or different route
                 const currentUrl = window.location.href;
                 const targetUrl = link.href;
-                
+
                 // Only intercept if it's a different page
                 if (currentUrl !== targetUrl && !targetUrl.includes('#')) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     Swal.fire({
                         title: 'Unsaved Changes',
                         text: 'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.',
@@ -189,12 +189,12 @@ export default function CVBuilder() {
                 }
             }
         };
-    
+
         // Use capture phase to catch all clicks
         document.addEventListener('click', handleClick, true);
         return () => document.removeEventListener('click', handleClick, true);
     }, [hasUnsavedChanges, saveChangesLoader, isNavigating]);
-    
+
     // Update the beforeunload handler to check the flag
     useEffect(() => {
         const handleBeforeUnload = (e) => {
@@ -203,16 +203,16 @@ export default function CVBuilder() {
                 sessionStorage.removeItem('allowNavigation');
                 return;
             }
-            
+
             if (hasUnsavedChanges && !saveChangesLoader) {
                 e.preventDefault();
                 e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
                 return 'You have unsaved changes. Are you sure you want to leave?';
             }
         };
-    
+
         window.addEventListener('beforeunload', handleBeforeUnload);
-        
+
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
@@ -257,11 +257,11 @@ export default function CVBuilder() {
 
 
 
-      // Add visual indicator in your save button
-      const renderSaveButton = () => (
-        <button 
-            className="btn btn-primary btn-sm position-relative" 
-            onClick={handleSaveChanges} 
+    // Add visual indicator in your save button
+    const renderSaveButton = () => (
+        <button
+            className="btn btn-primary btn-sm position-relative"
+            onClick={handleSaveChanges}
             disabled={parsedResume == prevParsedResume || saveChangesLoader}
         >
             {saveChangesLoader ? (
@@ -270,7 +270,7 @@ export default function CVBuilder() {
                 <>
                     Save Changes
                     {hasUnsavedChanges && (
-                        <span 
+                        <span
                             className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
                             title="Unsaved changes"
                             style={{ fontSize: '6px' }}
@@ -811,76 +811,81 @@ export default function CVBuilder() {
     const [eduListdispatch, setEduListdispatch] = useState([]);
     const [eduCurrentForm, setEduCurrentForm] = useState(null);
 
+    const [editingExperience, setEditingExperience] = useState({
+        index: null,
+        data: null
+    });
 
-// Update the education form state to include educationMajor
-const [eduFormData, setEduFormData] = useState({
-    eduDegree: '',
-    eduInstitution: '',
-    eduStartDate: '',
-    eduEndDate: '',
-    achievedGrade: '',
-    educationMajor: [''] // Add educationMajor as an array to store multiple majors
-});
 
-// Add a function to handle adding/removing major fields
-const handleAddMajor = () => {
-    setEduFormData(prev => ({
-        ...prev,
-        educationMajor: [...prev.educationMajor, '']
-    }));
-};
-
-const handleRemoveMajor = (index) => {
-    setEduFormData(prev => ({
-        ...prev,
-        educationMajor: prev.educationMajor.filter((_, i) => i !== index)
-    }));
-};
-
-const handleMajorChange = (index, value) => {
-    const newMajors = [...eduFormData.educationMajor];
-    newMajors[index] = value;
-    setEduFormData(prev => ({
-        ...prev,
-        educationMajor: newMajors
-    }));
-};
-
-// Update the form submission to include educationMajor
-const handleAddEducation = () => {
-    if (!eduFormData.eduDegree || !eduFormData.eduInstitution) {
-        toast.error('Please fill in all required fields');
-        return;
-    }
-
-    const newEducation = {
-        educationLevel: { label: eduFormData.eduDegree },
-        educationOrganization: eduFormData.eduInstitution,
-        educationDates: {
-            start: { date: eduFormData.eduStartDate },
-            end: { date: eduFormData.eduEndDate || null }
-        },
-        educationMajor: eduFormData.educationMajor.filter(major => major.trim() !== ''),
-        achievedGrade: eduFormData.achievedGrade || null
-    };
-
-    dispatch(updateField({
-        path: 'education',
-        value: [...(parsedResume.education || []), newEducation]
-    }));
-
-    // Reset form
-    setEduFormData({
+    // Update the education form state to include educationMajor
+    const [eduFormData, setEduFormData] = useState({
         eduDegree: '',
         eduInstitution: '',
         eduStartDate: '',
         eduEndDate: '',
         achievedGrade: '',
-        educationMajor: ['']
+        educationMajor: [''] // Add educationMajor as an array to store multiple majors
     });
-    setShowEducationForm(false);
-};
-    
+
+    // Add a function to handle adding/removing major fields
+    const handleAddMajor = () => {
+        setEduFormData(prev => ({
+            ...prev,
+            educationMajor: [...prev.educationMajor, '']
+        }));
+    };
+
+    const handleRemoveMajor = (index) => {
+        setEduFormData(prev => ({
+            ...prev,
+            educationMajor: prev.educationMajor.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleMajorChange = (index, value) => {
+        const newMajors = [...eduFormData.educationMajor];
+        newMajors[index] = value;
+        setEduFormData(prev => ({
+            ...prev,
+            educationMajor: newMajors
+        }));
+    };
+
+    // Update the form submission to include educationMajor
+    const handleAddEducation = () => {
+        if (!eduFormData.eduDegree || !eduFormData.eduInstitution) {
+            toast.error('Please fill in all required fields');
+            return;
+        }
+
+        const newEducation = {
+            educationLevel: { label: eduFormData.eduDegree },
+            educationOrganization: eduFormData.eduInstitution,
+            educationDates: {
+                start: { date: eduFormData.eduStartDate },
+                end: { date: eduFormData.eduEndDate || null }
+            },
+            educationMajor: eduFormData.educationMajor.filter(major => major.trim() !== ''),
+            achievedGrade: eduFormData.achievedGrade || null
+        };
+
+        dispatch(updateField({
+            path: 'education',
+            value: [...(parsedResume.education || []), newEducation]
+        }));
+
+        // Reset form
+        setEduFormData({
+            eduDegree: '',
+            eduInstitution: '',
+            eduStartDate: '',
+            eduEndDate: '',
+            achievedGrade: '',
+            educationMajor: ['']
+        });
+        setShowEducationForm(false);
+    };
+
     const eduHandleAddEducation = () => {
         // Check if there's already an empty form
         if (eduCurrentForm) {
@@ -1088,12 +1093,12 @@ const handleAddEducation = () => {
     const expHandleAddExperience = () => {
         // Check if there's already an incomplete form
         const hasIncomplete = expItems.some(item => !item.expIsComplete);
-    
+
         if (hasIncomplete) {
             toast.error('Please complete the current experience form before adding a new one');
             return;
         }
-    
+
         // Create a new incomplete experience item with highlights
         const expNewItem = {
             expId: Date.now(),
@@ -1107,7 +1112,7 @@ const handleAddEducation = () => {
                 items: []
             }
         };
-    
+
         const dispatchExperienceList = {
             workExperienceJobTitle: expNewItem.expJobTitle,
             workExperienceOrganization: expNewItem.expCompany,
@@ -1120,10 +1125,10 @@ const handleAddEducation = () => {
             },
             expIsComplete: false
         };
-    
-        dispatch(updateField({ 
-            path: "workExperience", 
-            value: [...parsedResume.workExperience, dispatchExperienceList] 
+
+        dispatch(updateField({
+            path: "workExperience",
+            value: [...parsedResume.workExperience, dispatchExperienceList]
         }));
     };
 
@@ -1136,37 +1141,39 @@ const handleAddEducation = () => {
         }));
     };
 
-    // Mark an item as complete
-    const expHandleSaveExperience = (expIndex) => {
-        const item = parsedResume.workExperience[expIndex];
+    const expHandleSaveExperience = () => {
+        const { index, data } = editingExperience;
 
         // Validate required fields
-        if (!item.workExperienceJobTitle || !item.workExperienceOrganization || !item.workExperienceDates?.start?.date || !item.workExperienceDates?.end?.date) {
+        if (!data.workExperienceJobTitle || !data.workExperienceOrganization ||
+            !data.workExperienceDates?.start?.date || !data.workExperienceDates?.end?.date) {
             toast.error('Please fill all the required fields');
             return;
         }
 
-        // Mark as complete by updating the specific item
-        const updatedExperience = parsedResume.workExperience.map((item, index) =>
-            index === expIndex ? { ...item, expIsComplete: true } : item
-        );
+        // Update the experience in the main state
+        const updatedExperience = [...parsedResume.workExperience];
+        updatedExperience[index] = data;
 
         dispatch(updateField({
             path: "workExperience",
             value: updatedExperience
         }));
+
+        // Reset editing state
+        setEditingExperience({ index: null, data: null });
     };
 
     // Edit an existing complete item
     const expHandleEditExperience = (expIndex) => {
-        const updatedExperience = parsedResume.workExperience.map((item, index) =>
-            index === expIndex ? { ...item, expIsComplete: false } : item
-        );
-
-        dispatch(updateField({
-            path: "workExperience",
-            value: updatedExperience
-        }));
+        setEditingExperience({
+            index: expIndex,
+            data: { ...parsedResume.workExperience[expIndex] }
+        });
+    };
+    // Cancel editing and remove incomplete items
+    const expHandleCancelEdit = () => {
+        setEditingExperience({ index: null, data: null });
     };
 
     // Delete an experience item
@@ -1192,15 +1199,6 @@ const handleAddEducation = () => {
         });
     };
 
-    // Cancel editing and remove incomplete items
-    const expHandleCancelEdit = (expIndex) => {
-        const updatedExperience = parsedResume.workExperience.filter((_, index) => index !== expIndex);
-
-        dispatch(updateField({
-            path: "workExperience",
-            value: updatedExperience
-        }));
-    };
 
     // Render the component
     return (
@@ -1686,9 +1684,9 @@ const handleAddEducation = () => {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.employmentDisabled ? 
-                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.employmentDisabled ?
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingEmploymentTitle ? (
@@ -1787,7 +1785,137 @@ const handleAddEducation = () => {
                                                                     {parsedResume.workExperience?.map((expItem, expIndex) => (
                                                                         <div key={expIndex} className="mb-3 p-3 border rounded">
 
-                                                                            {(expItem?.expIsComplete) ? (
+{(editingExperience.index === expIndex) ? (
+    // Edit mode
+    <div className="experience-edit-form">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+            <small className="fw-bold text-muted">
+                Experience #{expIndex + 1}
+            </small>
+            <button
+                type="button"
+                className="btn btn-sm btn-outline-danger"
+                onClick={expHandleCancelEdit}
+                title="Cancel editing"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </button>
+        </div>
+        <div className="mb-2">
+            <label className="form-label">Job Title</label>
+            <input
+                className="form-control"
+                value={editingExperience.data.workExperienceJobTitle}
+                onChange={(e) => setEditingExperience(prev => ({
+                    ...prev,
+                    data: {
+                        ...prev.data,
+                        workExperienceJobTitle: e.target.value
+                    }
+                }))}
+            />
+        </div>
+        <div className="mb-2">
+            <label className="form-label">Company</label>
+            <input
+                className="form-control"
+                value={editingExperience.data.workExperienceOrganization}
+                onChange={(e) => setEditingExperience(prev => ({
+                    ...prev,
+                    data: {
+                        ...prev.data,
+                        workExperienceOrganization: e.target.value
+                    }
+                }))}
+            />
+        </div>
+        <div className="row">
+            <div className="col-md-6">
+                <div className="mb-2">
+                    <label className="form-label">Start Date</label>
+                    <input
+                        placeholder="2020"
+                        className="form-control"
+                        type="text"
+                        value={editingExperience.data.workExperienceDates?.start?.date || ''}
+                        onChange={(e) => setEditingExperience(prev => ({
+                            ...prev,
+                            data: {
+                                ...prev.data,
+                                workExperienceDates: {
+                                    ...prev.data.workExperienceDates,
+                                    start: {
+                                        ...prev.data.workExperienceDates?.start,
+                                        date: e.target.value
+                                    }
+                                }
+                            }
+                        }))}
+                    />
+                </div>
+            </div>
+            <div className="col-md-6">
+                <div className="mb-2">
+                    <label className="form-label">End Date</label>
+                    <input
+                        placeholder="2021 or Present"
+                        className="form-control"
+                        type="text"
+                        value={editingExperience.data.workExperienceDates?.end?.date || ''}
+                        onChange={(e) => setEditingExperience(prev => ({
+                            ...prev,
+                            data: {
+                                ...prev.data,
+                                workExperienceDates: {
+                                    ...prev.data.workExperienceDates,
+                                    end: {
+                                        ...prev.data.workExperienceDates?.end,
+                                        date: e.target.value
+                                    }
+                                }
+                            }
+                        }))}
+                    />
+                </div>
+            </div>
+        </div>
+        <div className="mb-3">
+            <label className="form-label">Description</label>
+            <textarea
+                className="form-control"
+                rows="3"
+                value={editingExperience.data.workExperienceDescription || ''}
+                onChange={(e) => setEditingExperience(prev => ({
+                    ...prev,
+                    data: {
+                        ...prev.data,
+                        workExperienceDescription: e.target.value
+                    }
+                }))}
+                placeholder="Describe your role and responsibilities"
+            ></textarea>
+        </div>
+        <div className="d-flex justify-content-end gap-2">
+            <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={expHandleCancelEdit}
+            >
+                Cancel
+            </button>
+            <button
+                type="button"
+                className="btn btn-primary"
+                onClick={expHandleSaveExperience}
+            >
+                Save Changes
+            </button>
+        </div>
+    </div>
+) : (
+       
                                                                                 // Display completed experience item
                                                                                 <>
                                                                                     <div className="d-flex justify-content-between align-items-center mb-2">
@@ -1838,201 +1966,6 @@ const handleAddEducation = () => {
                                                                                         </button>
                                                                                     </div>
                                                                                 </>
-                                                                            ) : (
-                                                                                // Display incomplete experience form
-                                                                                <>
-                                                                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                                                                        <small className="fw-bold text-muted">
-                                                                                            Experience #{expIndex + 1}
-                                                                                        </small>
-                                                                                        <button
-                                                                                            type="button"
-                                                                                            className="btn btn-sm btn-outline-danger"
-                                                                                            onClick={() => expHandleCancelEdit(expIndex)}
-                                                                                            title="Cancel editing"
-                                                                                        >
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                                                                                            </svg>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div className="mb-2">
-                                                                                        <label className="form-label">Job Title</label>
-                                                                                        <input
-                                                                                            className="form-control"
-                                                                                            value={expItem.workExperienceJobTitle}
-                                                                                            onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceJobTitle', value: e.target.value }))}
-                                                                                        />
-                                                                                    </div>
-                                                                                    <div className="mb-2">
-                                                                                        <label className="form-label">Company</label>
-                                                                                        <input
-                                                                                            className="form-control"
-                                                                                            value={expItem.workExperienceOrganization}
-                                                                                            onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceOrganization', value: e.target.value }))}
-                                                                                        />
-                                                                                    </div>
-                                                                                    <div className="row">
-                                                                                        <div className="col-md-6">
-                                                                                            <div className="mb-2">
-                                                                                                <label className="form-label">Start Date</label>
-                                                                                                <input
-                                                                                                    placeholder="2020"
-                                                                                                    className="form-control"
-                                                                                                    type="text"
-                                                                                                    value={expItem.workExperienceDates?.start?.date}
-                                                                                                    onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceDates.start.date', value: e.target.value }))}
-                                                                                                />
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div className="col-md-6">
-                                                                                            <div className="mb-2">
-                                                                                                <label className="form-label">End Date</label>
-                                                                                                <input
-                                                                                                    placeholder="2021 or Present"
-                                                                                                    className="form-control"
-                                                                                                    type="text"
-                                                                                                    value={expItem.workExperienceDates?.end?.date}
-                                                                                                    onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceDates.end.date', value: e.target.value }))}
-                                                                                                />
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="mb-3">
-                                                                                    <div className="mb-3">
-        <label className="form-label">Additional Notes (Optional)</label>
-        <textarea
-            rows="3"
-            className="form-control"
-            value={expItem.workExperienceDescription || ''}
-            onChange={(e) => dispatch(updateField({ 
-                path: 'workExperience.' + expIndex + '.workExperienceDescription', 
-                value: e.target.value 
-            }))}
-            placeholder="Any additional details about this role"
-        ></textarea>
-    </div>
-    <div className="d-flex justify-content-between align-items-center mb-2">
-        <label className="form-label">Key Achievements</label>
-        <button 
-            type="button" 
-            className="btn btn-sm btn-outline-primary"
-// Update the onClick handler for adding a new bullet point
-onClick={() => {
-    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
-        if (idx === expIndex) {
-            // Create a new work experience item with updated highlights
-            return {
-                ...item,
-                highlights: {
-                    ...item.highlights,
-                    items: [
-                        ...(item.highlights?.items || []),
-                        { id: Date.now(), bullet: '' }
-                    ]
-                }
-            };
-        }
-        return item;
-    });
-
-    dispatch(updateField({
-        path: 'workExperience',
-        value: updatedExperience
-    }));
-}}
-        >
-            <FiPlus size={14} className="me-1" /> Add Bullet Point
-        </button>
-    </div>
-    
-    {expItem.highlights?.items?.map((bullet, bulletIndex) => (
-        <div key={bullet.id || bulletIndex} className="d-flex align-items-start mb-2">
-            <span className="me-2 mt-2">•</span>
-            <div className="flex-grow-1">
-                <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    value={bullet.bullet}
-                   // Update the onChange handler for editing a bullet point
-onChange={(e) => {
-    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
-        if (idx === expIndex) {
-            return {
-                ...item,
-                highlights: {
-                    ...item.highlights,
-                    items: item.highlights.items.map((b, i) => 
-                        i === bulletIndex 
-                            ? { ...b, bullet: e.target.value }
-                            : b
-                    )
-                }
-            };
-        }
-        return item;
-    });
-
-    dispatch(updateField({
-        path: 'workExperience',
-        value: updatedExperience
-    }));
-}}
-                    placeholder="Enter achievement or responsibility"
-                />
-            </div>
-            <button
-                type="button"
-                className="btn btn-sm btn-link text-danger ms-2"
-// Update the onClick handler for removing a bullet point
-onClick={() => {
-    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
-        if (idx === expIndex) {
-            return {
-                ...item,
-                highlights: {
-                    ...item.highlights,
-                    items: item.highlights.items.filter((_, i) => i !== bulletIndex)
-                }
-            };
-        }
-        return item;
-    });
-
-    dispatch(updateField({
-        path: 'workExperience',
-        value: updatedExperience
-    }));
-}}
-            >
-                <FiTrash2 size={14} />
-            </button>
-        </div>
-    ))}
-
-
-</div>
-                                                                                    <div className="d-flex align-items-center justify-content-end gap-2 mt-3">
-                                                                                        <button
-                                                                                            type="button"
-                                                                                            className="btn btn-outline-danger"
-                                                                                            onClick={() => expHandleCancelEdit(expIndex)}
-                                                                                        >
-                                                                                            Cancel
-                                                                                        </button>
-                                                                                        <button
-                                                                                            type="button"
-                                                                                            className="content-confirm-btn btn btn-outline-primary"
-                                                                                            onClick={() => expHandleSaveExperience(expIndex)}
-                                                                                        >
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
-                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                                                                <path d="M5 12l5 5l10 -10"></path>
-                                                                                            </svg>
-                                                                                            Done
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </>
                                                                             )}
                                                                         </div>
                                                                     ))}
@@ -2069,8 +2002,8 @@ onClick={() => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                                                                {/* Education */}
-                                                                                                <div className="accordion-item">
+                                                {/* Education */}
+                                                <div className="accordion-item">
                                                     <h2 className="accordion-header" id="headingEducation">
                                                         <div className="d-flex justify-content-between align-items-center w-100">
                                                             <div className="d-flex align-items-center w-100 gap-2">
@@ -2093,9 +2026,9 @@ onClick={() => {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.educationDisabled ? 
-                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.educationDisabled ?
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingEducationTitle ? (
@@ -2411,9 +2344,9 @@ onClick={() => {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.skillsDisabled ? 
-                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.skillsDisabled ?
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingSkillsTitle ? (
@@ -2646,9 +2579,9 @@ onClick={() => {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.languagesDisabled ? 
-                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.languagesDisabled ?
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingLanguagesTitle ? (
@@ -2852,9 +2785,9 @@ onClick={() => {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.hobbiesDisabled ? 
-                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.hobbiesDisabled ?
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingHobbiesTitle ? (
