@@ -83,7 +83,7 @@ export const generateCoverLetter = createAsyncThunk("coverletter/generate-cover-
 
 export const getrecentCvsCreated = createAsyncThunk(
   "resume/recent-created-cvs", 
-  async ({ page = 1, perPage = 5 }, { rejectWithValue }) => {
+  async ({ page = 1, perPage = 3 }, { rejectWithValue }) => {
     try {
       const response = await recentUserCvsCreated({ page, perPage });
       return response;

@@ -1787,7 +1787,7 @@ const handleAddEducation = () => {
                                                                     {parsedResume.workExperience?.map((expItem, expIndex) => (
                                                                         <div key={expIndex} className="mb-3 p-3 border rounded">
 
-                                                                            {expItem?.expIsComplete ? (
+                                                                            {(expItem?.expIsComplete) ? (
                                                                                 // Display completed experience item
                                                                                 <>
                                                                                     <div className="d-flex justify-content-between align-items-center mb-2">
