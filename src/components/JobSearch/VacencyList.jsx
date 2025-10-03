@@ -369,7 +369,7 @@ useEffect(() => {
             {/* Apply with MPF */}
             {row.applyWithMpf.startsWith("#") ? (
               <button
-                className="badge"
+                className="badge bg-secondary-subtle text-secondary-dark border text-primary"
                 style={{ backgroundColor: "#ece5fc", color: "#BA67EF" }}
                 data-bs-toggle="modal"
                 data-bs-target={row.applyWithMpf}
@@ -379,7 +379,7 @@ useEffect(() => {
               </button>
             ) : (
               <button
-                className="badge"
+                className="badge bg-secondary-subtle text-secondary-dark border text-primary"
                 style={{ backgroundColor: "#ece5fc", color: "#BA67EF" }}
                 href={row.applyWithMpf}
                 onClick={() => setShowModalMPFCV(true)}

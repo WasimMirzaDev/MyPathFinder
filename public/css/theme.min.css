@@ -31380,7 +31380,7 @@ a[href].bg-body-secondary:hover, a[href].bg-body-secondary:focus {
 .timeline-vertical .timeline-item:not(:last-child) .timeline-item-bar .timeline-bar {
   position: absolute;
   height: 100px;
-  left: 11px;
+  left: 12px;
   top: 24px;
 }
 .timeline-vertical.timeline-with-details .timeline-item:not(:last-child) .timeline-item-bar .timeline-bar {
@@ -35926,3 +35926,8 @@ a[href].bg-body-secondary:hover, a[href].bg-body-secondary:focus {
   height: 3rem;
 }
                                          
+
+
+.pagination-btn .page-link{
+  padding: 4px !important;
+}

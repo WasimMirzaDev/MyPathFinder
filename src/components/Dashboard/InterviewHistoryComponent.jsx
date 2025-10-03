@@ -33,23 +33,23 @@ export default function InterviewHistory({ interviewHistory, handleRetry, handle
                     return (
                         <div key={`interview-${item.id}`} className="d-flex hover-actions-trigger py-3 border-translucent border-top">
                             <div className="row justify-content-between align-items-md-center btn-reveal-trigger border-translucent gx-0 flex-1 cursor-pointer">
-                                <div className="col-12 col-md-auto col-xl-12 col-xxl-auto">
+                                <div className="col-12">
                                     <div className="mb-1 mb-md-0 d-flex align-items-center lh-1">
                                         <label className="form-check-label mb-1 mb-md-0 mb-xl-1 mb-xxl-0 fs-8 me-2 line-clamp-1 text-body cursor-pointer fs-9">General #{item.id}: <strong>{item.question?.speech}</strong></label>
 
                                         {item?.status === "FAIL" ? (
-                                            <span className="badge badge-phoenix ms-auto fs-10 bg-danger-subtle text-danger-dark border">{item?.evaluation?.breakdown?.total?.score}% Fail <svg xmlns="http://www.w3.org/2000/svg" width="1.7em" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x ms-1 small"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+                                            <span className="badge badge-phoenix ms-auto fs-10 bg-danger-subtle text-danger-dark border hover-md-hide hover-xl-show hover-xxl-hide">{item?.evaluation?.breakdown?.total?.score}% Fail <svg xmlns="http://www.w3.org/2000/svg" width="1.7em" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x ms-1 small"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
                                             //    <span>{item?.evaluation?.breakdown?.total?.score}% FAIL <span className="fail-x">X</span></span>
                                         ) : (
-                                            <span className="badge badge-phoenix ms-auto fs-10 bg-success-subtle text-success-dark border">{item?.status}: {item?.evaluation?.breakdown?.total?.score}% <svg xmlns="http://www.w3.org/2000/svg" width="1.7em" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check ms-1 small"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                                            <span className="badge badge-phoenix ms-auto fs-10 bg-success-subtle text-success-dark border hover-md-hide hover-xl-show hover-xxl-hide">{item?.status}: {item?.evaluation?.breakdown?.total?.score}% <svg xmlns="http://www.w3.org/2000/svg" width="1.7em" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check ms-1 small"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
                                             // <span>{item?.status}: {item?.evaluation?.breakdown?.total?.score}%</span>
                                         )}
                                     </div>
                                 </div>
-                                <div className="col-12 col-md-auto col-xl-12 col-xxl-auto">
+                                <div className="col-12">
                                     <div className="d-flex lh-1 align-items-center"><Link className="text-warning fw-bold fs-10 me-2" to="#!"><svg width={10} className="svg-inline--fa fa-list-check me-1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="list-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M152.1 38.2c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 113C-2.3 103.6-2.3 88.4 7 79s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zm0 160c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 273c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zM224 96c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zm0 160c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zM160 416c0-17.7 14.3-32 32-32l288 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-288 0c-17.7 0-32-14.3-32-32zM48 368a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>3</Link>
                                         <p className="text-body-tertiary fs-10 mb-md-0 me-2 me-md-3 me-xl-2 me-xxl-3 mb-0">{formatDate(item.created_at)}</p>
-                                        <div className="hover-md-hide hover-xl-show hover-xxl-hide">
+                                        <div className="">
                                             <p className="text-body-tertiary fs-10 fw-bold mb-md-0 mb-0 ps-md-3 ps-xl-0 ps-xxl-3 border-start-md border-xl-0 border-start-xxl">{formatTime(item.created_at)}</p>
                                         </div>
                                     </div>
