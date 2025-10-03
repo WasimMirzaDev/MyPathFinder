@@ -68,69 +68,69 @@ export default function BuildingComponents() {
   };
 
   // Add these states at the top of your component
-const [currentPage, setCurrentPage] = useState(1);
-const [itemsPerPage, setItemsPerPage] = useState(5); // Default items per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Default items per page
 
-// Update your useEffect that fetches the data
-useEffect(() => {
-  dispatch(getrecentCvsCreated({ page: currentPage, perPage: itemsPerPage }));
-}, [dispatch, currentPage, itemsPerPage]);
+  // Update your useEffect that fetches the data
+  useEffect(() => {
+    dispatch(getrecentCvsCreated({ page: currentPage, perPage: itemsPerPage }));
+  }, [dispatch, currentPage, itemsPerPage]);
 
-// In your component's return, add the pagination controls
-<div className="d-flex justify-content-between align-items-center mt-3">
-  <div className="d-flex align-items-center">
-    <span className="me-2">Show:</span>
-    <Form.Select 
-      size="sm" 
-      style={{ width: '80px' }} 
-      value={itemsPerPage}
-      onChange={(e) => setItemsPerPage(Number(e.target.value))}
-    >
-      <option value="5">5</option>
-      <option value="10">10</option>
-      <option value="20">20</option>
-      <option value="50">50</option>
-    </Form.Select>
+  // In your component's return, add the pagination controls
+  <div className="d-flex justify-content-between align-items-center mt-3">
+    <div className="d-flex align-items-center">
+      <span className="me-2">Show:</span>
+      <Form.Select
+        size="sm"
+        style={{ width: '80px' }}
+        value={itemsPerPage}
+        onChange={(e) => setItemsPerPage(Number(e.target.value))}
+      >
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </Form.Select>
+    </div>
+
+    <Pagination>
+      <Pagination.First
+        onClick={() => setCurrentPage(1)}
+        disabled={currentPage === 1}
+      />
+      <Pagination.Prev
+        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+      />
+
+      {Array.from({ length: Math.min(5, recentCVs.last_page || 1) }, (_, i) => {
+        const pageNum = Math.max(1,
+          Math.min(
+            (recentCVs.last_page || 1) - 4,
+            Math.max(1, currentPage - 2)
+          ) + i
+        );
+        return (
+          <Pagination.Item
+            key={pageNum}
+            active={pageNum === currentPage}
+            onClick={() => setCurrentPage(pageNum)}
+          >
+            {pageNum}
+          </Pagination.Item>
+        );
+      })}
+
+      <Pagination.Next
+        onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs.last_page || 1))}
+        disabled={currentPage === (recentCVs.last_page || 1)}
+      />
+      <Pagination.Last
+        onClick={() => setCurrentPage(recentCVs.last_page || 1)}
+        disabled={currentPage === (recentCVs.last_page || 1)}
+      />
+    </Pagination>
   </div>
-  
-  <Pagination>
-    <Pagination.First 
-      onClick={() => setCurrentPage(1)} 
-      disabled={currentPage === 1} 
-    />
-    <Pagination.Prev 
-      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-      disabled={currentPage === 1} 
-    />
-    
-    {Array.from({ length: Math.min(5, recentCVs.last_page || 1) }, (_, i) => {
-      const pageNum = Math.max(1, 
-        Math.min(
-          (recentCVs.last_page || 1) - 4,
-          Math.max(1, currentPage - 2)
-        ) + i
-      );
-      return (
-        <Pagination.Item 
-          key={pageNum} 
-          active={pageNum === currentPage}
-          onClick={() => setCurrentPage(pageNum)}
-        >
-          {pageNum}
-        </Pagination.Item>
-      );
-    })}
-    
-    <Pagination.Next 
-      onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs.last_page || 1))} 
-      disabled={currentPage === (recentCVs.last_page || 1)} 
-    />
-    <Pagination.Last 
-      onClick={() => setCurrentPage(recentCVs.last_page || 1)} 
-      disabled={currentPage === (recentCVs.last_page || 1)} 
-    />
-  </Pagination>
-</div>
 
   // Manual CV creation
   const handleManualCV = async () => {
@@ -327,16 +327,16 @@ useEffect(() => {
 
     switch (ext) {
       case "pdf":
-        return (<svg  xmlns="http://www.w3.org/2000/svg"  width="48"  height="48"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-pdf"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /><path d="M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6" /><path d="M17 18h2" /><path d="M20 15h-3v6" /><path d="M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" /></svg>); // or "fa-solid fa-file-pdf"
+        return (<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-pdf"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /><path d="M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6" /><path d="M17 18h2" /><path d="M20 15h-3v6" /><path d="M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" /></svg>); // or "fa-solid fa-file-pdf"
       case "doc":
-        return (<svg  xmlns="http://www.w3.org/2000/svg"  width="48"  height="48"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-doc"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /><path d="M5 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" /><path d="M20 16.5a1.5 1.5 0 0 0 -3 0v3a1.5 1.5 0 0 0 3 0" /><path d="M12.5 15a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -3 0v-3a1.5 1.5 0 0 1 1.5 -1.5z" /></svg>); // or "fa-solid fa-file-word"
+        return (<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-doc"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /><path d="M5 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" /><path d="M20 16.5a1.5 1.5 0 0 0 -3 0v3a1.5 1.5 0 0 0 3 0" /><path d="M12.5 15a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -3 0v-3a1.5 1.5 0 0 1 1.5 -1.5z" /></svg>); // or "fa-solid fa-file-word"
       case "docx":
-        return (<svg  xmlns="http://www.w3.org/2000/svg"  width="48"  height="48"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-docx"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /><path d="M2 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" /><path d="M17 16.5a1.5 1.5 0 0 0 -3 0v3a1.5 1.5 0 0 0 3 0" /><path d="M9.5 15a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -3 0v-3a1.5 1.5 0 0 1 1.5 -1.5z" /><path d="M19.5 15l3 6" /><path d="M19.5 21l3 -6" /></svg>);
+        return (<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-docx"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /><path d="M2 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" /><path d="M17 16.5a1.5 1.5 0 0 0 -3 0v3a1.5 1.5 0 0 0 3 0" /><path d="M9.5 15a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -3 0v-3a1.5 1.5 0 0 1 1.5 -1.5z" /><path d="M19.5 15l3 6" /><path d="M19.5 21l3 -6" /></svg>);
       case "rtf":
       case "odt":
-        return (<svg  xmlns="http://www.w3.org/2000/svg"  width="48"  height="48"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-license"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 21h-9a3 3 0 0 1 -3 -3v-1h10v2a2 2 0 0 0 4 0v-14a2 2 0 1 1 2 2h-2m2 -4h-11a3 3 0 0 0 -3 3v11" /><path d="M9 7l4 0" /><path d="M9 11l4 0" /></svg>);
+        return (<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-license"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 21h-9a3 3 0 0 1 -3 -3v-1h10v2a2 2 0 0 0 4 0v-14a2 2 0 1 1 2 2h-2m2 -4h-11a3 3 0 0 0 -3 3v11" /><path d="M9 7l4 0" /><path d="M9 11l4 0" /></svg>);
       default:
-        return (<svg  xmlns="http://www.w3.org/2000/svg"  width="48"  height="48"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-notes"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 3m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" /><path d="M9 7l6 0" /><path d="M9 11l6 0" /><path d="M9 15l4 0" /></svg>); // default icon
+        return (<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-notes"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 3m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" /><path d="M9 7l6 0" /><path d="M9 11l6 0" /><path d="M9 15l4 0" /></svg>); // default icon
     }
   }
 
@@ -347,7 +347,7 @@ useEffect(() => {
         {/* Upload Existing CV Card */}
         <div className="col-12 col-xl-3">
           <Card className="border h-100 w-100 overflow-hidden position-relative">
-            <Card.Body className="px-6 py-6 position-relative text-center" style={{ height: "300px" }}>
+            <Card.Body className="px-6 py-9 position-relative text-center" style={{ height: "300px" }}>
               <div
                 className="icon-item icon-item-md rounded-1 shadow-none mx-auto"
                 style={{ backgroundColor: '#ece5fc' }}>
@@ -386,7 +386,7 @@ useEffect(() => {
         {/* Build from Scratch Card */}
         <div className="col-12 col-xl-3">
           <Card className="border h-100 w-100 overflow-hidden position-relative">
-            <Card.Body className="px-6 py-6 position-relative text-center">
+            <Card.Body className="px-6 py-9 position-relative text-center">
               <div
                 className="icon-item icon-item-md rounded-1 shadow-none mx-auto"
                 style={{ backgroundColor: '#ece5fc' }}>
@@ -411,130 +411,143 @@ useEffect(() => {
 
         {/* Recent CVs Section */}
         {Array.isArray(recentCVs?.data) && recentCVs?.data?.length > 0 && (
-           
-<>
-{/* Recent CVs Section */}
-{recentCVs?.data?.length > 0 ? (
-  <div className="col-12 col-xl-6">
-    <Card className="border h-100 w-100 overflow-hidden position-relative">
-      <Card.Body className="position-relative">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="mb-0">Recent CVs</h5>
-         
-        </div>
-        
-        <div className="table-responsive">
-          <table className="table table-hover align-middle mb-0 cv-table">
-            <thead className="table-light">
-              <tr>
-                <th scope="col" className="text-start ps-0 bg-white">CV Title</th>
-                <th scope="col" className="bg-white">Date Created</th>
-                <th scope="col" className="bg-white text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentCVs?.data.map((item, index) => (
-                <tr key={index}>
-                  <td className="text-start">
-                    {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
-                    {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
-                    {item?.resume?.cv_resumejson?.headline ? (
-                      " | " + 
-                      item.resume.cv_resumejson.headline
-                        .split(' ')
-                        .slice(0, 5)
-                        .join(' ') + 
-                      (item.resume.cv_resumejson.headline.split(' ').length > 5 ? '...' : '')
-                    ) : ""}
-                  </td>
-                  <td>
-                    {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
-                  </td>
-                  <td className="text-end">
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      className="me-2"
-                      href={`/cv-generate/${item?.resume?.id}`}
-                    >
-                      View
-                    </Button>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="me-2"
-                      href={`/cv-generate/${item?.resume?.id}?download=true`}
-                      target="_blank"
-                    >
-                      Download
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDeleteCv(item?.resume?.id)}
-                      disabled={delResumeLoader}
-                    >
-                      {delResumeLoader ? "Deleting..." : "Delete"}
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
 
-        {/* Pagination */}
-        {recentCVs.last_page > 1 && (
-          <div className="d-flex justify-content-center mt-3">
-            <Pagination className="mb-0">
-              <Pagination.First 
-                onClick={() => setCurrentPage(1)} 
-                disabled={currentPage === 1} 
-              />
-              <Pagination.Prev 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                disabled={currentPage === 1} 
-              />
-              
-              {Array.from({ length: Math.min(5, recentCVs.last_page) }, (_, i) => {
-                let pageNum;
-                if (recentCVs.last_page <= 5) {
-                  pageNum = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1;
-                } else if (currentPage >= recentCVs.last_page - 2) {
-                  pageNum = recentCVs.last_page - 4 + i;
-                } else {
-                  pageNum = currentPage - 2 + i;
-                }
+          <>
+            {/* Recent CVs Section */}
+            {recentCVs?.data?.length > 0 ? (
+              <div className="col-12 col-xl-6">
+                <Card className="border h-100 w-100 overflow-hidden position-relative">
+                  <Card.Body className="position-relative">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <h5 className="mb-0">Recent CVs</h5>
 
-                return (
-                  <Pagination.Item 
-                    key={pageNum} 
-                    active={pageNum === currentPage}
-                    onClick={() => setCurrentPage(pageNum)}
-                  >
-                    {pageNum}
-                  </Pagination.Item>
-                );
-              })}
-              
-              <Pagination.Next 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs.last_page))} 
-                disabled={currentPage === recentCVs.last_page} 
-              />
-              <Pagination.Last 
-                onClick={() => setCurrentPage(recentCVs.last_page)} 
-                disabled={currentPage === recentCVs.last_page} 
-              />
-            </Pagination>
-          </div>
-        )}
-      </Card.Body>
-    </Card>
-  </div>
-) : null}
-</>
+                    </div>
+
+                    <div className="table-responsive">
+                      <table className="table table-hover align-middle mb-0 cv-table">
+                        <thead className="table-light">
+                          <tr>
+                            <th scope="col" className="text-start ps-0 bg-white" style={{ maxWidth: 300 }}>CV Title</th>
+                            <th scope="col" className="bg-white">Date Created</th>
+                            <th scope="col" className="bg-white text-end">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {recentCVs?.data.map((item, index) => (
+                            <tr key={index}>
+                              <td className="text-start text-truncate" style={{ maxWidth: 300, fontSize: 14 }}>
+                                {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
+                                {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
+                                {item?.resume?.cv_resumejson?.headline ? (
+                                  " | " +
+                                  item.resume.cv_resumejson.headline
+                                    .split(' ')
+                                    .slice(0, 5)
+                                    .join(' ') +
+                                  (item.resume.cv_resumejson.headline.split(' ').length > 5 ? '...' : '')
+                                ) : ""}
+                              </td>
+                              <td style={{ fontSize: 14 }}>
+                                {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
+                              </td>
+                              <td className="text-end">
+                                <Button
+                                  variant="outline-primary"
+                                  size="sm"
+                                  className="me-2 p-1 px-3"
+                                  href={`/cv-generate/${item?.resume?.id}`}
+                                >
+                                  View
+                                </Button>
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  className="me-2 p-1 px-3"
+                                  href={`/cv-generate/${item?.resume?.id}?download=true`}
+                                  target="_blank"
+                                >
+                                  Download
+                                </Button>
+                                <Button
+                                  variant="outline-danger"
+                                  size="sm"
+                                  className="p-1 px-3"
+                                  onClick={() => handleDeleteCv(item?.resume?.id)}
+                                  disabled={delResumeLoader}
+                                >
+                                  {delResumeLoader ? "Deleting..." : "Delete"}
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Pagination */}
+                    {recentCVs.last_page > 1 && (
+                      <div className="d-flex justify-content-center mt-3">
+                        <Pagination className="mb-0">
+                          <Pagination.First
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                            className='pagination-btn'
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-chevrons-left"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M11 7l-5 5l5 5" /><path d="M17 7l-5 5l5 5" /></svg>
+                          </Pagination.First>
+                          <Pagination.Prev
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className='pagination-btn'
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-left"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
+                          </Pagination.Prev>
+
+                          {Array.from({ length: Math.min(5, recentCVs.last_page) }, (_, i) => {
+                            let pageNum;
+                            if (recentCVs.last_page <= 5) {
+                              pageNum = i + 1;
+                            } else if (currentPage <= 3) {
+                              pageNum = i + 1;
+                            } else if (currentPage >= recentCVs.last_page - 2) {
+                              pageNum = recentCVs.last_page - 4 + i;
+                            } else {
+                              pageNum = currentPage - 2 + i;
+                            }
+
+                            return (
+                              <Pagination.Item
+                                key={pageNum}
+                                active={pageNum === currentPage}
+                                onClick={() => setCurrentPage(pageNum)}
+                              >
+                                {pageNum}
+                              </Pagination.Item>
+                            );
+                          })}
+
+                          <Pagination.Next
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs.last_page))}
+                            disabled={currentPage === recentCVs.last_page}
+                            className='pagination-btn'
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
+                          </Pagination.Next>
+                          <Pagination.Last
+                            onClick={() => setCurrentPage(recentCVs.last_page)}
+                            disabled={currentPage === recentCVs.last_page}
+                            className='pagination-btn'
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevrons-right"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7l5 5l-5 5" /><path d="M13 7l5 5l-5 5" /></svg>
+                          </Pagination.Last>
+                        </Pagination>
+                      </div>
+                    )}
+                  </Card.Body>
+                </Card>
+              </div>
+            ) : null}
+          </>
         )}
       </div>
 
