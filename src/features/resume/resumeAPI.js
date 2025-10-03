@@ -44,7 +44,7 @@ export const generateUserCoverLetter = async (formData) =>{
   return response.data;
 }
 
-export const recentUserCvsCreated = async ({ page = 1, perPage = 5 }) =>{
+export const recentUserCvsCreated = async ({ page = 1, perPage = 3 }) =>{
   const response = await axios.get("/recent-created-cvs", {
     params: {
       page,

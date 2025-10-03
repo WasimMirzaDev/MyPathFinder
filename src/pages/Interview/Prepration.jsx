@@ -129,6 +129,7 @@ export default function Prepration() {
     };
 
     const stopRecording = () => {
+        stopMicrophoneMonitoring();
         if (mediaRecorder && isRecording) {
             try {
                 // Stop the media recorder
@@ -171,20 +172,25 @@ export default function Prepration() {
         }
     };
 
+    const mediaStreamRef = useRef(null);
+    
+
 
 
     // Start monitoring microphone level for preparation screen
     const startMicrophoneMonitoring = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            const audioContext = new AudioContext();
+            mediaStreamRef.current = stream;  // Store the stream in the ref
+    
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const analyser = audioContext.createAnalyser();
-            analyser.fftSize = 32;
-
             const source = audioContext.createMediaStreamSource(stream);
             source.connect(analyser);
+            analyser.fftSize = 256;
+
+            // const source = audioContext.createMediaStreamSource(stream);
+            // source.connect(analyser);
 
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
@@ -215,12 +221,29 @@ export default function Prepration() {
 
     // Stop microphone monitoring
     const stopMicrophoneMonitoring = () => {
+        // Stop any ongoing animation frame
         if (animationFrameRef.current) {
             cancelAnimationFrame(animationFrameRef.current);
+            animationFrameRef.current = null;
         }
+    
+        // Close the audio context
         if (audioContextRef.current) {
-            audioContextRef.current.close();
+            if (audioContextRef.current.state !== 'closed') {
+                audioContextRef.current.close();
+            }
+            audioContextRef.current = null;
         }
+    
+        // Stop all audio tracks
+        if (mediaStreamRef.current) {
+            mediaStreamRef.current.getTracks().forEach(track => {
+                track.stop();  // This actually revokes the microphone access
+            });
+            mediaStreamRef.current = null;
+        }
+    
+        // Reset the audio level
         setPreparationAudioLevel(0);
     };
 
