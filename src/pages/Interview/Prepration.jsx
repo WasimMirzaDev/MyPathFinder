@@ -46,6 +46,8 @@ export default function Prepration() {
         });
     }, []);
 
+    const [exitInterview , setExitInterview] = useState(false);
+
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -93,6 +95,10 @@ export default function Prepration() {
             };
 
             recorder.onstop = async () => {
+                if (exitInterview) {
+                    console.log('Exiting interview, skipping audio upload');
+                    return;
+                }
 
 
                 const blob = new Blob(chunks, { type: 'audio/webm' });
@@ -116,6 +122,7 @@ export default function Prepration() {
                     console.error('Upload failed:', error);
                 }
 
+            
 
             };
 
@@ -481,6 +488,7 @@ export default function Prepration() {
 
     const handleExitInterview = () => {
         try {
+            setExitInterview(true);
             // Stop media recording if active
             if (mediaRecorder && isRecording) {
                 mediaRecorder.stop();
@@ -538,6 +546,7 @@ export default function Prepration() {
         } catch (error) {
             console.error('Error during exit cleanup:', error);
         } finally {
+            setExitInterview(false);
             // Navigate away after cleanup
             navigate('/interview');
         }
