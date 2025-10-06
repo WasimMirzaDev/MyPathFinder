@@ -47,6 +47,7 @@ export default function Prepration() {
     }, []);
 
     const [exitInterview , setExitInterview] = useState(false);
+    const exitInterviewRef = useRef(false);
 
     const startRecording = async () => {
         try {
@@ -95,8 +96,17 @@ export default function Prepration() {
             };
 
             recorder.onstop = async () => {
+                if (exitInterviewRef.current) {
+                    console.log('Exiting interview, skipping audio upload');
+                    return;
+                }
                 if (exitInterview) {
                     console.log('Exiting interview, skipping audio upload');
+                    return;
+                }
+            
+                if (!chunks.length) {
+                    console.log('No audio chunks, skipping upload');
                     return;
                 }
 
@@ -488,9 +498,15 @@ export default function Prepration() {
 
     const handleExitInterview = () => {
         try {
+            exitInterviewRef.current = true;
             setExitInterview(true);
+            
             // Stop media recording if active
             if (mediaRecorder && isRecording) {
+                if (exitInterviewRef.current) {
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    return;
+                }
                 mediaRecorder.stop();
             }
 
@@ -546,7 +562,6 @@ export default function Prepration() {
         } catch (error) {
             console.error('Error during exit cleanup:', error);
         } finally {
-            setExitInterview(false);
             // Navigate away after cleanup
             navigate('/interview');
         }
