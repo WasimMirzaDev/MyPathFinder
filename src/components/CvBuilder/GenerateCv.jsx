@@ -40,7 +40,7 @@ const cardTemplate = [
     // { name: 'Template4', template: ProfessionalTemplate2, image: 'dummy.jpg' },
     { name: 'Default', template: Template9, image: 'default1.png', recommended: true },
     { name: 'Classic', template: Template12, image: 'classic.png', recommended: true },
-    { name: 'Professional', template: Template5, image: 'professional.png'},
+    { name: 'Professional', template: Template5, image: 'professional.png' },
     { name: 'Unique', template: Template11, image: 'unique.png' },
     { name: 'Modern', template: Template8, image: 'modern.png' },
     { name: 'Chrono', template: Template6, image: 'chrono.png' },
@@ -1206,8 +1206,8 @@ export default function CVBuilder() {
             <div className="row g-3">
                 {/* LEFT: Tabs + Form */}
                 <div className="col-12 col-xxl-6 col-lg-7">
-                    <div className="card border h-100">
-                        <div className="card-header border-bottom-0 pb-0 d-flex justify-content-between">
+                    <div className="card border" style={{ height: 'calc(100vh - 175px)', overflow: 'hidden' }}>
+                        <div className="card-header border-bottom-0 pb-0 d-flex justify-content-between shadow">
                             {/* Tabs */}
                             <ul className="nav nav-underline cv-uploader-tabs" id="cvTabs" role="tablist">
                                 <li className="nav-item" role="presentation">
@@ -1271,7 +1271,7 @@ export default function CVBuilder() {
                             <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume || saveChangesLoader}>{saveChangesLoader ? (<><FiLoader size={14} className="me-2 animate-spin" />Saving...</>) : "Save Changes"}</button>
                         </div>
 
-                        <div className="card-body pt-3">
+                        <div className="card-body pt-3" style={{ height: '100%', overflowY: 'auto' }}>
 
 
                             {/* Tab panes */}
@@ -1382,7 +1382,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.personalDisabled ? (
-                                                                <div className="card border-0">
+                                                                <div className="card border-0 shadow-none">
                                                                     {/* Avatar + Name/Headline */}
                                                                     <div className="row g-3 mb-3">
                                                                         <div className="col-md-3 col-4">
@@ -1781,141 +1781,141 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.employmentDisabled ? (
-                                                                <div className="card border-0">
+                                                                <div className="card border-0 shadow-none">
                                                                     {parsedResume.workExperience?.map((expItem, expIndex) => (
                                                                         <div key={expIndex} className="mb-3 p-3 border rounded">
 
-{(editingExperience.index === expIndex) ? (
-    // Edit mode
-    <div className="experience-edit-form">
-        <div className="d-flex justify-content-between align-items-center mb-2">
-            <small className="fw-bold text-muted">
-                Experience #{expIndex + 1}
-            </small>
-            <button
-                type="button"
-                className="btn btn-sm btn-outline-danger"
-                onClick={expHandleCancelEdit}
-                title="Cancel editing"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                </svg>
-            </button>
-        </div>
-        <div className="mb-2">
-            <label className="form-label">Job Title</label>
-            <input
-                className="form-control"
-                value={editingExperience.data.workExperienceJobTitle}
-                onChange={(e) => setEditingExperience(prev => ({
-                    ...prev,
-                    data: {
-                        ...prev.data,
-                        workExperienceJobTitle: e.target.value
-                    }
-                }))}
-            />
-        </div>
-        <div className="mb-2">
-            <label className="form-label">Company</label>
-            <input
-                className="form-control"
-                value={editingExperience.data.workExperienceOrganization}
-                onChange={(e) => setEditingExperience(prev => ({
-                    ...prev,
-                    data: {
-                        ...prev.data,
-                        workExperienceOrganization: e.target.value
-                    }
-                }))}
-            />
-        </div>
-        <div className="row">
-            <div className="col-md-6">
-                <div className="mb-2">
-                    <label className="form-label">Start Date</label>
-                    <input
-                        placeholder="2020"
-                        className="form-control"
-                        type="text"
-                        value={editingExperience.data.workExperienceDates?.start?.date || ''}
-                        onChange={(e) => setEditingExperience(prev => ({
-                            ...prev,
-                            data: {
-                                ...prev.data,
-                                workExperienceDates: {
-                                    ...prev.data.workExperienceDates,
-                                    start: {
-                                        ...prev.data.workExperienceDates?.start,
-                                        date: e.target.value
-                                    }
-                                }
-                            }
-                        }))}
-                    />
-                </div>
-            </div>
-            <div className="col-md-6">
-                <div className="mb-2">
-                    <label className="form-label">End Date</label>
-                    <input
-                        placeholder="2021 or Present"
-                        className="form-control"
-                        type="text"
-                        value={editingExperience.data.workExperienceDates?.end?.date || ''}
-                        onChange={(e) => setEditingExperience(prev => ({
-                            ...prev,
-                            data: {
-                                ...prev.data,
-                                workExperienceDates: {
-                                    ...prev.data.workExperienceDates,
-                                    end: {
-                                        ...prev.data.workExperienceDates?.end,
-                                        date: e.target.value
-                                    }
-                                }
-                            }
-                        }))}
-                    />
-                </div>
-            </div>
-        </div>
-        <div className="mb-3">
-            <label className="form-label">Description</label>
-            <textarea
-                className="form-control"
-                rows="3"
-                value={editingExperience.data.workExperienceDescription || ''}
-                onChange={(e) => setEditingExperience(prev => ({
-                    ...prev,
-                    data: {
-                        ...prev.data,
-                        workExperienceDescription: e.target.value
-                    }
-                }))}
-                placeholder="Describe your role and responsibilities"
-            ></textarea>
-        </div>
-        <div className="d-flex justify-content-end gap-2">
-            <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={expHandleCancelEdit}
-            >
-                Cancel
-            </button>
-            <button
-                type="button"
-                className="btn btn-primary"
-                onClick={expHandleSaveExperience}
-            >
-                Save Changes
-            </button>
-        </div>
-    </div>
-) : (
-       
+                                                                            {(editingExperience.index === expIndex) ? (
+                                                                                // Edit mode
+                                                                                <div className="experience-edit-form">
+                                                                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                                        <small className="fw-bold text-muted">
+                                                                                            Experience #{expIndex + 1}
+                                                                                        </small>
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            className="btn btn-sm btn-outline-danger"
+                                                                                            onClick={expHandleCancelEdit}
+                                                                                            title="Cancel editing"
+                                                                                        >
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                                                                            </svg>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    <div className="mb-2">
+                                                                                        <label className="form-label">Job Title</label>
+                                                                                        <input
+                                                                                            className="form-control"
+                                                                                            value={editingExperience.data.workExperienceJobTitle}
+                                                                                            onChange={(e) => setEditingExperience(prev => ({
+                                                                                                ...prev,
+                                                                                                data: {
+                                                                                                    ...prev.data,
+                                                                                                    workExperienceJobTitle: e.target.value
+                                                                                                }
+                                                                                            }))}
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className="mb-2">
+                                                                                        <label className="form-label">Company</label>
+                                                                                        <input
+                                                                                            className="form-control"
+                                                                                            value={editingExperience.data.workExperienceOrganization}
+                                                                                            onChange={(e) => setEditingExperience(prev => ({
+                                                                                                ...prev,
+                                                                                                data: {
+                                                                                                    ...prev.data,
+                                                                                                    workExperienceOrganization: e.target.value
+                                                                                                }
+                                                                                            }))}
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className="row">
+                                                                                        <div className="col-md-6">
+                                                                                            <div className="mb-2">
+                                                                                                <label className="form-label">Start Date</label>
+                                                                                                <input
+                                                                                                    placeholder="2020"
+                                                                                                    className="form-control"
+                                                                                                    type="text"
+                                                                                                    value={editingExperience.data.workExperienceDates?.start?.date || ''}
+                                                                                                    onChange={(e) => setEditingExperience(prev => ({
+                                                                                                        ...prev,
+                                                                                                        data: {
+                                                                                                            ...prev.data,
+                                                                                                            workExperienceDates: {
+                                                                                                                ...prev.data.workExperienceDates,
+                                                                                                                start: {
+                                                                                                                    ...prev.data.workExperienceDates?.start,
+                                                                                                                    date: e.target.value
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }))}
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div className="col-md-6">
+                                                                                            <div className="mb-2">
+                                                                                                <label className="form-label">End Date</label>
+                                                                                                <input
+                                                                                                    placeholder="2021 or Present"
+                                                                                                    className="form-control"
+                                                                                                    type="text"
+                                                                                                    value={editingExperience.data.workExperienceDates?.end?.date || ''}
+                                                                                                    onChange={(e) => setEditingExperience(prev => ({
+                                                                                                        ...prev,
+                                                                                                        data: {
+                                                                                                            ...prev.data,
+                                                                                                            workExperienceDates: {
+                                                                                                                ...prev.data.workExperienceDates,
+                                                                                                                end: {
+                                                                                                                    ...prev.data.workExperienceDates?.end,
+                                                                                                                    date: e.target.value
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }))}
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="mb-3">
+                                                                                        <label className="form-label">Description</label>
+                                                                                        <textarea
+                                                                                            className="form-control"
+                                                                                            rows="3"
+                                                                                            value={editingExperience.data.workExperienceDescription || ''}
+                                                                                            onChange={(e) => setEditingExperience(prev => ({
+                                                                                                ...prev,
+                                                                                                data: {
+                                                                                                    ...prev.data,
+                                                                                                    workExperienceDescription: e.target.value
+                                                                                                }
+                                                                                            }))}
+                                                                                            placeholder="Describe your role and responsibilities"
+                                                                                        ></textarea>
+                                                                                    </div>
+                                                                                    <div className="d-flex justify-content-end gap-2">
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            className="btn btn-outline-secondary"
+                                                                                            onClick={expHandleCancelEdit}
+                                                                                        >
+                                                                                            Cancel
+                                                                                        </button>
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            className="btn btn-primary"
+                                                                                            onClick={expHandleSaveExperience}
+                                                                                        >
+                                                                                            Save Changes
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ) : (
+
                                                                                 // Display completed experience item
                                                                                 <>
                                                                                     <div className="d-flex justify-content-between align-items-center mb-2">
@@ -2121,7 +2121,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.educationDisabled ? (
-                                                                <div className="card border-0">
+                                                                <div className="card border-0 shadow-none">
                                                                     {parsedResume.education?.map((eduItem, eduIndex) => (
                                                                         <div key={eduIndex} className="mb-3 p-3 border rounded">
                                                                             <div className="d-flex justify-content-between align-items-center mb-2">
@@ -2441,7 +2441,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.skillsDisabled ? (
-                                                                <div className="card border-0 p-2">
+                                                                <div className="card border-0 shadow-none p-2">
                                                                     <div className="border rounded p-3">
                                                                         <label className="form-label">Add Skills (one per line)</label>
                                                                         <div className='d-flex'>
@@ -2676,7 +2676,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.languagesDisabled ? (
-                                                                <div className="card border-0">
+                                                                <div className="card border-0 shadow-none">
                                                                     <div className="border rounded p-3">
                                                                         <label className="form-label">Add Language</label>
                                                                         <div className="row g-2">
@@ -2880,7 +2880,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.hobbiesDisabled ? (
-                                                                <div className="card border-0">
+                                                                <div className="card border-0 shadow-none">
                                                                     <div className="border rounded p-3">
                                                                         <label className="form-label">Add Hobby</label>
                                                                         <div className='d-flex'>
@@ -2953,7 +2953,7 @@ export default function CVBuilder() {
                                 {/* TAB placeholders */}
                                 {activeTab === 'tabDesign' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabDesign' ? 'show active' : ''}`} id="tabDesign" role="tabpanel" aria-labelledby="tabDesign-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-sm"><div className="card-body">
+                                        <div className="card border-0 shadow-none shadow-sm"><div className="card-body">
                                             <Row className="g-4">
                                                 {cardTemplate.map((template) => (
                                                     <Col key={template.name} xs={6} sm={6} md={4} lg={3} xl={4}>
@@ -3278,12 +3278,12 @@ export default function CVBuilder() {
 
                                 {activeTab === 'tabMatching' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabMatching' ? 'show active' : ''}`} id="tabMatching" role="tabpanel" aria-labelledby="tabMatching-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-sm"><div className="card-body">Job matching goes here.</div></div>
+                                        <div className="card border-0 shadow-none shadow-sm"><div className="card-body">Job matching goes here.</div></div>
                                     </div>
                                 )}
                                 {activeTab === 'tabCover' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabCover' ? 'show active' : ''}`} id="tabCover" role="tabpanel" aria-labelledby="tabCover-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-sm"><div className="card-body">
+                                        <div className="card border-0 shadow-none shadow-sm"><div className="card-body">
                                             <CoverLetter />
 
                                         </div></div>
@@ -3291,7 +3291,7 @@ export default function CVBuilder() {
                                 )}
 
                                 {/* Prev/Next */}
-                                <div className="card border-0 shadow-sm mt-3">
+                                <div className="card border-0 shadow-none shadow-sm mt-3">
                                     <div className="card-body p-3 d-flex justify-content-between align-items-center">
                                         <button type="button" className="btn btn-outline-primary d-flex align-items-center gap-2" disabled={activeTab == "tabPreview"} onClick={handlePreviousTab}>
                                             <span aria-hidden="true">←</span> Previous
@@ -3310,7 +3310,7 @@ export default function CVBuilder() {
                 </div>
 
                 <Col lg={5} xxl={6} className='right-section'>
-                    <Card className="border-0 shadow-custom mb-3">
+                    <Card className="border-0 shadow-custom" style={{ height: 'calc(100vh - 175px)', overflow: 'hidden'}}>
                         <Card.Header className="bg-white border-bottom p-3">
                             <div className="d-flex justify-content-between align-items-center">
                                 <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>CV Preview</h5>
@@ -3349,6 +3349,7 @@ export default function CVBuilder() {
                         <div
                             ref={previewContainerRef}
                             className="cv-template-div"
+                            style={{ height: 'calc(100% - 80px)', overflow: 'auto' }}
                         >
                             <div
                                 ref={cvRef}
@@ -3410,10 +3411,10 @@ export default function CVBuilder() {
                             ))}
                         </div>
                     </Card>
-                    <Card className="border-0 shadow-custom">
+                    {/* <Card className="border-0 shadow-custom">
                         <Card.Body className="p-3">
                             <div className="d-flex justify-content-between align-items-center">
-                                {/* <Button
+                                <Button
                                     variant="outline-primary"
                                     onClick={handlePreviousStep}
                                     disabled={activeTab === "Preview"}
@@ -3428,10 +3429,10 @@ export default function CVBuilder() {
                                     className="d-flex align-items-center gap-2"
                                     >
                                     Next <FiChevronRight />
-                                </Button> */}
+                                </Button>
                             </div>
                         </Card.Body>
-                    </Card>
+                    </Card> */}
                 </Col>
             </div>
         </div>
