@@ -114,7 +114,7 @@ const resumeSlice = createSlice({
       saveChangesLoader: false,
       AiCvLoader: false,
       AiResumeLoader: false,
-      selectedTemplate:"Default",
+      selectedTemplate:"Clasic",
       coverletterjson:{},
       coverletterLoader:false,
       prevParsedResume:{},
