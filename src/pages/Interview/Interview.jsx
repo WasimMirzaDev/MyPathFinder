@@ -5,7 +5,8 @@ import InterviewPractice from "../../components/Interview/InterviewPractice";
 import PracticeHistory from "../../components/Interview/PracticeHistory";
 import { useDispatch, useSelector } from "react-redux";
 import { setFilters } from "../../features/interview/interviewSlice";
-import { fetchInterviewHistory , fetchInterviewQuestions ,getRandomQuestions } from "../../features/interview/interviewSlice";
+import { fetchInterviewHistory , fetchInterviewQuestions ,getRandomQuestions , setParsedFeedback} from "../../features/interview/interviewSlice";
+
 import { motion } from "framer-motion";
 import { 
   Container, 
@@ -18,6 +19,8 @@ import {
   Modal, 
   Spinner 
 } from "react-bootstrap";
+
+
 
 import axios from "../../utils/axios"
 import { useNavigate } from "react-router-dom";
@@ -175,6 +178,13 @@ useEffect(() => {
         subcategory: null,
         searchQuery: ""
     }));
+};
+
+
+const handleViewDetails = (item) => {
+    console.log('Viewing details for interview:', item.id);
+    dispatch(setParsedFeedback(item));
+    navigate(`/question-feedback`);
 };
 
       
@@ -341,7 +351,7 @@ const isNextDisabled = () => {
               <>
         <BreadCrum title='Interview Simulator' subTitle='Practise with industry specific questions and real-time feedback.' />
         <InterviewPractice interviewQuestions={interviewQuestions} setShowModal={setShowModal} filters={filters} dispatch={dispatch} getRandomQuestionsInterview={getRandomQuestionsInterview}/>
-        <PracticeHistory history={history} />
+        <PracticeHistory history={history}   handleViewDetails={handleViewDetails}  />
         </>
         )}
       </MasterLayout>

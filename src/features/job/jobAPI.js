@@ -31,3 +31,8 @@ export const UserJobAppliedUpdate = async (id, updates) => {
   });
   return response.data;
 }
+
+export const UserJobAppliedDelete = async (id) => {
+  const response = await axios.delete(`/delete-applied-app/${id}`);
+  return response.data;
+}

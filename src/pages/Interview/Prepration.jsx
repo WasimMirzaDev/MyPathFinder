@@ -480,47 +480,67 @@ export default function Prepration() {
     };
 
     const handleExitInterview = () => {
-        if (mediaRecorder && isRecording) {
-            try {
+        try {
+            // Stop media recording if active
+            if (mediaRecorder && isRecording) {
                 mediaRecorder.stop();
-
-                if (mediaRecorder.stream) {
-                    mediaRecorder.stream.getTracks().forEach(track => {
-                        track.stop();
-                    });
-                }
-
-                if (animationFrameRef.current) {
-                    cancelAnimationFrame(animationFrameRef.current);
-                    animationFrameRef.current = null;
-                }
-
-                // Close audio context if it exists
-                if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-                    audioContextRef.current.close();
-                    audioContextRef.current = null;
-                }
-
-                // Reset analyzer reference
-                if (analyserRef.current) {
-                    analyserRef.current.disconnect();
-                    analyserRef.current = null;
-                }
-
-                // Reset state
-                setIsRecording(false);
-                setAudioLevel(0);
-                setAudioChunks([]);
-
-                console.log('Microphone access has been stopped');
-            } catch (error) {
-                console.error('Error stopping recording:', error);
             }
+
+            // Stop all media tracks
+            if (mediaRecorder?.stream) {
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+
+            // Cancel animation frame
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+                animationFrameRef.current = null;
+            }
+
+            // Close audio context
+            if (audioContextRef.current?.state !== 'closed') {
+                audioContextRef.current?.close();
+                audioContextRef.current = null;
+            }
+
+            // Clean up analyzer
+            if (analyserRef.current) {
+                analyserRef.current.disconnect();
+                analyserRef.current = null;
+            }
+
+            // Reset all states
+            setIsRecording(false);
+            setAudioLevel(0);
+            setPreparationAudioLevel(0);
+            setAudioChunks([]);
+            setMediaRecorder(null);
+            setQuestion(null);
+            setIsLoading(false);
+            setIsReady(false);
+            setCountdown(5);
+            setHasMicAccess(false);
+            setPosition({ x: 50, y: 50 });
+            setIndustry(null);
+            setBusinessSector(null);
+            setIsSubmitting(false);
+            setIsVideoLoading(true);
+            
+            // Clear data array reference
+            dataArrayRef.current = null;
+
+            // Exit fullscreen if active
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+
+            console.log('Interview exited and all resources cleaned up');
+        } catch (error) {
+            console.error('Error during exit cleanup:', error);
+        } finally {
+            // Navigate away after cleanup
+            navigate('/interview');
         }
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        }
-        navigate('/interview');
     };
 
     const handleDragEnd = (event, info) => {

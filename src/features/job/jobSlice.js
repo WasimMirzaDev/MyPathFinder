@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchUserJobs , UserJobAppliedCreate , fetchUserAppliedJobs , UserJobAppliedUpdate} from "./jobAPI";
+import { fetchUserJobs , UserJobAppliedCreate , fetchUserAppliedJobs , UserJobAppliedUpdate , UserJobAppliedDelete} from "./jobAPI";
 
 
 export const fetchJobs = createAsyncThunk("fetch/jobs", async (formData) => {
@@ -21,6 +21,20 @@ export const updateAppliedJob = createAsyncThunk(
 
       // 🔑 Force the payload into a plain predictable object
       return { id, updates: data };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const deleteAppliedJob = createAsyncThunk(
+  "jobs/deleteAppliedJob",
+  async (id, { rejectWithValue }) => {
+    try {
+      const data = await UserJobAppliedDelete(id);
+
+      // 🔑 Force the payload into a plain predictable object
+      return { id, data };
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -116,6 +130,23 @@ const jobSlice = createSlice({
         .addCase(updateAppliedJob.rejected, (state, action) => {
           state.loading = false;
           state.error = action.payload || 'Failed to update job application';
+        })
+        .addCase(deleteAppliedJob.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(deleteAppliedJob.fulfilled, (state, action) => {
+          state.loading = false;
+          const { id } = action.payload;
+        
+          if (Array.isArray(state.appliedJobs)) {
+            state.appliedJobs = state.appliedJobs.filter(job => job.id !== id);
+          } else if (Array.isArray(state.appliedJobs?.data)) {
+            state.appliedJobs.data = state.appliedJobs.data.filter(job => job.id !== id);
+          }
+        })
+        .addCase(deleteAppliedJob.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload || 'Failed to delete job application';
         });
     },
   });

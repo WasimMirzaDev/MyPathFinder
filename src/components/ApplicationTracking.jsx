@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import toggleImage from '../assets/images/P-solid-rgb.svg';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAppliedJobs, updateAppliedJob, setAppliedJobs } from "../features/job/jobSlice";
+import { fetchAppliedJobs, updateAppliedJob, setAppliedJobs , deleteAppliedJob } from "../features/job/jobSlice";
 import alertify from "alertifyjs";
 import "alertifyjs/build/css/alertify.css";
 
@@ -21,6 +21,16 @@ export default function ApplicationTracking() {
         };
         fetchData();
     }, [dispatch]);
+
+    const handleDelete = async (id) => {
+        try {
+            await dispatch(deleteAppliedJob(id)).unwrap();
+            const updatedJobs = appliedJobs.filter(job => job.id !== id);
+            dispatch(setAppliedJobs(updatedJobs));
+        } catch (error) {
+            console.error('Failed to delete job:', error);
+        }
+    };
 
     // ✅ Update job status
     const handleStatusChange = async (id, newStatus) => {
@@ -250,6 +260,18 @@ export default function ApplicationTracking() {
                         </option>
                     ))}
                 </select>
+            ),
+            minWidth: '250px'
+        },
+        {
+            name: <strong>Action</strong>,
+            cell: row => (
+                <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(row.id)}
+                    >
+                        Delete
+                    </button>
             ),
             minWidth: '250px'
         }

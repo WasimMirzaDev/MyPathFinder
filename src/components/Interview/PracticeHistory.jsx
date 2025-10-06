@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
-export default function PracticeHistory({history}) {
+export default function PracticeHistory({history , handleViewDetails}) {
 
     // const questions = [
     //     {
@@ -68,12 +69,12 @@ export default function PracticeHistory({history}) {
                                 <div className="border-bottom border-translucent">
                                     <div className="d-flex align-items-start mb-1">
                                         <div className="d-sm-flex align-items-center">
-                                            <Link
+                                            <a
                                                 className="fw-bold fs-8 lh-sm title line-clamp-1"
-                                                to={`/prepration/${q.question.id}`}
+                                                onClick={() => handleViewDetails(q)}
                                             >
                                                 {q.question?.title}
-                                            </Link>
+                                            </a>
                                         </div>
                                     </div>
                                     {/* <p className="fs-9 fw-semibold text-body text mb-4">
