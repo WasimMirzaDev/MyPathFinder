@@ -35,7 +35,7 @@ export default function InterviewHistory({ interviewHistory, handleRetry, handle
                             <div className="row justify-content-between align-items-md-center btn-reveal-trigger border-translucent gx-0 flex-1 cursor-pointer">
                                 <div className="col-12">
                                     <div className="mb-1 mb-md-0 d-flex align-items-center lh-1">
-                                        <label className="form-check-label mb-1 mb-md-0 mb-xl-1 mb-xxl-0 fs-8 me-2 line-clamp-1 text-body cursor-pointer fs-9">General #{item.id}: <strong>{item.question?.speech}</strong></label>
+                                        <label className="form-check-label mb-1 mb-md-0 mb-xl-1 mb-xxl-0 fs-8 me-2 line-clamp-1 text-body cursor-pointer fs-9"><strong>{item.question?.speech}</strong></label>
 
                                         {item?.status === "FAIL" ? (
                                             <span className="badge badge-phoenix ms-auto fs-10 bg-danger-subtle text-danger-dark border hover-md-hide hover-xl-show hover-xxl-hide">{item?.evaluation?.breakdown?.total?.score}% Fail <svg xmlns="http://www.w3.org/2000/svg" width="1.7em" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x ms-1 small"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>

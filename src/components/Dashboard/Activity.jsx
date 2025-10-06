@@ -73,7 +73,7 @@ export default function Activity({ recentActivities }) {
                                             </>
                                                 :
                                                 <>
-                                                    <h5 className="fs-9 lh-sm">Achieved a score of {item?.interview?.evaluation?.breakdown?.total?.score}% in General #{item?.interview?.id}: {item?.message}</h5>
+                                                    <h5 className="fs-9 lh-sm">Achieved a score of <span className="text-primary">{item?.interview?.evaluation?.breakdown?.total?.score}%</span> : {item?.message}</h5>
                                                     <p className="fs-9"><Link className="fw-semibold" onClick={() => { handleViewDetails(item?.interview) }}>View Feedback</Link></p>
                                                     <p className="fs-9 text-body-secondary mb-5">{item?.interview?.evaluation?.breakdown?.total?.feedback?.split(' ').length > 10 ? `${item?.interview?.evaluation?.breakdown?.total?.feedback?.split(' ').slice(0, 10).join(' ')}...` : item?.interview?.evaluation?.breakdown?.total?.feedback}</p>
                                                 </>
