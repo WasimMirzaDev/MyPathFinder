@@ -25,6 +25,8 @@ import SignIn from "./pages/Auth/SignIn";
 import SignUp from "./pages/Auth/SignUp";
 import Verification from "./pages/Auth/Verification";
 import F2Verification from "./pages/Auth/F2Verification";
+import ForgetPassword from "./pages/Auth/ForgetPassword";
+import UpdatePassword from "./pages/Auth/UpdatePassword";
 import Welcome from "./pages/Welcome";
 import UploadProfile from "./pages/Auth/UploadProfile";
 import Feedback from "./pages/Feedback/Feedback";
@@ -61,6 +63,8 @@ const publicRoutes = [
   { path: '/sign-up', element: <SignUp /> },
   { path: '/verification', element: <Verification /> },
   { path: '/2f-verification', element: <F2Verification /> },
+  { path: '/forget-password', element: <ForgetPassword /> },
+  { path: '/update-password', element: <UpdatePassword /> },
   { path: '*', element: <ErrorPage /> },
 ];
 
