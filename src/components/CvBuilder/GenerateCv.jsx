@@ -38,14 +38,14 @@ const cardTemplate = [
     // { name: 'Template2', template: ClassicTemplate, image: 'dummy.jpg' },
     // { name: 'Template3', template: ProfessionalTemplate, image: 'dummy.jpg' },
     // { name: 'Template4', template: ProfessionalTemplate2, image: 'dummy.jpg' },
-    { name: 'Luxe', template: Template13, image: 'Luxe.png' },
-    { name: 'Default', template: Template9, image: 'default1.png' },
-    { name: 'Professional', template: Template5, image: 'professional.png', recommended: true },
-    { name: 'Chrono', template: Template6, image: 'chrono.png' },
-    { name: 'Elegant', template: Template7, image: 'elegant.png' },
-    { name: 'Modern', template: Template8, image: 'modern.png', recommended: true },
-    { name: 'Classic', template: Template12, image: 'classic.png' },
+    { name: 'Default', template: Template9, image: 'default1.png', recommended: true },
+    { name: 'Classic', template: Template12, image: 'classic.png', recommended: true },
+    { name: 'Professional', template: Template5, image: 'professional.png'},
     { name: 'Unique', template: Template11, image: 'unique.png' },
+    { name: 'Modern', template: Template8, image: 'modern.png' },
+    { name: 'Chrono', template: Template6, image: 'chrono.png' },
+    { name: 'Luxe', template: Template13, image: 'Luxe.png' },
+    { name: 'Elegant', template: Template7, image: 'elegant.png' },
 ];
 
 const coverLetterjson = {
@@ -79,7 +79,7 @@ export default function CVBuilder() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { parsedResume, AnalyseResumeData, AiResumeLoader, selectedTemplate, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
+    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -97,7 +97,7 @@ export default function CVBuilder() {
     const [customSections, setCustomSections] = useState([]);
 
     // State for active tab
-    // const [selectedTemplate, setSelectedTemplate] = useState("Default");
+    const [selectedTemplate, setSelectedTemplate] = useState("Default");
 
 
 

@@ -92,7 +92,7 @@
   --phoenix-link-color-rgb: 186, 103, 239;
   --phoenix-link-decoration: none;
   --phoenix-link-hover-color: #003cc7;
-  --phoenix-link-hover-color-rgb: 0, 60, 199;
+  --phoenix-link-hover-color-rgb: #001433;
   --phoenix-link-hover-decoration: underline;
   --phoenix-code-color: #d63384;
   --phoenix-highlight-color: #31374a;
@@ -165,7 +165,7 @@
   --phoenix-link-color: #85a9ff;
   --phoenix-link-hover-color: #85a9ff;
   --phoenix-link-color-rgb: 133, 169, 255;
-  --phoenix-link-hover-color-rgb: 133, 169, 255;
+  --phoenix-link-hover-color-rgb: #001433;
   --phoenix-code-color: #d63384;
   --phoenix-highlight-color: #9fa6bc;
   --phoenix-highlight-bg: #664d03;
