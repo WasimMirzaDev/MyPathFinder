@@ -3292,13 +3292,12 @@ export default function CVBuilder() {
 
                                 {/* Prev/Next */}
                                 <div className="card border-0 shadow-none shadow-sm mt-3">
-                                    <div className="card-body p-3 d-flex justify-content-between align-items-center">
-                                        <button type="button" className="btn btn-outline-primary d-flex align-items-center gap-2" disabled={activeTab == "tabPreview"} onClick={handlePreviousTab}>
+                                    <div className="card-body p-3 d-flex justify-content-center align-items-center">
+                                        <button type="button" className={`btn btn-outline-primary d-flex align-items-center gap-2 ${activeTab == "tabPreview" && 'd-none'}`} onClick={handlePreviousTab}>
                                             <span aria-hidden="true">←</span> Previous
                                         </button>
-                                        <button type="button" className="btn btn-primary d-flex align-items-center gap-2"
+                                        <button type="button" className={`btn btn-primary d-flex align-items-center gap-2 ${activeTab == "tabDesign" && 'd-none'}`}
                                             onClick={handleNextTab}
-                                            disabled={activeTab == "tabDesign"}
                                         >
                                             Next <span aria-hidden="true">→</span>
                                         </button>
@@ -3349,7 +3348,7 @@ export default function CVBuilder() {
                         <div
                             ref={previewContainerRef}
                             className="cv-template-div"
-                            style={{ height: 'calc(100% - 80px)', overflow: 'auto' }}
+                            style={{ height: 'calc(100% - 65px)', overflow: 'auto', background: '#f2f2f2' }}
                         >
                             <div
                                 ref={cvRef}
