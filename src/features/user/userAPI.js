@@ -67,3 +67,29 @@ export const updateUserProfileSettings = async (formData) => {
   });
   return response.data;
 }
+
+export const userForgotPassword = async (formData) => {
+  try {
+    const response = await axios.post('/password/email', formData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    // Throw an error with the server's error message or a default message
+    const errorMessage = error.response?.data?.message || 
+                       (error.response?.data?.errors ? 
+                        Object.values(error.response.data.errors).flat().join(' ') : 
+                        'Failed to send password reset email');
+    throw new Error(errorMessage);
+  }
+}
+export const userResetPassword = async (resetData) => {
+  const response = await axios.post('/password/reset', resetData, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return response.data;
+};

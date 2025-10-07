@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps , updateUserProfileSettings } from "./userAPI";
+import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps , updateUserProfileSettings ,userForgotPassword , userResetPassword} from "./userAPI";
 import { REHYDRATE } from 'redux-persist';
 
 
@@ -50,6 +50,38 @@ export const updateProfileSettings = createAsyncThunk(
   }
 );
 
+export const ForgotPassword = createAsyncThunk(
+  "user/forgot-password-email",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await userForgotPassword(formData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+// 2. In userSlice.js, add the thunk
+export const resetPassword = createAsyncThunk(
+  "user/reset-password",
+  async (resetData, { rejectWithValue }) => {
+    try {
+      const response = await userResetPassword(resetData);
+      return response;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 
+                         (error.response?.data?.errors ? 
+                          Object.values(error.response.data.errors).flat().join(' ') : 
+                          'Failed to reset password');
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -63,6 +95,8 @@ const userSlice = createSlice({
     error: null,
     accessToken: null,
     success: "",
+    forgetPasswordError:"",
+    forgetPasswordSuccess:""
   },
   reducers: {
     logout: (state) => {
@@ -186,14 +220,47 @@ const userSlice = createSlice({
       })
       .addCase(updateProfileSettings.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.forgetPasswordError = action.error.message;
       })
+      // In your extraReducers:
+      .addCase(ForgotPassword.pending, (state) => {
+        state.loading = true;
+        state.forgetPasswordError = null;
+        state.forgetPasswordSuccess = null;
+      })
+      .addCase(ForgotPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.forgetPasswordSuccess = action.payload.message;
+        state.forgetPasswordError = null;
+      })
+      .addCase(ForgotPassword.rejected, (state, action) => {
+        state.loading = false;
+        console.log(action.payload);
+        state.forgetPasswordError = action.payload || 'Failed to send reset email';
+        state.forgetPasswordSuccess = null;
+      })
+      
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.forgetPasswordError = null;
+        state.forgetPasswordSuccess = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.forgetPasswordSuccess = action.payload.message || 'Password reset successful';
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.forgetPasswordError = action.payload || 'Failed to reset password';
+      })
+
       .addCase(REHYDRATE, (state) => {
         state.loading = false;
         state.bootstrapping = false;
         state.error = null;
         state.success = "";
       })
+      
   },
 });
 

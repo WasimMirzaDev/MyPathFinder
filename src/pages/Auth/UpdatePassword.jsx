@@ -1,11 +1,72 @@
-import React from 'react'
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { resetPassword } from '../../features/user/userSlice';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+import logo from '../../assets/images/MPF-logo.svg';
 
-import logo from '../../assets/images/MPF-logo.svg'
+export default function UpdatePassword() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [formData, setFormData] = useState({
+    password: '',
+    password_confirmation: ''
+  });
+  
+  const { loading, forgetPasswordError, forgetPasswordSuccess } = useSelector((state) => state.user || {});
+  const token = searchParams.get('token');
+  const email = searchParams.get('email');
 
+  useEffect(() => {
+    if (forgetPasswordError) {
+      toast.error(forgetPasswordError);
+    }
+    if (forgetPasswordSuccess) {
+      toast.success(forgetPasswordSuccess);
+      setTimeout(() => {
+      navigate('/sign-in');
+      }, 3000);
+    }
+  }, [forgetPasswordError, forgetPasswordSuccess, navigate]);
 
-export default function Verification() {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.password_confirmation) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    
+    if (!token || !email) {
+      toast.error('Invalid reset link');
+      return;
+    }
+    
+    try {
+      await dispatch(resetPassword({
+        email,
+        token,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation
+      })).unwrap();
+      
+      // alert("Password updated successfully");
+    } catch (error) {
+      // Error is handled by the toast in the effect
+    }
+  };
+
   return (
     <main className="main" id="top">
       <div className="container-fluid bg-body-tertiary dark__bg-gray-1200">
@@ -25,42 +86,69 @@ export default function Verification() {
                           </div>
                         </div>
 
-                        <h3 className="fw-bold">Secure Your Account</h3>
+                        <h3 className="fw-bold">Reset Your Password</h3>
+                        <p className="text-body-tertiary">
+                          Enter your new password below
+                        </p>
 
-
-                        <form action="2fa.html" method="post" data-2fa-form="data-2fa-form" noValidate="novalidate">
+                        <form onSubmit={handleSubmit}>
                           <div className="mb-3 text-start">
-                            <label className="form-label" htmlFor="password">Password</label>
+                            <label className="form-label" htmlFor="password">New Password</label>
                             <div className="form-icon-container">
                               <input
-                                className="form-control w-100"
+                                className={`form-control w-100 ${forgetPasswordError?.includes('password') ? 'is-invalid' : ''}`}
                                 id="password"
                                 name="password"
                                 type="password"
-                                placeholder="password"
+                                placeholder="Enter new password"
+                                value={formData.password}
+                                onChange={handleChange}
                                 required
+                                minLength="8"
                               />
                             </div>
                           </div>
+                          
                           <div className="mb-3 text-start">
-                            <label className="form-label" htmlFor="confirm-password">Confirm Password</label>
+                            <label className="form-label" htmlFor="password_confirmation">
+                              Confirm New Password
+                            </label>
                             <div className="form-icon-container">
                               <input
                                 className="form-control w-100"
-                                id="confirm-password"
-                                name="confirm-password"
+                                id="password_confirmation"
+                                name="password_confirmation"
                                 type="password"
-                                placeholder="confirm-password"
+                                placeholder="Confirm new password"
+                                value={formData.password_confirmation}
+                                onChange={handleChange}
                                 required
                               />
                             </div>
                           </div>
-                          <div className="visually-hidden" aria-live="polite"></div>
 
-                          <button type="submit" className="btn btn-secondary w-100">
-                            Update
+                          <button 
+                            type="submit" 
+                            className="btn btn-primary w-100"
+                            disabled={loading}
+                          >
+                            {loading ? (
+                              <>
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Updating...
+                              </>
+                            ) : 'Update Password'}
                           </button>
                         </form>
+
+                        <div className="text-center mt-3">
+                          <p className="mb-0">
+                            Remember your password?{' '}
+                            <Link to="/sign-in" className="fw-bold">
+                              Sign In
+                            </Link>
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -71,5 +159,5 @@ export default function Verification() {
         </div>
       </div>
     </main>
-  )
+  );
 }

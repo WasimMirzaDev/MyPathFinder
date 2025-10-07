@@ -38,12 +38,12 @@ const cardTemplate = [
     // { name: 'Template2', template: ClassicTemplate, image: 'dummy.jpg' },
     // { name: 'Template3', template: ProfessionalTemplate, image: 'dummy.jpg' },
     // { name: 'Template4', template: ProfessionalTemplate2, image: 'dummy.jpg' },
-    { name: 'Default', template: Template9, image: 'default1.png', recommended: true },
-    { name: 'Classic', template: Template12, image: 'classic.png', recommended: true },
+    { name: 'Chrono', template: Template9, image: 'default1.png', recommended: true },
+    { name: 'Classic', template: Template12, image: 'classic.png'},
     { name: 'Professional', template: Template5, image: 'professional.png' },
     { name: 'Unique', template: Template11, image: 'unique.png' },
     { name: 'Modern', template: Template8, image: 'modern.png' },
-    { name: 'Chrono', template: Template6, image: 'chrono.png' },
+    { name: 'Default', template: Template6, image: 'chrono.png' , recommended: true },
     { name: 'Luxe', template: Template13, image: 'Luxe.png' },
     { name: 'Elegant', template: Template7, image: 'elegant.png' },
 ];
@@ -567,6 +567,11 @@ export default function CVBuilder() {
     }, [parsedResume, downloadPDFLoader]);
 
     const handleDownloadPDF = async () => {
+
+        const downloadUrl = `https://api.mypathfinder.uk/resume/${id}/download?template=${selectedTemplate}`;
+        window.open(downloadUrl, '_blank');
+        return
+        
         if (!cvRef.current) return;
 
         const element = cvRef.current;
