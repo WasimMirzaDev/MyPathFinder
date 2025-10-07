@@ -141,7 +141,7 @@ a:hover {
 }
 
 .feature-cards .card:hover {
-    transform: translateY(-6px);
+    transform: translateY(0px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
     border-color: #BA67EF !important;
 }
