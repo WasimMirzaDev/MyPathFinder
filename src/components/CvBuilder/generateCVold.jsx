@@ -38,14 +38,14 @@ const cardTemplate = [
     // { name: 'Template2', template: ClassicTemplate, image: 'dummy.jpg' },
     // { name: 'Template3', template: ProfessionalTemplate, image: 'dummy.jpg' },
     // { name: 'Template4', template: ProfessionalTemplate2, image: 'dummy.jpg' },
-    { name: 'Chrono', template: Template9, image: 'default1.png', recommended: true },
-    { name: 'Classic', template: Template12, image: 'classic.png' },
-    { name: 'Professional', template: Template5, image: 'professional.png' },
-    { name: 'Unique', template: Template11, image: 'unique.png' },
-    { name: 'Modern', template: Template8, image: 'modern.png' },
-    { name: 'Default', template: Template6, image: 'chrono.png', recommended: true },
     { name: 'Luxe', template: Template13, image: 'Luxe.png' },
+    { name: 'Default', template: Template9, image: 'default1.png' },
+    { name: 'Professional', template: Template5, image: 'professional.png', recommended: true },
+    { name: 'Chrono', template: Template6, image: 'chrono.png' },
     { name: 'Elegant', template: Template7, image: 'elegant.png' },
+    { name: 'Modern', template: Template8, image: 'modern.png', recommended: true },
+    { name: 'Classic', template: Template12, image: 'classic.png' },
+    { name: 'Unique', template: Template11, image: 'unique.png' },
 ];
 
 const coverLetterjson = {
@@ -79,8 +79,7 @@ export default function CVBuilder() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
-    const { data } = useSelector((state) => state.user);
+    const { parsedResume, AnalyseResumeData, AiResumeLoader, selectedTemplate, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -98,7 +97,7 @@ export default function CVBuilder() {
     const [customSections, setCustomSections] = useState([]);
 
     // State for active tab
-    const [selectedTemplate, setSelectedTemplate] = useState("Default");
+    // const [selectedTemplate, setSelectedTemplate] = useState("Default");
 
 
 
@@ -107,48 +106,10 @@ export default function CVBuilder() {
         setActiveTab((prevTab) => (prevTab === tabName ? '' : tabName)); // toggle if same, else set new
     };
 
-    useEffect(() => {
-        if (!parsedResume?.candidateName?.[0]?.firstName && data?.name) {
-            dispatch(updateField({
-                path: "candidateName[0].firstName",
-                value: data?.name
-            }));
-        }
-
-        if (!parsedResume?.email?.[0] && data?.email) {
-            dispatch(updateField({
-                path: "email",
-                value: [data.email]
-            }));
-        }
-
-        if (!parsedResume?.phoneNumber?.[0]?.formattedNumber && data?.phone) {
-            dispatch(updateField({
-                path: "phoneNumber[0].formattedNumber",
-                value: data.phone
-            }));
-        }
-
-        if (!parsedResume?.socialLinks?.linkedin && data?.linkedin_profile_url) {
-            dispatch(updateField({
-
-                path: "socialLinks.linkedin",
-                value: data.linkedin_profile_url
-            }));
-        }
-
-        // Batch all updates in a single dispatch
-        // if (updates.length > 0) {
-        //     dispatch(
-        //         updateField(updates.reduce((acc, curr) => ({ ...acc, [curr.path]: curr.value }), []))
-        //     );
-        // }
-    }, [data, parsedResume, dispatch]);
-
     const handleNextTab = () => {
         if (activeTab == "tabPreview") {
             setActiveTab("tabDesign"); // toggle if same, else set new
-        }
+        } 
     }
 
     const handlePreviousTab = () => {
@@ -194,18 +155,18 @@ export default function CVBuilder() {
         const handleClick = (e) => {
             // If we're already processing navigation or no unsaved changes, allow the click
             if (isNavigating || !hasUnsavedChanges || saveChangesLoader) return;
-
+    
             const link = e.target.closest('a');
             if (link && link.href) {
                 // Check if it's an external link or different route
                 const currentUrl = window.location.href;
                 const targetUrl = link.href;
-
+                
                 // Only intercept if it's a different page
                 if (currentUrl !== targetUrl && !targetUrl.includes('#')) {
                     e.preventDefault();
                     e.stopPropagation();
-
+                    
                     Swal.fire({
                         title: 'Unsaved Changes',
                         text: 'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.',
@@ -228,12 +189,12 @@ export default function CVBuilder() {
                 }
             }
         };
-
+    
         // Use capture phase to catch all clicks
         document.addEventListener('click', handleClick, true);
         return () => document.removeEventListener('click', handleClick, true);
     }, [hasUnsavedChanges, saveChangesLoader, isNavigating]);
-
+    
     // Update the beforeunload handler to check the flag
     useEffect(() => {
         const handleBeforeUnload = (e) => {
@@ -242,16 +203,16 @@ export default function CVBuilder() {
                 sessionStorage.removeItem('allowNavigation');
                 return;
             }
-
+            
             if (hasUnsavedChanges && !saveChangesLoader) {
                 e.preventDefault();
                 e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
                 return 'You have unsaved changes. Are you sure you want to leave?';
             }
         };
-
+    
         window.addEventListener('beforeunload', handleBeforeUnload);
-
+        
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
@@ -296,11 +257,11 @@ export default function CVBuilder() {
 
 
 
-    // Add visual indicator in your save button
-    const renderSaveButton = () => (
-        <button
-            className="btn btn-primary btn-sm position-relative"
-            onClick={handleSaveChanges}
+      // Add visual indicator in your save button
+      const renderSaveButton = () => (
+        <button 
+            className="btn btn-primary btn-sm position-relative" 
+            onClick={handleSaveChanges} 
             disabled={parsedResume == prevParsedResume || saveChangesLoader}
         >
             {saveChangesLoader ? (
@@ -309,7 +270,7 @@ export default function CVBuilder() {
                 <>
                     Save Changes
                     {hasUnsavedChanges && (
-                        <span
+                        <span 
                             className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
                             title="Unsaved changes"
                             style={{ fontSize: '6px' }}
@@ -606,36 +567,8 @@ export default function CVBuilder() {
     }, [parsedResume, downloadPDFLoader]);
 
     const handleDownloadPDF = async () => {
-
-        setDownloadPDFLoader(true);
-        try {
-            // Save changes first and wait for it to complete
-            if (parsedResume !== prevParsedResume) {
-                await new Promise((resolve, reject) => {
-                    dispatch(updateResumeById({ id, parsedResume }))
-                        .unwrap()
-                        .then(() => {
-                            setHasUnsavedChanges(false);
-                            toast.success('Changes saved successfully!');
-                            resolve();
-                        })
-                        .catch((error) => {
-                            toast.error('Failed to save changes');
-                            reject(error);
-                        });
-                });
-            }
-        } catch {
-
-        }
-
-        if (["Chrono", "Default", "Luxe"].includes(selectedTemplate)) {
-            const downloadUrl = `https://api.mypathfinder.uk/resume/${id}/download?template=${selectedTemplate}`;
-            window.open(downloadUrl, '_blank');
-            setDownloadPDFLoader(false);
-            return;
-        }
         if (!cvRef.current) return;
+
         const element = cvRef.current;
 
         const opt = {
@@ -648,7 +581,6 @@ export default function CVBuilder() {
         };
 
         await html2pdf().from(element).set(opt).save();
-        setDownloadPDFLoader(false);
     };
 
 
@@ -879,81 +811,76 @@ export default function CVBuilder() {
     const [eduListdispatch, setEduListdispatch] = useState([]);
     const [eduCurrentForm, setEduCurrentForm] = useState(null);
 
-    const [editingExperience, setEditingExperience] = useState({
-        index: null,
-        data: null
-    });
 
+// Update the education form state to include educationMajor
+const [eduFormData, setEduFormData] = useState({
+    eduDegree: '',
+    eduInstitution: '',
+    eduStartDate: '',
+    eduEndDate: '',
+    achievedGrade: '',
+    educationMajor: [''] // Add educationMajor as an array to store multiple majors
+});
 
-    // Update the education form state to include educationMajor
-    const [eduFormData, setEduFormData] = useState({
+// Add a function to handle adding/removing major fields
+const handleAddMajor = () => {
+    setEduFormData(prev => ({
+        ...prev,
+        educationMajor: [...prev.educationMajor, '']
+    }));
+};
+
+const handleRemoveMajor = (index) => {
+    setEduFormData(prev => ({
+        ...prev,
+        educationMajor: prev.educationMajor.filter((_, i) => i !== index)
+    }));
+};
+
+const handleMajorChange = (index, value) => {
+    const newMajors = [...eduFormData.educationMajor];
+    newMajors[index] = value;
+    setEduFormData(prev => ({
+        ...prev,
+        educationMajor: newMajors
+    }));
+};
+
+// Update the form submission to include educationMajor
+const handleAddEducation = () => {
+    if (!eduFormData.eduDegree || !eduFormData.eduInstitution) {
+        toast.error('Please fill in all required fields');
+        return;
+    }
+
+    const newEducation = {
+        educationLevel: { label: eduFormData.eduDegree },
+        educationOrganization: eduFormData.eduInstitution,
+        educationDates: {
+            start: { date: eduFormData.eduStartDate },
+            end: { date: eduFormData.eduEndDate || null }
+        },
+        educationMajor: eduFormData.educationMajor.filter(major => major.trim() !== ''),
+        achievedGrade: eduFormData.achievedGrade || null
+    };
+
+    dispatch(updateField({
+        path: 'education',
+        value: [...(parsedResume.education || []), newEducation]
+    }));
+
+    // Reset form
+    setEduFormData({
         eduDegree: '',
         eduInstitution: '',
         eduStartDate: '',
         eduEndDate: '',
         achievedGrade: '',
-        educationMajor: [''] // Add educationMajor as an array to store multiple majors
+        educationMajor: ['']
     });
-
-    // Add a function to handle adding/removing major fields
-    const handleAddMajor = () => {
-        setEduFormData(prev => ({
-            ...prev,
-            educationMajor: [...prev.educationMajor, '']
-        }));
-    };
-
-    const handleRemoveMajor = (index) => {
-        setEduFormData(prev => ({
-            ...prev,
-            educationMajor: prev.educationMajor.filter((_, i) => i !== index)
-        }));
-    };
-
-    const handleMajorChange = (index, value) => {
-        const newMajors = [...eduFormData.educationMajor];
-        newMajors[index] = value;
-        setEduFormData(prev => ({
-            ...prev,
-            educationMajor: newMajors
-        }));
-    };
-
-    // Update the form submission to include educationMajor
-    const handleAddEducation = () => {
-        if (!eduFormData.eduDegree || !eduFormData.eduInstitution) {
-            toast.error('Please fill in all required fields');
-            return;
-        }
-
-        const newEducation = {
-            educationLevel: { label: eduFormData.eduDegree },
-            educationOrganization: eduFormData.eduInstitution,
-            educationDates: {
-                start: { date: eduFormData.eduStartDate },
-                end: { date: eduFormData.eduEndDate || null }
-            },
-            educationMajor: eduFormData.educationMajor.filter(major => major.trim() !== ''),
-            achievedGrade: eduFormData.achievedGrade || null
-        };
-
-        dispatch(updateField({
-            path: 'education',
-            value: [...(parsedResume.education || []), newEducation]
-        }));
-
-        // Reset form
-        setEduFormData({
-            eduDegree: '',
-            eduInstitution: '',
-            eduStartDate: '',
-            eduEndDate: '',
-            achievedGrade: '',
-            educationMajor: ['']
-        });
-        setShowEducationForm(false);
-    };
-
+    setShowEducationForm(false);
+};
+    
     const eduHandleAddEducation = () => {
         // Check if there's already an empty form
         if (eduCurrentForm) {
@@ -1161,12 +1088,12 @@ export default function CVBuilder() {
     const expHandleAddExperience = () => {
         // Check if there's already an incomplete form
         const hasIncomplete = expItems.some(item => !item.expIsComplete);
-
+    
         if (hasIncomplete) {
             toast.error('Please complete the current experience form before adding a new one');
             return;
         }
-
+    
         // Create a new incomplete experience item with highlights
         const expNewItem = {
             expId: Date.now(),
@@ -1180,7 +1107,7 @@ export default function CVBuilder() {
                 items: []
             }
         };
-
+    
         const dispatchExperienceList = {
             workExperienceJobTitle: expNewItem.expJobTitle,
             workExperienceOrganization: expNewItem.expCompany,
@@ -1193,10 +1120,10 @@ export default function CVBuilder() {
             },
             expIsComplete: false
         };
-
-        dispatch(updateField({
-            path: "workExperience",
-            value: [...parsedResume.workExperience, dispatchExperienceList]
+    
+        dispatch(updateField({ 
+            path: "workExperience", 
+            value: [...parsedResume.workExperience, dispatchExperienceList] 
         }));
     };
 
@@ -1209,49 +1136,37 @@ export default function CVBuilder() {
         }));
     };
 
-    const expHandleSaveExperience = async () => {
-        const { index, data } = editingExperience;
-    
+    // Mark an item as complete
+    const expHandleSaveExperience = (expIndex) => {
+        const item = parsedResume.workExperience[expIndex];
+
         // Validate required fields
-        if (!data.workExperienceJobTitle || !data.workExperienceOrganization ||
-            !data.workExperienceDates?.start?.date || !data.workExperienceDates?.end?.date) {
+        if (!item.workExperienceJobTitle || !item.workExperienceOrganization || !item.workExperienceDates?.start?.date || !item.workExperienceDates?.end?.date) {
             toast.error('Please fill all the required fields');
             return;
         }
-    
-        // Update the experience in the main state
-        const updatedExperience = [...parsedResume.workExperience];
-        updatedExperience[index] = data;
-    
-        try {
-            const result = await dispatch(updateField({
-                path: "workExperience",
-                value: updatedExperience
-            }));
-            
-            // // Only save changes if the field update was successful
-            // if (result) {
-            //     await handleSaveChanges();
-            // }
-        } catch (error) {
-            console.error('Failed to update work experience:', error);
-            toast.error('Failed to save work experience');
-        }
-    
-        // Reset editing state
-        setEditingExperience({ index: null, data: null });
+
+        // Mark as complete by updating the specific item
+        const updatedExperience = parsedResume.workExperience.map((item, index) =>
+            index === expIndex ? { ...item, expIsComplete: true } : item
+        );
+
+        dispatch(updateField({
+            path: "workExperience",
+            value: updatedExperience
+        }));
     };
 
     // Edit an existing complete item
     const expHandleEditExperience = (expIndex) => {
-        setEditingExperience({
-            index: expIndex,
-            data: { ...parsedResume.workExperience[expIndex] }
-        });
-    };
-    // Cancel editing and remove incomplete items
-    const expHandleCancelEdit = () => {
-        setEditingExperience({ index: null, data: null });
+        const updatedExperience = parsedResume.workExperience.map((item, index) =>
+            index === expIndex ? { ...item, expIsComplete: false } : item
+        );
+
+        dispatch(updateField({
+            path: "workExperience",
+            value: updatedExperience
+        }));
     };
 
     // Delete an experience item
@@ -1277,6 +1192,15 @@ export default function CVBuilder() {
         });
     };
 
+    // Cancel editing and remove incomplete items
+    const expHandleCancelEdit = (expIndex) => {
+        const updatedExperience = parsedResume.workExperience.filter((_, index) => index !== expIndex);
+
+        dispatch(updateField({
+            path: "workExperience",
+            value: updatedExperience
+        }));
+    };
 
     // Render the component
     return (
@@ -1284,8 +1208,8 @@ export default function CVBuilder() {
             <div className="row g-3">
                 {/* LEFT: Tabs + Form */}
                 <div className="col-12 col-xxl-6 col-lg-7">
-                    <div className="card border" style={{ height: 'calc(100vh - 175px)', overflow: 'hidden' }}>
-                        <div className="card-header border-bottom-0 pb-0 d-flex justify-content-between shadow">
+                    <div className="card border h-100">
+                        <div className="card-header border-bottom-0 pb-0 d-flex justify-content-between">
                             {/* Tabs */}
                             <ul className="nav nav-underline cv-uploader-tabs" id="cvTabs" role="tablist">
                                 <li className="nav-item" role="presentation">
@@ -1349,7 +1273,7 @@ export default function CVBuilder() {
                             <button className="btn btn-primary btn-sm" onClick={handleSaveChanges} disabled={parsedResume == prevParsedResume || saveChangesLoader}>{saveChangesLoader ? (<><FiLoader size={14} className="me-2 animate-spin" />Saving...</>) : "Save Changes"}</button>
                         </div>
 
-                        <div className="card-body pt-3" style={{ height: '100%', overflowY: 'auto' }}>
+                        <div className="card-body pt-3">
 
 
                             {/* Tab panes */}
@@ -1460,7 +1384,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.personalDisabled ? (
-                                                                <div className="card border-0 shadow-none">
+                                                                <div className="card border-0">
                                                                     {/* Avatar + Name/Headline */}
                                                                     <div className="row g-3 mb-3">
                                                                         <div className="col-md-3 col-4">
@@ -1697,91 +1621,26 @@ export default function CVBuilder() {
                                                                     </div>
 
                                                                     {/* Summary */}
-                                                                    <div className="row g-3 mb-4">
+                                                                    <div className="row g-3">
                                                                         <div className="col-12">
                                                                             <label className="form-label fw-bold small">Summary</label>
                                                                             <textarea
                                                                                 rows="5"
                                                                                 className="form-control"
-                                                                                placeholder="Describe your professional background, key skills, achievements, and career goals..."
+                                                                                placeholder="Describe your professional background, key skills, achievements, and career goals. Be specific about technologies, methodologies, and results..."
                                                                                 name="summary"
                                                                                 value={parsedResume?.summary?.paragraph || ''}
                                                                                 onChange={(e) =>
                                                                                     dispatch(
                                                                                         updateField({
                                                                                             path: "summary.paragraph",
-                                                                                            value: e.target.value,
+                                                                                            value: e.target.value
                                                                                         })
                                                                                     )
                                                                                 }
                                                                             ></textarea>
                                                                         </div>
                                                                     </div>
-
-                                                                    {/* 🔗 Social Links */}
-                                                                    <div className="row g-3 mb-3">
-                                                                        <div className="col-12">
-                                                                            <h6 className="fw-bold mb-2">Social Links</h6>
-                                                                        </div>
-
-                                                                        <div className="col-md-4">
-                                                                            <label className="form-label">GitHub</label>
-                                                                            <input
-                                                                                type="url"
-                                                                                className="form-control"
-                                                                                name="github"
-                                                                                placeholder="https://github.com/username"
-                                                                                value={parsedResume?.socialLinks?.github || ''}
-                                                                                onChange={(e) =>
-                                                                                    dispatch(
-                                                                                        updateField({
-                                                                                            path: "socialLinks.github",
-                                                                                            value: e.target.value,
-                                                                                        })
-                                                                                    )
-                                                                                }
-                                                                            />
-                                                                        </div>
-
-                                                                        <div className="col-md-4">
-                                                                            <label className="form-label">LinkedIn</label>
-                                                                            <input
-                                                                                type="url"
-                                                                                className="form-control"
-                                                                                name="linkedin"
-                                                                                placeholder="https://linkedin.com/in/username"
-                                                                                value={parsedResume?.socialLinks?.linkedin || ''}
-                                                                                onChange={(e) =>
-                                                                                    dispatch(
-                                                                                        updateField({
-                                                                                            path: "socialLinks.linkedin",
-                                                                                            value: e.target.value,
-                                                                                        })
-                                                                                    )
-                                                                                }
-                                                                            />
-                                                                        </div>
-
-                                                                        <div className="col-md-4">
-                                                                            <label className="form-label">Portfolio / Website</label>
-                                                                            <input
-                                                                                type="url"
-                                                                                className="form-control"
-                                                                                name="website"
-                                                                                placeholder="https://yourwebsite.com"
-                                                                                value={parsedResume?.socialLinks?.website || ''}
-                                                                                onChange={(e) =>
-                                                                                    dispatch(
-                                                                                        updateField({
-                                                                                            path: "socialLinks.website",
-                                                                                            value: e.target.value,
-                                                                                        })
-                                                                                    )
-                                                                                }
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-
                                                                 </div>
                                                             ) : (
                                                                 <div className="text-muted text-center py-3 d-flex flex-column gap-2">
@@ -1827,9 +1686,9 @@ export default function CVBuilder() {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.employmentDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.employmentDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingEmploymentTitle ? (
@@ -1924,216 +1783,11 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.employmentDisabled ? (
-                                                                <div className="card border-0 shadow-none">
+                                                                <div className="card border-0">
                                                                     {parsedResume.workExperience?.map((expItem, expIndex) => (
                                                                         <div key={expIndex} className="mb-3 p-3 border rounded">
 
-                                                                            {(editingExperience.index === expIndex) ? (
-                                                                                // Edit mode
-                                                                                <div className="experience-edit-form">
-                                                                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                                                                        <small className="fw-bold text-muted">
-                                                                                            Experience #{expIndex + 1}
-                                                                                        </small>
-                                                                                        <button
-                                                                                            type="button"
-                                                                                            className="btn btn-sm btn-outline-danger"
-                                                                                            onClick={expHandleCancelEdit}
-                                                                                            title="Cancel editing"
-                                                                                        >
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                                                                                            </svg>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div className="mb-2">
-                                                                                        <label className="form-label">Job Title</label>
-                                                                                        <input
-                                                                                            className="form-control"
-                                                                                            value={editingExperience.data.workExperienceJobTitle}
-                                                                                            onChange={(e) => setEditingExperience(prev => ({
-                                                                                                ...prev,
-                                                                                                data: {
-                                                                                                    ...prev.data,
-                                                                                                    workExperienceJobTitle: e.target.value
-                                                                                                }
-                                                                                            }))}
-                                                                                        />
-                                                                                    </div>
-                                                                                    <div className="mb-2">
-                                                                                        <label className="form-label">Company</label>
-                                                                                        <input
-                                                                                            className="form-control"
-                                                                                            value={editingExperience.data.workExperienceOrganization}
-                                                                                            onChange={(e) => setEditingExperience(prev => ({
-                                                                                                ...prev,
-                                                                                                data: {
-                                                                                                    ...prev.data,
-                                                                                                    workExperienceOrganization: e.target.value
-                                                                                                }
-                                                                                            }))}
-                                                                                        />
-                                                                                    </div>
-                                                                                    <div className="row">
-                                                                                        <div className="col-md-6">
-                                                                                            <div className="mb-2">
-                                                                                                <label className="form-label">Start Date</label>
-                                                                                                <input
-                                                                                                    placeholder="2020"
-                                                                                                    className="form-control"
-                                                                                                    type="text"
-                                                                                                    value={editingExperience.data.workExperienceDates?.start?.date || ''}
-                                                                                                    onChange={(e) => setEditingExperience(prev => ({
-                                                                                                        ...prev,
-                                                                                                        data: {
-                                                                                                            ...prev.data,
-                                                                                                            workExperienceDates: {
-                                                                                                                ...prev.data.workExperienceDates,
-                                                                                                                start: {
-                                                                                                                    ...prev.data.workExperienceDates?.start,
-                                                                                                                    date: e.target.value
-                                                                                                                }
-                                                                                                            }
-                                                                                                        }
-                                                                                                    }))}
-                                                                                                />
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div className="col-md-6">
-                                                                                            <div className="mb-2">
-                                                                                                <label className="form-label">End Date</label>
-                                                                                                <input
-                                                                                                    placeholder="2021 or Present"
-                                                                                                    className="form-control"
-                                                                                                    type="text"
-                                                                                                    value={editingExperience.data.workExperienceDates?.end?.date || ''}
-                                                                                                    onChange={(e) => setEditingExperience(prev => ({
-                                                                                                        ...prev,
-                                                                                                        data: {
-                                                                                                            ...prev.data,
-                                                                                                            workExperienceDates: {
-                                                                                                                ...prev.data.workExperienceDates,
-                                                                                                                end: {
-                                                                                                                    ...prev.data.workExperienceDates?.end,
-                                                                                                                    date: e.target.value
-                                                                                                                }
-                                                                                                            }
-                                                                                                        }
-                                                                                                    }))}
-                                                                                                />
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="mb-3">
-                                                                                        <div className="mb-3">
-                                                                                            <label className="form-label">Additional Notes (Optional)</label>
-                                                                                            <textarea
-                                                                                                rows="3"
-                                                                                                className="form-control"
-                                                                                                value={editingExperience.data.workExperienceDescription || ''}
-                                                                                                onChange={(e) => setEditingExperience(prev => ({
-                                                                                                    ...prev,
-                                                                                                    data: {
-                                                                                                        ...prev.data,
-                                                                                                        workExperienceDescription: e.target.value
-                                                                                                    }
-                                                                                                }))}
-                                                                                                placeholder="Any additional details about this role"
-                                                                                            ></textarea>
-                                                                                        </div>
-                                                                                        <div className="d-flex justify-content-between align-items-center mb-2">
-  <label className="form-label">Key Achievements</label>
-  <button
-    type="button"
-    className="btn btn-sm btn-outline-primary"
-    onClick={() => {
-      setEditingExperience(prev => ({
-        ...prev,
-        data: {
-          ...prev.data,
-          highlights: {
-            ...prev.data.highlights,
-            items: [
-              ...(prev.data.highlights?.items || []),
-              { id: Date.now(), bullet: '' }
-            ]
-          }
-        }
-      }));
-    }}
-  >
-    <FiPlus size={14} className="me-1" /> Add Bullet Point
-  </button>
-</div>
-
-{editingExperience.data.highlights?.items?.map((bullet, bulletIndex) => (
-  <div key={bullet.id || bulletIndex} className="d-flex align-items-start mb-2">
-    <span className="me-2 mt-2">•</span>
-    <div className="flex-grow-1">
-      <input
-        type="text"
-        className="form-control form-control-sm"
-        value={bullet.bullet}
-        onChange={(e) => {
-          setEditingExperience(prev => ({
-            ...prev,
-            data: {
-              ...prev.data,
-              highlights: {
-                ...prev.data.highlights,
-                items: prev.data.highlights.items.map((b, i) =>
-                  i === bulletIndex ? { ...b, bullet: e.target.value } : b
-                )
-              }
-            }
-          }));
-        }}
-        placeholder="Enter achievement or responsibility"
-      />
-    </div>
-    <button
-      type="button"
-      className="btn btn-sm btn-link text-danger ms-2"
-      onClick={() => {
-        setEditingExperience(prev => ({
-          ...prev,
-          data: {
-            ...prev.data,
-            highlights: {
-              ...prev.data.highlights,
-              items: prev.data.highlights.items.filter((_, i) => i !== bulletIndex)
-            }
-          }
-        }));
-      }}
-    >
-      <FiTrash2 size={14} />
-    </button>
-  </div>
-))}
-
-
-
-                                                                                    </div>
-                                                                                    <div className="d-flex justify-content-end gap-2">
-                                                                                        <button
-                                                                                            type="button"
-                                                                                            className="btn btn-outline-secondary"
-                                                                                            onClick={expHandleCancelEdit}
-                                                                                        >
-                                                                                            Cancel
-                                                                                        </button>
-                                                                                        <button
-                                                                                            type="button"
-                                                                                            className="btn btn-primary"
-                                                                                            onClick={expHandleSaveExperience}
-                                                                                        >
-                                                                                            Done
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            ) : (
-
+                                                                            {(expItem?.expIsComplete) ? (
                                                                                 // Display completed experience item
                                                                                 <>
                                                                                     <div className="d-flex justify-content-between align-items-center mb-2">
@@ -2184,6 +1838,201 @@ export default function CVBuilder() {
                                                                                         </button>
                                                                                     </div>
                                                                                 </>
+                                                                            ) : (
+                                                                                // Display incomplete experience form
+                                                                                <>
+                                                                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                                        <small className="fw-bold text-muted">
+                                                                                            Experience #{expIndex + 1}
+                                                                                        </small>
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            className="btn btn-sm btn-outline-danger"
+                                                                                            onClick={() => expHandleCancelEdit(expIndex)}
+                                                                                            title="Cancel editing"
+                                                                                        >
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                                                                            </svg>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    <div className="mb-2">
+                                                                                        <label className="form-label">Job Title</label>
+                                                                                        <input
+                                                                                            className="form-control"
+                                                                                            value={expItem.workExperienceJobTitle}
+                                                                                            onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceJobTitle', value: e.target.value }))}
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className="mb-2">
+                                                                                        <label className="form-label">Company</label>
+                                                                                        <input
+                                                                                            className="form-control"
+                                                                                            value={expItem.workExperienceOrganization}
+                                                                                            onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceOrganization', value: e.target.value }))}
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className="row">
+                                                                                        <div className="col-md-6">
+                                                                                            <div className="mb-2">
+                                                                                                <label className="form-label">Start Date</label>
+                                                                                                <input
+                                                                                                    placeholder="2020"
+                                                                                                    className="form-control"
+                                                                                                    type="text"
+                                                                                                    value={expItem.workExperienceDates?.start?.date}
+                                                                                                    onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceDates.start.date', value: e.target.value }))}
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div className="col-md-6">
+                                                                                            <div className="mb-2">
+                                                                                                <label className="form-label">End Date</label>
+                                                                                                <input
+                                                                                                    placeholder="2021 or Present"
+                                                                                                    className="form-control"
+                                                                                                    type="text"
+                                                                                                    value={expItem.workExperienceDates?.end?.date}
+                                                                                                    onChange={(e) => dispatch(updateField({ path: 'workExperience.' + expIndex + '.workExperienceDates.end.date', value: e.target.value }))}
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="mb-3">
+                                                                                    <div className="mb-3">
+        <label className="form-label">Additional Notes (Optional)</label>
+        <textarea
+            rows="3"
+            className="form-control"
+            value={expItem.workExperienceDescription || ''}
+            onChange={(e) => dispatch(updateField({ 
+                path: 'workExperience.' + expIndex + '.workExperienceDescription', 
+                value: e.target.value 
+            }))}
+            placeholder="Any additional details about this role"
+        ></textarea>
+    </div>
+    <div className="d-flex justify-content-between align-items-center mb-2">
+        <label className="form-label">Key Achievements</label>
+        <button 
+            type="button" 
+            className="btn btn-sm btn-outline-primary"
+// Update the onClick handler for adding a new bullet point
+onClick={() => {
+    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
+        if (idx === expIndex) {
+            // Create a new work experience item with updated highlights
+            return {
+                ...item,
+                highlights: {
+                    ...item.highlights,
+                    items: [
+                        ...(item.highlights?.items || []),
+                        { id: Date.now(), bullet: '' }
+                    ]
+                }
+            };
+        }
+        return item;
+    });
+
+    dispatch(updateField({
+        path: 'workExperience',
+        value: updatedExperience
+    }));
+}}
+        >
+            <FiPlus size={14} className="me-1" /> Add Bullet Point
+        </button>
+    </div>
+    
+    {expItem.highlights?.items?.map((bullet, bulletIndex) => (
+        <div key={bullet.id || bulletIndex} className="d-flex align-items-start mb-2">
+            <span className="me-2 mt-2">•</span>
+            <div className="flex-grow-1">
+                <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    value={bullet.bullet}
+                   // Update the onChange handler for editing a bullet point
+onChange={(e) => {
+    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
+        if (idx === expIndex) {
+            return {
+                ...item,
+                highlights: {
+                    ...item.highlights,
+                    items: item.highlights.items.map((b, i) => 
+                        i === bulletIndex 
+                            ? { ...b, bullet: e.target.value }
+                            : b
+                    )
+                }
+            };
+        }
+        return item;
+    });
+
+    dispatch(updateField({
+        path: 'workExperience',
+        value: updatedExperience
+    }));
+}}
+                    placeholder="Enter achievement or responsibility"
+                />
+            </div>
+            <button
+                type="button"
+                className="btn btn-sm btn-link text-danger ms-2"
+// Update the onClick handler for removing a bullet point
+onClick={() => {
+    const updatedExperience = parsedResume.workExperience.map((item, idx) => {
+        if (idx === expIndex) {
+            return {
+                ...item,
+                highlights: {
+                    ...item.highlights,
+                    items: item.highlights.items.filter((_, i) => i !== bulletIndex)
+                }
+            };
+        }
+        return item;
+    });
+
+    dispatch(updateField({
+        path: 'workExperience',
+        value: updatedExperience
+    }));
+}}
+            >
+                <FiTrash2 size={14} />
+            </button>
+        </div>
+    ))}
+
+
+</div>
+                                                                                    <div className="d-flex align-items-center justify-content-end gap-2 mt-3">
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            className="btn btn-outline-danger"
+                                                                                            onClick={() => expHandleCancelEdit(expIndex)}
+                                                                                        >
+                                                                                            Cancel
+                                                                                        </button>
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            className="content-confirm-btn btn btn-outline-primary"
+                                                                                            onClick={() => expHandleSaveExperience(expIndex)}
+                                                                                        >
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                                                <path d="M5 12l5 5l10 -10"></path>
+                                                                                            </svg>
+                                                                                            Done
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </>
                                                                             )}
                                                                         </div>
                                                                     ))}
@@ -2220,8 +2069,8 @@ export default function CVBuilder() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {/* Education */}
-                                                <div className="accordion-item">
+                                                                                                {/* Education */}
+                                                                                                <div className="accordion-item">
                                                     <h2 className="accordion-header" id="headingEducation">
                                                         <div className="d-flex justify-content-between align-items-center w-100">
                                                             <div className="d-flex align-items-center w-100 gap-2">
@@ -2244,9 +2093,9 @@ export default function CVBuilder() {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.educationDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.educationDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingEducationTitle ? (
@@ -2339,7 +2188,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.educationDisabled ? (
-                                                                <div className="card border-0 shadow-none">
+                                                                <div className="card border-0">
                                                                     {parsedResume.education?.map((eduItem, eduIndex) => (
                                                                         <div key={eduIndex} className="mb-3 p-3 border rounded">
                                                                             <div className="d-flex justify-content-between align-items-center mb-2">
@@ -2562,9 +2411,9 @@ export default function CVBuilder() {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.skillsDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.skillsDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingSkillsTitle ? (
@@ -2659,7 +2508,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.skillsDisabled ? (
-                                                                <div className="card border-0 shadow-none p-2">
+                                                                <div className="card border-0 p-2">
                                                                     <div className="border rounded p-3">
                                                                         <label className="form-label">Add Skills (one per line)</label>
                                                                         <div className='d-flex'>
@@ -2797,9 +2646,9 @@ export default function CVBuilder() {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.languagesDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.languagesDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingLanguagesTitle ? (
@@ -2894,7 +2743,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.languagesDisabled ? (
-                                                                <div className="card border-0 shadow-none">
+                                                                <div className="card border-0">
                                                                     <div className="border rounded p-3">
                                                                         <label className="form-label">Add Language</label>
                                                                         <div className="row g-2">
@@ -3003,9 +2852,9 @@ export default function CVBuilder() {
                                                                         width="28"
                                                                         height="28"
                                                                     /> */}
-                                                                    {!parsedResume?.hobbiesDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                    {!parsedResume?.hobbiesDisabled ? 
+                                                                    (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                    : (<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#222"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingHobbiesTitle ? (
@@ -3098,7 +2947,7 @@ export default function CVBuilder() {
                                                     >
                                                         <div className="accordion-body">
                                                             {!parsedResume?.hobbiesDisabled ? (
-                                                                <div className="card border-0 shadow-none">
+                                                                <div className="card border-0">
                                                                     <div className="border rounded p-3">
                                                                         <label className="form-label">Add Hobby</label>
                                                                         <div className='d-flex'>
@@ -3171,7 +3020,7 @@ export default function CVBuilder() {
                                 {/* TAB placeholders */}
                                 {activeTab === 'tabDesign' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabDesign' ? 'show active' : ''}`} id="tabDesign" role="tabpanel" aria-labelledby="tabDesign-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-none shadow-sm"><div className="card-body">
+                                        <div className="card border-0 shadow-sm"><div className="card-body">
                                             <Row className="g-4">
                                                 {cardTemplate.map((template) => (
                                                     <Col key={template.name} xs={6} sm={6} md={4} lg={3} xl={4}>
@@ -3496,12 +3345,12 @@ export default function CVBuilder() {
 
                                 {activeTab === 'tabMatching' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabMatching' ? 'show active' : ''}`} id="tabMatching" role="tabpanel" aria-labelledby="tabMatching-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-none shadow-sm"><div className="card-body">Job matching goes here.</div></div>
+                                        <div className="card border-0 shadow-sm"><div className="card-body">Job matching goes here.</div></div>
                                     </div>
                                 )}
                                 {activeTab === 'tabCover' && (
                                     <div className={`tab-pane fade ${activeTab === 'tabCover' ? 'show active' : ''}`} id="tabCover" role="tabpanel" aria-labelledby="tabCover-tab" tabIndex="0">
-                                        <div className="card border-0 shadow-none shadow-sm"><div className="card-body">
+                                        <div className="card border-0 shadow-sm"><div className="card-body">
                                             <CoverLetter />
 
                                         </div></div>
@@ -3509,13 +3358,14 @@ export default function CVBuilder() {
                                 )}
 
                                 {/* Prev/Next */}
-                                <div className="card border-0 shadow-none shadow-sm mt-3">
-                                    <div className="card-body p-3 d-flex justify-content-center align-items-center">
-                                        <button type="button" className={`btn btn-outline-primary d-flex align-items-center gap-2 ${activeTab == "tabPreview" && 'd-none'}`} onClick={handlePreviousTab}>
+                                <div className="card border-0 shadow-sm mt-3">
+                                    <div className="card-body p-3 d-flex justify-content-between align-items-center">
+                                        <button type="button" className="btn btn-outline-primary d-flex align-items-center gap-2" disabled={activeTab == "tabPreview"} onClick={handlePreviousTab}>
                                             <span aria-hidden="true">←</span> Previous
                                         </button>
-                                        <button type="button" className={`btn btn-primary d-flex align-items-center gap-2 ${activeTab == "tabDesign" && 'd-none'}`}
+                                        <button type="button" className="btn btn-primary d-flex align-items-center gap-2"
                                             onClick={handleNextTab}
+                                            disabled={activeTab == "tabDesign"}
                                         >
                                             Next <span aria-hidden="true">→</span>
                                         </button>
@@ -3527,7 +3377,7 @@ export default function CVBuilder() {
                 </div>
 
                 <Col lg={5} xxl={6} className='right-section'>
-                    <Card className="border-0 shadow-custom" style={{ height: 'calc(100vh - 175px)', overflow: 'hidden' }}>
+                    <Card className="border-0 shadow-custom mb-3">
                         <Card.Header className="bg-white border-bottom p-3">
                             <div className="d-flex justify-content-between align-items-center">
                                 <h5 className="mb-0 fw-semibold" style={{ fontSize: '1.1rem' }}>CV Preview</h5>
@@ -3566,7 +3416,6 @@ export default function CVBuilder() {
                         <div
                             ref={previewContainerRef}
                             className="cv-template-div"
-                            style={{ height: 'calc(100% - 65px)', overflow: 'auto', background: '#f2f2f2' }}
                         >
                             <div
                                 ref={cvRef}
@@ -3628,10 +3477,10 @@ export default function CVBuilder() {
                             ))}
                         </div>
                     </Card>
-                    {/* <Card className="border-0 shadow-custom">
+                    <Card className="border-0 shadow-custom">
                         <Card.Body className="p-3">
                             <div className="d-flex justify-content-between align-items-center">
-                                <Button
+                                {/* <Button
                                     variant="outline-primary"
                                     onClick={handlePreviousStep}
                                     disabled={activeTab === "Preview"}
@@ -3646,10 +3495,10 @@ export default function CVBuilder() {
                                     className="d-flex align-items-center gap-2"
                                     >
                                     Next <FiChevronRight />
-                                </Button>
+                                </Button> */}
                             </div>
                         </Card.Body>
-                    </Card> */}
+                    </Card>
                 </Col>
             </div>
         </div>
