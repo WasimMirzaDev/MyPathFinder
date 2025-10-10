@@ -159,11 +159,21 @@ const Template11 = ({ resumeData }) => {
               <span style={styles.label}>Phone number:</span> {resumeData.phoneNumber[0].formattedNumber}
             </div>
           )}
-          {/* {resumeData?.website?.[0] && (
+          {resumeData?.socialLinks?.github  && (
             <div style={styles.detailItem}>
-              <span style={styles.label}>LinkedIn:</span> {resumeData.website[0].replace(/^https?:\/\//, '')}
+              <span style={styles.label}>Github:</span> {resumeData?.socialLinks?.github }
             </div>
-          )} */}
+          )}
+          {resumeData?.socialLinks?.linkedin  && (
+            <div style={styles.detailItem}>
+              <span style={styles.label}>Linkedin:</span> {resumeData?.socialLinks?.linkedin }
+            </div>
+          )}
+          {resumeData?.socialLinks?.website  && (
+            <div style={styles.detailItem}>
+              <span style={styles.label}>Website:</span> {resumeData?.socialLinks?.website }
+            </div>
+          )}
         </div>
       </section>
 

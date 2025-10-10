@@ -153,12 +153,24 @@ const Template13 = ({ resumeData }) => {
             <div>{resumeData.location.postCode}</div>
           </div>
         )}
-        {/* {resumeData?.website?.[0] && (
+        {resumeData?.socialLinks?.github  && (
+          <div style={styles.personalDetailItem}>
+            <div style={styles.label}>Github</div>
+            <div>{resumeData?.socialLinks?.github}</div>
+            </div>
+          )}
+                  {resumeData?.socialLinks?.linkedin  && (
           <div style={styles.personalDetailItem}>
             <div style={styles.label}>LinkedIn</div>
-            <div>{resumeData.website[0].replace(/^https?:\/\//, '')}</div>
+            <div>{resumeData?.socialLinks?.linkedin}</div>
             </div>
-            )} */}
+          )}
+                  {resumeData?.socialLinks?.website  && (
+          <div style={styles.personalDetailItem}>
+            <div style={styles.label}>Website</div>
+            <div>{resumeData?.socialLinks?.website}</div>
+            </div>
+          )}
       </div>
 
       {/* Summary */}

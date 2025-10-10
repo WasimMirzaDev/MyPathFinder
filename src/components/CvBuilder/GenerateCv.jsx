@@ -1623,27 +1623,92 @@ export default function CVBuilder() {
                                                                         </div>
                                                                     </div>
 
-                                                                    {/* Summary */}
-                                                                    <div className="row g-3">
-                                                                        <div className="col-12">
-                                                                            <label className="form-label fw-bold small">Summary</label>
-                                                                            <textarea
-                                                                                rows="5"
-                                                                                className="form-control"
-                                                                                placeholder="Describe your professional background, key skills, achievements, and career goals. Be specific about technologies, methodologies, and results..."
-                                                                                name="summary"
-                                                                                value={parsedResume?.summary?.paragraph || ''}
-                                                                                onChange={(e) =>
-                                                                                    dispatch(
-                                                                                        updateField({
-                                                                                            path: "summary.paragraph",
-                                                                                            value: e.target.value
-                                                                                        })
-                                                                                    )
-                                                                                }
-                                                                            ></textarea>
-                                                                        </div>
-                                                                    </div>
+{/* Summary */}
+<div className="row g-3 mb-4">
+    <div className="col-12">
+        <label className="form-label fw-bold small">Summary</label>
+        <textarea
+            rows="5"
+            className="form-control"
+            placeholder="Describe your professional background, key skills, achievements, and career goals..."
+            name="summary"
+            value={parsedResume?.summary?.paragraph || ''}
+            onChange={(e) =>
+                dispatch(
+                    updateField({
+                        path: "summary.paragraph",
+                        value: e.target.value,
+                    })
+                )
+            }
+        ></textarea>
+    </div>
+</div>
+
+{/* 🔗 Social Links */}
+<div className="row g-3 mb-3">
+    <div className="col-12">
+        <h6 className="fw-bold mb-2">Social Links</h6>
+    </div>
+
+    <div className="col-md-4">
+        <label className="form-label">GitHub</label>
+        <input
+            type="url"
+            className="form-control"
+            name="github"
+            placeholder="https://github.com/username"
+            value={parsedResume?.socialLinks?.github || ''}
+            onChange={(e) =>
+                dispatch(
+                    updateField({
+                        path: "socialLinks.github",
+                        value: e.target.value,
+                    })
+                )
+            }
+        />
+    </div>
+
+    <div className="col-md-4">
+        <label className="form-label">LinkedIn</label>
+        <input
+            type="url"
+            className="form-control"
+            name="linkedin"
+            placeholder="https://linkedin.com/in/username"
+            value={parsedResume?.socialLinks?.linkedin || ''}
+            onChange={(e) =>
+                dispatch(
+                    updateField({
+                        path: "socialLinks.linkedin",
+                        value: e.target.value,
+                    })
+                )
+            }
+        />
+    </div>
+
+    <div className="col-md-4">
+        <label className="form-label">Portfolio / Website</label>
+        <input
+            type="url"
+            className="form-control"
+            name="website"
+            placeholder="https://yourwebsite.com"
+            value={parsedResume?.socialLinks?.website || ''}
+            onChange={(e) =>
+                dispatch(
+                    updateField({
+                        path: "socialLinks.website",
+                        value: e.target.value,
+                    })
+                )
+            }
+        />
+    </div>
+</div>
+
                                                                 </div>
                                                             ) : (
                                                                 <div className="text-muted text-center py-3 d-flex flex-column gap-2">

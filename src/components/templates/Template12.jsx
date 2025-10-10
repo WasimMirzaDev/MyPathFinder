@@ -146,11 +146,21 @@ const Template12 = ({ resumeData }) => {
                 <strong>Postcode:</strong> {resumeData.location.postCode}
               </p>
             )}
-            {/* {resumeData?.website?.[0] && (
+            {resumeData?.socialLinks?.github && (
               <p style={styles.contactParagraph}>
-                <strong>Website:</strong> {resumeData.website[0].replace(/^https?:\/\//, '')}
+                <strong>Github:</strong> {resumeData?.socialLinks?.github }
               </p>
-            )} */}
+            )}
+            {resumeData?.socialLinks?.linkedin && (
+              <p style={styles.contactParagraph}>
+                <strong>LinkedIn:</strong> {resumeData?.socialLinks?.linkedin }
+              </p>
+            )}
+            {resumeData?.socialLinks?.website && (
+              <p style={styles.contactParagraph}>
+                <strong>Website:</strong> {resumeData?.socialLinks?.website }
+              </p>
+            )}
           </div>
         </section>
 

@@ -98,24 +98,32 @@ const Template6 = ({ resumeData }) => {
       {/* Header */}
       <div style={styles.header}>
         {resumeData?.candidateName?.[0]?.firstName}{" "}
-        {resumeData?.candidateName?.[0]?.familyName} |{" "}
-        {resumeData?.location?.city}, {resumeData?.location?.country} |{" "}
-        {resumeData?.email?.[0]} |{" "}
-        {resumeData?.phoneNumber?.[0]?.formattedNumber} |{" "}
-        {resumeData?.socialLinks?.[0]?.url || "LinkedIn URL"}
+        {resumeData?.candidateName?.[0]?.familyName ? ` ${resumeData?.candidateName?.[0]?.familyName}` : ''}
+        {resumeData?.location?.formatted ? ` | ${resumeData.location?.formatted} , ` : ''}
+        {resumeData?.location?.city ? `${resumeData.location?.city}` : ''}
+        {resumeData?.email?.[0] ? ` | ${resumeData?.email?.[0]}` : ''}
+        {resumeData?.phoneNumber?.[0]?.formattedNumber ? ` | ${resumeData?.phoneNumber?.[0]?.formattedNumber}` : ''}
+        {resumeData?.socialLinks?.github ? ` | ${resumeData.socialLinks.github}` : ''}
+        {resumeData?.socialLinks?.linkedin ? ` | ${resumeData.socialLinks.linkedin}` : ''}
+        {resumeData?.socialLinks?.website ? ` | ${resumeData.socialLinks.website}` : ''}
       </div>
 
       {/* Candidate Headline */}
-      <h2 style={styles.candidateHeadline}>Candidate Headline</h2>
+      {resumeData?.headline ? <>
+        <h2 style={styles.candidateHeadline}>Candidate Headline</h2>
       <p style={styles.headlineText}>
         {resumeData?.headline || "Results-Driven Partnerships & Client Success Leader"}
       </p>
+      </>: ""}
+
 
       {/* Profile */}
-      <h2 style={styles.sectionTitle}>Profile</h2>
+      {resumeData?.summary?.paragraph ? <>      <h2 style={styles.sectionTitle}>Profile</h2>
       <p style={styles.profile}>
         {resumeData?.summary?.paragraph}
       </p>
+      </>: ""}
+
 
       {/* Two Column Layout */}
       <div style={styles.twoColumn}>
