@@ -80,6 +80,7 @@ export default function CVBuilder() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
+    const {data} = useSelector((state) => state.user);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -105,6 +106,44 @@ export default function CVBuilder() {
     const handleTabClick = (tabName) => {
         setActiveTab((prevTab) => (prevTab === tabName ? '' : tabName)); // toggle if same, else set new
     };
+
+    useEffect(()=>{
+        if(!parsedResume?.candidateName?.[0]?.firstName && data?.name){
+            dispatch(updateField({
+                path: "candidateName[0].firstName",
+                value: data?.name
+            }));
+        }
+
+        if (!parsedResume?.email?.[0] && data?.email) {
+            dispatch(updateField({
+                path: "email",
+                value: [data.email]
+            }));
+        }
+
+        if (!parsedResume?.phoneNumber?.[0]?.formattedNumber && data?.phone) {
+            dispatch(updateField({
+                path: "phoneNumber[0].formattedNumber",
+                value: data.phone
+            }));
+        }
+
+        if (!parsedResume?.socialLinks?.linkedin && data?.linkedin_profile_url) {
+            dispatch(updateField({
+
+                path: "socialLinks.linkedin",
+                value: data.linkedin_profile_url
+            }));
+        }
+
+        // Batch all updates in a single dispatch
+        // if (updates.length > 0) {
+        //     dispatch(
+        //         updateField(updates.reduce((acc, curr) => ({ ...acc, [curr.path]: curr.value }), []))
+        //     );
+        // }
+    }, [data, parsedResume, dispatch]);
 
     const handleNextTab = () => {
         if (activeTab == "tabPreview") {
@@ -568,13 +607,36 @@ export default function CVBuilder() {
 
     const handleDownloadPDF = async () => {
 
-        const downloadUrl = `https://api.mypathfinder.uk/resume/${id}/download?template=${selectedTemplate}`;
-        window.open(downloadUrl, '_blank');
-        return
-        
-        if (!cvRef.current) return;
+        setDownloadPDFLoader(true);
+        try {
+            // Save changes first and wait for it to complete
+            if (parsedResume !== prevParsedResume) {
+                await new Promise((resolve, reject) => {
+                    dispatch(updateResumeById({ id, parsedResume }))
+                        .unwrap()
+                        .then(() => {
+                            setHasUnsavedChanges(false);
+                            toast.success('Changes saved successfully!');
+                            resolve();
+                        })
+                        .catch((error) => {
+                            toast.error('Failed to save changes');
+                            reject(error);
+                        });
+                });
+            }
+        }catch{
 
-        const element = cvRef.current;
+        }
+
+            if (["Chrono", "Default", "Luxe"].includes(selectedTemplate)) {
+                const downloadUrl = `https://api.mypathfinder.uk/resume/${id}/download?template=${selectedTemplate}`;
+                window.open(downloadUrl, '_blank');
+                setDownloadPDFLoader(false);
+                return;
+            }
+            if (!cvRef.current) return;
+            const element = cvRef.current;
 
         const opt = {
             margin: 5,
@@ -586,6 +648,7 @@ export default function CVBuilder() {
         };
 
         await html2pdf().from(element).set(opt).save();
+        setDownloadPDFLoader(false);
     };
 
 
