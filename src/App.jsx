@@ -37,6 +37,7 @@ import ProfilePage from "./pages/Profile/Profile";
 import { useDispatch, useSelector } from "react-redux";
 import { login, getUser, logout } from "./features/user/userSlice";
 import SubscribePlan from "./pages/Subscription/SubscribePlan";
+import UpgradeSubscribePlan from "./pages/Subscription/UpgradeSubscribePlan";
 
 import InterviewFeedback from "./pages/Interview/InterviewFeedback";
 
@@ -71,6 +72,7 @@ const publicRoutes = [
 const protectedRoutes = [
   { path: '/', element: <Dashboard /> },
   { path: '/welcome', element: <Welcome /> },
+  { path: '/upgrade-subscription', element:<UpgradeSubscribePlan/> },
   { path: '/subscription', element:<SubscribePlan/> },
   { path: '/upload-profile', element: <UploadProfile /> },
   { path: '/feedback', element: <InterviewFeedback/>},

@@ -68,6 +68,15 @@ export const updateUserProfileSettings = async (formData) => {
   return response.data;
 }
 
+export const updateUserCurrentPassword = async (formData) => {
+  const response = await axios.post('/change-password', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+}
+
 export const userForgotPassword = async (formData) => {
   try {
     const response = await axios.post('/password/email', formData, {

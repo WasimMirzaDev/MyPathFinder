@@ -1,40 +1,28 @@
 // ProfilePage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ProfilePage2.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfileSettings } from '../../features/user/userSlice';
 import favicon from '../../assets/images/MPF-180x180.png';
-import { data } from 'react-router-dom';
+import axios, { stripe_public_key } from '../../utils/axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useStripe, useElements, CardElement, Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from '@stripe/stripe-js';
+import { useNavigate } from 'react-router-dom';
+import { updateCurrentPassword } from '../../features/user/userSlice';
 
+// Initialize Stripe with your publishable key
+const stripePromise = loadStripe(stripe_public_key);
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
-
-  const {
-    loading,
-    data
-  } = useSelector((state) => state.user);
-
-
-    const [imagePreview, setImagePreview] = useState(null);
+  const { data: userData } = useSelector((state) => state.user);
+  const navigate = useNavigate();
   
-    const handleImageChange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result);
-        };
-        reader.readAsDataURL(file);
-        setEditedUser(prev => ({
-          ...prev,
-          profile_img: file
-        }));
-      }
-    };
-
   const [activeTab, setActiveTab] = useState('personal');
-  const [userData, setUserData] = useState({
+  const [imagePreview, setImagePreview] = useState(null);
+  const [editedUser, setEditedUser] = useState({
     firstName: 'Johnathan',
     lastName: 'Doe',
     email: 'johndoe@example.com',
@@ -58,9 +46,216 @@ const ProfilePage = () => {
     confirmPassword: ''
   });
 
+  // Subscription state
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [subscription, setSubscription] = useState(null);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showUpdatePaymentModal, setShowUpdatePaymentModal] = useState(false);
+  const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
+  const [clientSecret, setClientSecret] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethodToRemove, setPaymentMethodToRemove] = useState(null);
+
+  useEffect(() => {
+    if (activeTab === 'subscription') {
+      fetchSubscriptionDetails();
+      fetchPaymentMethods();
+    }
+  }, [activeTab]);
+
+  // Subscription functions
+  const fetchSubscriptionDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('/api/subscription/details');
+      const { subscription } = response.data;
+      
+      if (subscription) {
+        setSubscription({
+          id: subscription.id,
+          planName: subscription.plan?.title || subscription.name,
+          amount: `$${subscription.plan?.price || '0.00'}`,
+          interval: subscription.plan?.interval || 'monthly',
+          status: subscription.status,
+          nextBillingDate: subscription.ends_at,
+          features: subscription.plan?.features || [],
+          subId: subscription.sub_id,
+          cus_id: subscription.cus_id,
+          subscriptionDetails: subscription
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+      toast.error('Failed to load subscription details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const response = await axios.get('/api/subscription/payment-method');
+      const paymentMethods = response.data.data.map(method => ({
+        id: method.id,
+        type: method.type,
+        default: method.default,
+        card: {
+          brand: method.card.brand,
+          last4: method.card.last4,
+          expMonth: method.card.exp_month,
+          expYear: method.card.exp_year,
+          country: method.card.country
+        },
+        billing: {
+          name: method.billing_details.name,
+          email: method.billing_details.email,
+          country: method.billing_details.address?.country
+        },
+        created: new Date(method.created * 1000).toISOString()
+      }));
+      setPaymentMethods(paymentMethods);
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
+      toast.error('Failed to load payment methods');
+    }
+  };
+
+  const handleRemovePaymentMethod = async () => {
+    if (!paymentMethodToRemove) return;
+    
+    try {
+      setLoading(true);
+      await axios.delete(`/api/subscription/payment-method/${paymentMethodToRemove}`);
+      await fetchPaymentMethods();
+      toast.success('Payment method removed successfully');
+      setPaymentMethodToRemove(null);
+    } catch (error) {
+      console.error('Error removing payment method:', error);
+      toast.error('Failed to remove payment method');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddPaymentMethod = async () => {
+    try {
+      setLoading(true);
+      const customerId = subscription?.cus_id;
+      if (!customerId) {
+        throw new Error('Customer ID not found');
+      }
+      
+      const response = await axios.get(`/api/subscription/payment-method-intent/${customerId}`);
+      setClientSecret(response.data.clientSecret);
+      setShowAddPaymentModal(true);
+    } catch (error) {
+      console.error('Error setting up payment method:', error);
+      toast.error('Failed to set up payment method');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const cardElement = elements.getElement(CardElement);
+      const { setupIntent, error } = await stripe.confirmCardSetup(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: userData?.name || '',
+            email: userData?.email || ''
+          },
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success('Payment method added successfully');
+      setShowAddPaymentModal(false);
+      await axios.post(`/api/subscription/payment-method-default/${subscription?.cus_id}`, { 
+        payment_method_id: setupIntent.payment_method 
+      });
+      await fetchPaymentMethods();
+    } catch (error) {
+      console.error('Error adding payment method:', error);
+      toast.error(error.message || 'Failed to add payment method');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    try {
+      setLoading(true);
+      await axios.post('/api/subscription/cancel');
+      setShowCancelModal(false);
+      await fetchSubscriptionDetails();
+      toast.success('Subscription has been cancelled successfully');
+    } catch (error) {
+      console.error('Error cancelling subscription:', error);
+      toast.error('Failed to cancel subscription');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMakeDefault = async (paymentMethodId) => {
+    try {
+      setLoading(true);
+      await axios.post(`/api/subscription/payment-method-default/${subscription?.cus_id}`, { 
+        payment_method_id: paymentMethodId 
+      });
+      toast.success('Payment method updated successfully');
+      await fetchPaymentMethods();
+    } catch (error) {
+      console.error('Error updating payment method:', error);
+      toast.error('Failed to update payment method');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  // Profile functions
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setEditedUser(prev => ({
+        ...prev,
+        profile_img: file
+      }));
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserData(prev => ({
+    setEditedUser(prev => ({
       ...prev,
       [name]: value
     }));
@@ -84,7 +279,7 @@ const ProfilePage = () => {
   const handleSubmit = (e, formType) => {
     e.preventDefault();
     if (formType === 'profile') {
-      console.log('Updating profile:', userData);
+      console.log('Updating profile:', editedUser);
       alert('Profile updated successfully!');
     } else if (formType === 'password') {
       if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -103,7 +298,7 @@ const ProfilePage = () => {
   return (
     <div className="profile-page">
       {/* Profile Header */}
-      <ProfileHeader userData={data} imagePreview={imagePreview} />
+      <ProfileHeader userData={userData} imagePreview={imagePreview} />
 
       <div className="container">
         {/* Tab Navigation */}
@@ -112,7 +307,7 @@ const ProfilePage = () => {
         {/* Tab Content */}
         <div className="tab-content">
           {activeTab === 'personal' && (
-            <PersonalInfoTab userData={data} />
+            <PersonalInfoTab userData={userData} />
           )}
 
           {activeTab === 'settings' && (
@@ -124,34 +319,113 @@ const ProfilePage = () => {
           )}
 
           {activeTab === 'subscription' && (
-            <SubscriptionTab />
+            <SubscriptionTab
+              loading={loading}
+              subscription={subscription}
+              paymentMethods={paymentMethods}
+              onCancelSubscription={() => setShowCancelModal(true)}
+              onUpgradeSubscription={() => navigate('/upgrade-subscription')}
+              onAddPaymentMethod={handleAddPaymentMethod}
+              onMakeDefault={handleMakeDefault}
+              onRemovePaymentMethod={setPaymentMethodToRemove}
+              formatDate={formatDate}
+            />
           )}
 
           {activeTab === 'edit' && (
             <EditProfileTab
-              userData={data}
-              passwordData={passwordData}
-              onInputChange={handleInputChange}
-              onPasswordChange={handlePasswordChange}
-              onSubmit={handleSubmit}
-            />
+  initialUserData={userData}
+  onSave={async (formData, type) => {
+    try {
+        const response = await dispatch(updateProfileSettings(formData)).unwrap();
+        // Show success message
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Profile updated successfully',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        // Handle error
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to update profile',
+            confirmButtonText: 'OK'
+        });
+    }
+}}
+onPasswordChange={async (passwordData) => {
+  try {
+    const response = await dispatch(updateCurrentPassword({
+      current_password: passwordData.currentPassword,
+      new_password: passwordData.newPassword,
+      new_password_confirmation: passwordData.confirmPassword
+    })).unwrap();
+
+    // Show success message
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: response.message || 'Password updated successfully',
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+    // Clear the form
+    return true;
+  } catch (error) {
+    // Handle error
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || 'Failed to update password',
+      confirmButtonText: 'OK'
+    });
+    throw error; // Re-throw to let the form handle the error state
+  }
+}}
+/>
           )}
         </div>
       </div>
 
+      {/* Modals */}
+      <RemovePaymentModal
+        show={!!paymentMethodToRemove}
+        onHide={() => setPaymentMethodToRemove(null)}
+        onConfirm={handleRemovePaymentMethod}
+        loading={loading}
+      />
+
+      <CancelSubscriptionModal
+        show={showCancelModal}
+        onHide={() => setShowCancelModal(false)}
+        onConfirm={handleCancelSubscription}
+        loading={loading}
+      />
+
+      <AddPaymentModal
+        show={showAddPaymentModal}
+        onHide={() => setShowAddPaymentModal(false)}
+        onSubmit={handlePaymentSubmit}
+        isProcessing={isProcessing}
+        stripe={stripe}
+      />
     </div>
   );
 };
 
 // Profile Header Component
-const ProfileHeader = ({ userData , imagePreview}) => (
+const ProfileHeader = ({ userData, imagePreview }) => (
   <div className="profile-header">
     <div className="container">
       <div className="row justify-content-center">
         <div className="col-12 text-center">
           <div className="profile-image-container">
             <img
-               src={imagePreview || userData?.profile_img_url || favicon} 
+              src={imagePreview || userData?.profile_img_url || favicon} 
               alt="Profile"
               className="profile-image"
             />
@@ -159,20 +433,6 @@ const ProfileHeader = ({ userData , imagePreview}) => (
           <div className="profile-info">
             <h1 className="profile-name">{userData?.name}</h1>
             <p className="profile-email">{userData?.email}</p>
-            {/* <div className="profile-stats">
-              <div className="stat-item">
-                <div className="stat-value">245</div>
-                <div className="stat-label">Followers</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-value">128</div>
-                <div className="stat-label">Following</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-value">42</div>
-                <div className="stat-label">Posts</div>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
@@ -183,10 +443,10 @@ const ProfileHeader = ({ userData , imagePreview}) => (
 // Tab Navigation Component
 const TabNavigation = ({ activeTab, setActiveTab }) => {
   const tabs = [
-    { id: 'personal', label: 'Personal Info', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05" /></svg>) },
-    { id: 'settings', label: 'Settings', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-adjustments-horizontal"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 6l8 0" /><path d="M16 6l4 0" /><path d="M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 12l2 0" /><path d="M10 12l10 0" /><path d="M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 18l11 0" /><path d="M19 18l1 0" /></svg>) },
-    { id: 'subscription', label: 'Subscription', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-credit-card-pay"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 19h-6a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v4.5" /><path d="M3 10h18" /><path d="M16 19h6" /><path d="M19 16l3 3l-3 3" /><path d="M7.005 15h.005" /><path d="M11 15h2" /></svg>) },
-    { id: 'edit', label: 'Edit Profile', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 9a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M8 16a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2" /></svg> }
+    { id: 'personal', label: 'Personal Info', icon: '👤' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
+    { id: 'subscription', label: 'Subscription', icon: '💳' },
+    { id: 'edit', label: 'Edit Profile', icon: '✏️' }
   ];
 
   return (
@@ -206,61 +466,20 @@ const TabNavigation = ({ activeTab, setActiveTab }) => {
   );
 };
 
-// #BA67EF
-
-const userIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05" /></svg>)
-const emailIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg>)
-const phoneIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-phone"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /></svg>)
-const BDIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cake"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 20h18v-8a3 3 0 0 0 -3 -3h-12a3 3 0 0 0 -3 3v8z" /><path d="M3 14.803c.312 .135 .654 .204 1 .197a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1c.35 .007 .692 -.062 1 -.197" /><path d="M12 4l1.465 1.638a2 2 0 1 1 -3.015 .099l1.55 -1.737z" /></svg>);
-const addressIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" /></svg>);
-const memberIcon = (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-week"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M7 14h.013" /><path d="M10.01 14h.005" /><path d="M13.01 14h.005" /><path d="M16.015 14h.005" /><path d="M13.015 17h.005" /><path d="M7.01 17h.005" /><path d="M10.01 17h.005" /></svg>);
-
 // Personal Info Tab Component
 const PersonalInfoTab = ({ userData }) => (
   <div className="tab-pane active">
-    <h3 className="section-title">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#BA67EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05" /></svg>
-      Personal Information
-    </h3>
+    <h3 className="section-title">Personal Information</h3>
     <div className="row">
       <div className="col-md-6">
-        <InfoItem icon={userIcon} label="Full Name" value={`${userData?.name}`} />
-        <InfoItem icon={emailIcon} label="Email" value={userData?.email} />
-        <InfoItem icon={phoneIcon} label="Phone" value={userData?.phone} />
+        <InfoItem icon="👤" label="Full Name" value={userData?.name} />
+        <InfoItem icon="📧" label="Email" value={userData?.email} />
+        <InfoItem icon="📞" label="Phone" value={userData?.phone} />
       </div>
       <div className="col-md-6">
-        <InfoItem icon={BDIcon} label="Date of Birth" value={userData?.dob} />
-        <InfoItem icon={addressIcon} label="Address" value={userData?.address} />
-        <InfoItem icon={memberIcon} label="Member Since" value={userData?.created_at} />
-      </div>
-    </div>
-
-    <div className="mt-5">
-      <h3 className="section-title ">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-menu-3"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 6h10" /><path d="M4 12h16" /><path d="M7 12h13" /><path d="M4 18h10" /></svg>
-        Activity Overview
-      </h3>
-      <div className="row">
-        {/* <div className="col-md-6">
-          <div className="card mb-4">
-            <div className="card-body">
-              <h5 className="card-title">Profile Completion</h5>
-              <div className="progress">
-                <div className="progress-bar" style={{ width: '85%' }}></div>
-              </div>
-              <p className="card-text">Your profile is 85% complete. Add more information to get better recommendations.</p>
-            </div>
-          </div>
-        </div> */}
-        <div className="col-md-6">
-          <div className="card mb-4">
-            <div className="card-body">
-              <h5 className="card-title">Account Status</h5>
-              <p className="card-text"><span className="badge bg-primary">Verified</span> Your account is fully verified and active.</p>
-              <p className="card-text"><span className="badge bg-primary">Premium</span> You are on a premium subscription plan.</p>
-            </div>
-          </div>
-        </div>
+        <InfoItem icon="🎂" label="Date of Birth" value={userData?.dob} />
+        <InfoItem icon="📍" label="Address" value={userData?.address} />
+        <InfoItem icon="📅" label="Member Since" value={userData?.created_at} />
       </div>
     </div>
   </div>
@@ -269,12 +488,10 @@ const PersonalInfoTab = ({ userData }) => (
 // Info Item Component
 const InfoItem = ({ icon, label, value }) => (
   <div className="info-item">
-    <div className="info-icon">
-      {icon}
-    </div>
+    <div className="info-icon">{icon}</div>
     <div>
       <div className="info-label">{label}</div>
-      <div className="info-value">{value}</div>
+      <div className="info-value">{value || 'Not provided'}</div>
     </div>
   </div>
 );
@@ -282,10 +499,7 @@ const InfoItem = ({ icon, label, value }) => (
 // Settings Tab Component
 const SettingsTab = ({ settings, onSettingsChange, onSubmit }) => (
   <div className="tab-pane">
-    <h3 className="section-title">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-adjustments-horizontal"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 6l8 0" /><path d="M16 6l4 0" /><path d="M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 12l2 0" /><path d="M10 12l10 0" /><path d="M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 18l11 0" /><path d="M19 18l1 0" /></svg>
-      Account Settings
-    </h3>
+    <h3 className="section-title">Account Settings</h3>
     <form onSubmit={onSubmit}>
       <div className="row">
         <div className="col-md-6">
@@ -315,18 +529,6 @@ const SettingsTab = ({ settings, onSettingsChange, onSubmit }) => (
               <option>Pacific Time (PT)</option>
             </select>
           </div>
-          <div className="mb-4">
-            <label className="form-label">Theme</label>
-            <select
-              className="form-select"
-              value={settings.theme}
-              onChange={(e) => onSettingsChange('theme', e.target.value)}
-            >
-              <option>Light</option>
-              <option>Dark</option>
-              <option>Auto</option>
-            </select>
-          </div>
         </div>
         <div className="col-md-6">
           <h5 className="mb-3">Notification Preferences</h5>
@@ -341,18 +543,6 @@ const SettingsTab = ({ settings, onSettingsChange, onSubmit }) => (
             description="Receive browser notifications"
             checked={settings.pushNotifications}
             onChange={(checked) => onSettingsChange('pushNotifications', checked)}
-          />
-          <ToggleSetting
-            label="SMS Notifications"
-            description="Receive text messages"
-            checked={settings.smsNotifications}
-            onChange={(checked) => onSettingsChange('smsNotifications', checked)}
-          />
-          <ToggleSetting
-            label="Marketing Emails"
-            description="Receive promotional content"
-            checked={settings.marketingEmails}
-            onChange={(checked) => onSettingsChange('marketingEmails', checked)}
           />
         </div>
       </div>
@@ -382,262 +572,501 @@ const ToggleSetting = ({ label, description, checked, onChange }) => (
 );
 
 // Subscription Tab Component
-const SubscriptionTab = () => (
-  <div className="tab-pane">
-    <h3 className="section-title">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-credit-card-pay"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 19h-6a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v4.5" /><path d="M3 10h18" /><path d="M16 19h6" /><path d="M19 16l3 3l-3 3" /><path d="M7.005 15h.005" /><path d="M11 15h2" /></svg>
-      Subscription Details
-    </h3>
-    <div className="row">
-      <div className="col-lg-8">
-        <SubscriptionCard
-          title="Premium Plan"
-          price="$19.99"
-          period="/month"
-          badge="Active"
-          badgeType="premium"
-          features={[
-            "Unlimited access to all premium features",
-            "Priority customer support",
-            "Advanced analytics and reports",
-            "Custom branding options",
-            "Early access to new features"
-          ]}
-          renewDate="March 15, 2023"
-          primaryAction="Upgrade Plan"
-          secondaryAction="Cancel Subscription"
-        />
-
-        <SubscriptionCard
-          title="Basic Plan"
-          price="$9.99"
-          period="/month"
-          features={[
-            "Access to basic features",
-            "Standard customer support",
-            "Basic analytics",
-            "Limited customization"
-          ]}
-          primaryAction="Downgrade to Basic"
-        />
-      </div>
-      <div className="col-lg-4">
-        <BillingHistory />
-        <PaymentMethod />
-      </div>
-    </div>
-  </div>
-);
-
-// Subscription Card Component
-const SubscriptionCard = ({
-  title,
-  price,
-  period,
-  badge,
-  badgeType,
-  features,
-  renewDate,
-  primaryAction,
-  secondaryAction
+const SubscriptionTab = ({
+  loading,
+  subscription,
+  paymentMethods,
+  onCancelSubscription,
+  onUpgradeSubscription,
+  onAddPaymentMethod,
+  onMakeDefault,
+  onRemovePaymentMethod,
+  formatDate
 }) => (
-  <div className={`subscription-card premium`}>
-    <div className="d-flex justify-content-between align-items-center mb-3">
-      <div>
-        <span className="subscription-title">{title}</span>
-        {badge && <span className={`badge-${badgeType} ms-2`}>{badge}</span>}
-      </div>
-      <div className="subscription-price">{price}<span className="text-muted" style={{ fontSize: '1rem' }}>{period}</span></div>
-    </div>
-    {renewDate && <p className="text-muted">Your subscription will renew on <strong>{renewDate}</strong></p>}
-    <ul className="subscription-features">
-      {features.map((feature, index) => (
-        <li key={index}>{feature}</li>
-      ))}
-    </ul>
-    <div className="mt-4">
-      <button className="btn btn-primary me-2">{primaryAction}</button>
-      {secondaryAction && <button className="btn btn-outline-secondary">{secondaryAction}</button>}
-    </div>
-  </div>
-);
-
-// Billing History Component
-const BillingHistory = () => {
-  const billingHistory = [
-    { date: 'February 15, 2023', amount: '$19.99' },
-    { date: 'January 15, 2023', amount: '$19.99' },
-    { date: 'December 15, 2022', amount: '$19.99' },
-    { date: 'November 15, 2022', amount: '$19.99' }
-  ];
-
-  return (
-    <div className="card">
-      <div className="card-header">Billing History</div>
-      <div className="card-body">
-        {billingHistory.map((item, index) => (
-          <div key={index} className="d-flex justify-content-between border-bottom py-3">
-            <div>{item.date}</div>
-            <div className="fw-bold">{item.amount}</div>
+  <div className="tab-pane">
+    <h3 className="section-title">Subscription Details</h3>
+    
+    {/* Subscription Card */}
+    <div className="subscription-card premium mb-4">
+      {loading ? (
+        <div className="text-center py-4">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
-        ))}
-        <div className="mt-3 text-center">
-          <a href="#" className="text-primary">View Full History</a>
         </div>
-      </div>
+      ) : subscription ? (
+        <>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <span className="subscription-title">{subscription.planName}</span>
+              <span className={`badge-${subscription.status === 'active' ? 'premium' : 'warning'} ms-2`}>
+                {subscription.status}
+              </span>
+            </div>
+            <div className="subscription-price">
+              {subscription.amount}<span className="text-muted">/{subscription.interval}</span>
+            </div>
+          </div>
+          
+          {subscription.nextBillingDate && (
+            <p className="text-muted">
+              Next billing date: <strong>{formatDate(subscription.nextBillingDate)}</strong>
+            </p>
+          )}
+          
+          {subscription.features && subscription.features.length > 0 && (
+            <ul className="subscription-features">
+              {subscription.features.map((feature, index) => (
+                <li key={index}>{feature}</li>
+              ))}
+            </ul>
+          )}
+          
+          <div className="mt-4">
+            <button 
+              className="btn btn-outline-danger me-2" 
+              onClick={onCancelSubscription}
+              disabled={subscription.status === 'canceled'}
+            >
+              Cancel Subscription
+            </button>
+            <button 
+              className="btn btn-primary" 
+              onClick={onUpgradeSubscription}
+            >
+              Upgrade Subscription
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="text-center py-4">
+          <p>No active subscription found.</p>
+          <button className="btn btn-primary" onClick={onUpgradeSubscription}>
+            Get Started
+          </button>
+        </div>
+      )}
     </div>
-  );
-};
 
-// Payment Method Component
-const PaymentMethod = () => (
-  <div className="card mt-4">
-    <div className="card-header">Payment Method</div>
-    <div className="card-body">
-      <div className="d-flex align-items-center">
-        <i className="fab fa-cc-visa fa-2x text-primary me-3"></i>
-        <div>
-          <div className="fw-bold">Visa ending in 4567</div>
-          <div className="text-muted small">Expires 05/2024</div>
-        </div>
+    {/* Payment Methods */}
+    <div className="card">
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h5 className="mb-0">Payment Methods</h5>
+        <button 
+          className="btn btn-outline-primary btn-sm"
+          onClick={onAddPaymentMethod}
+          disabled={loading}
+        >
+          Add Payment Method
+        </button>
       </div>
-      <div className="mt-3">
-        <button className="btn btn-outline-primary btn-sm">Update Payment Method</button>
+      <div className="card-body">
+        {paymentMethods.length > 0 ? (
+          paymentMethods.map((method) => (
+            <div key={method.id} className="payment-method-card mb-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
+                  <i className={`fab fa-cc-${method.card.brand} fa-2x text-primary me-3`}></i>
+                  <div>
+                    <h6 className="mb-1">
+                      {method.card.brand.charAt(0).toUpperCase() + method.card.brand.slice(1)} 
+                      ending in {method.card.last4}
+                      {method.default && (
+                        <span className="badge bg-success ms-2">Default</span>
+                      )}
+                    </h6>
+                    <p className="mb-1 text-muted small">
+                      Expires: {method.card.expMonth.toString().padStart(2, '0')}/{method.card.expYear.toString().slice(-2)}
+                    </p>
+                  </div>
+                </div>
+                <div className="d-flex gap-2">
+                  <button 
+                    className="btn btn-outline-warning btn-sm"
+                    onClick={() => onMakeDefault(method.id)}
+                    disabled={method.default}
+                  >
+                    Make Default
+                  </button>
+                  <button 
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => onRemovePaymentMethod(method.id)}
+                    disabled={paymentMethods.length <= 1}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-4">
+            <i className="fas fa-credit-card fa-3x text-muted mb-3"></i>
+            <p>No payment methods found</p>
+            <button className="btn btn-primary" onClick={onAddPaymentMethod}>
+              Add Payment Method
+            </button>
+          </div>
+        )}
       </div>
     </div>
   </div>
 );
 
 // Edit Profile Tab Component
-const EditProfileTab = ({ userData, passwordData, onInputChange, onPasswordChange, onSubmit }) => (
-  <div className="tab-pane">
-    {/* Edit User Details Form */}
-    <div className="form-section">
-      <h3 className="section-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 9a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M8 16a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2" /></svg>
-        Edit Personal Information
-      </h3>
-      <form onSubmit={(e) => onSubmit(e, 'profile')}>
-        <div className="mb-3">
-              <label htmlFor="firstName" className="form-label">First Name</label>
-              <input
-                type="text"
-                className="form-control"
-                id="firstName"
-                name="firstName"
-                value={userData.firstName}
-                onChange={onInputChange}
-              />
-            </div>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email Address</label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            name="email"
-            value={userData.email}
-            onChange={onInputChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="phone" className="form-label">Phone Number</label>
-          <input
-            type="tel"
-            className="form-control"
-            id="phone"
-            name="phone"
-            value={userData.phone}
-            onChange={onInputChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="address" className="form-label">Address</label>
-          <textarea
-            className="form-control"
-            id="address"
-            name="address"
-            rows="3"
-            value={userData.address}
-            onChange={onInputChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="birthDate" className="form-label">Date of Birth</label>
-          <input
-            type="date"
-            className="form-control"
-            id="birthDate"
-            name="birthDate"
-            value={userData.birthDate}
-            onChange={onInputChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="bio" className="form-label">Bio</label>
-          <textarea
-            className="form-control"
-            id="bio"
-            name="bio"
-            rows="4"
-            placeholder="Tell us about yourself"
-            value={userData.bio}
-            onChange={onInputChange}
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">Update Profile</button>
-      </form>
-    </div>
+const EditProfileTab = ({
+  userData: initialUserData,
+  onSave,
+  onPasswordChange
+}) => {
+  const [userData, setUserData] = useState(initialUserData);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-    {/* Change Password Form */}
-    <div className="form-section">
-      <h3 className="section-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-password-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 17v4" /><path d="M10 20l4 -2" /><path d="M10 18l4 2" /><path d="M5 17v4" /><path d="M3 20l4 -2" /><path d="M3 18l4 2" /><path d="M19 17v4" /><path d="M17 20l4 -2" /><path d="M17 18l4 2" /><path d="M9 6a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M7 14a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2" /></svg>
-        Change Password
-      </h3>
-      <form onSubmit={(e) => onSubmit(e, 'password')}>
-        <div className="mb-3">
-          <label htmlFor="currentPassword" className="form-label">Current Password</label>
-          <input
-            type="password"
-            className="form-control"
-            id="currentPassword"
-            name="currentPassword"
-            value={passwordData.currentPassword}
-            onChange={onPasswordChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="newPassword" className="form-label">New Password</label>
-          <input
-            type="password"
-            className="form-control"
-            id="newPassword"
-            name="newPassword"
-            value={passwordData.newPassword}
-            onChange={onPasswordChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="confirmPassword" className="form-label">Confirm New Password</label>
-          <input
-            type="password"
-            className="form-control"
-            id="confirmPassword"
-            name="confirmPassword"
-            value={passwordData.confirmPassword}
-            onChange={onPasswordChange}
-          />
-        </div>
-        <div className="mb-3">
-          <div className="form-text">
-            Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      // Preview the image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUserData(prev => ({
+          ...prev,
+          imagePreview: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const validateForm = (type) => {
+    const newErrors = {};
+    
+    if (type === 'profile') {
+      if (!userData.name?.trim()) newErrors.name = 'Name is required';
+      if (!userData.email?.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email)) {
+        newErrors.email = 'Please enter a valid email';
+      }
+    } else if (type === 'password') {
+      if (!passwordData.currentPassword) newErrors.currentPassword = 'Current password is required';
+      if (!passwordData.newPassword) {
+        newErrors.newPassword = 'New password is required';
+      } else if (passwordData.newPassword.length < 6) {
+        newErrors.newPassword = 'Password must be at least 6 characters';
+      }
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        newErrors.confirmPassword = 'Passwords do not match';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e, type) => {
+    e.preventDefault();
+    if (!validateForm(type)) return;
+
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      
+      if (type === 'profile') {
+        if (selectedImage) {
+          formData.append('image', selectedImage);
+        }
+        Object.keys(userData).forEach(key => {
+          if (key !== 'imagePreview') {
+            formData.append(key, userData[key]);
+          }
+        });
+        await onSave(formData, 'profile');
+      } else {
+        await onPasswordChange(passwordData);
+        // Clear password fields after successful change
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+      }
+    } catch (error) {
+      console.error('Error saving changes:', error);
+      // Handle API errors here
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="tab-pane">
+      <div className="form-section">
+        <h3 className="section-title">Edit Personal Information</h3>
+        <form onSubmit={(e) => handleSubmit(e, 'profile')}>
+          <div className="mb-3">
+            <label className="form-label">Profile Image</label>
+            {userData?.profile_img || userData?.imagePreview && (
+              <div className="mb-2">
+                <img 
+                  src={ userData?.profile_img || userData?.imagePreview} 
+                  alt="Profile preview" 
+                  className="img-thumbnail" 
+                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                />
+              </div>
+            )}
+            <input
+              type="file"
+              className="form-control"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {errors.image && <div className="text-danger">{errors.image}</div>}
           </div>
+          
+          <div className="mb-3">
+            <label className="form-label"> Name</label>
+            <input
+              type="text"
+              className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+              name="name"
+              value={userData?.name || ''}
+              onChange={handleInputChange}
+            />
+            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+          </div>
+        
+          
+          <div className="mb-3">
+            <label className="form-label">Email Address</label>
+            <input
+              type="email"
+              className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+              name="email"
+              value={userData?.email || ''}
+              onChange={handleInputChange}
+            />
+            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+          </div>
+          
+          <div className="mb-3">
+            <label className="form-label">Phone Number</label>
+            <input
+              type="tel"
+              className="form-control"
+              name="phone"
+              value={userData?.phone || ''}
+              onChange={handleInputChange}
+            />
+          </div>
+          
+          <div className="mb-3">
+            <label className="form-label">Bio</label>
+            <textarea
+              className="form-control"
+              name="bio"
+              rows="4"
+              placeholder="Tell us about yourself"
+              value={userData?.bio || ''}
+              onChange={handleInputChange}
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            className="btn btn-primary"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Saving...' : 'Update Profile'}
+          </button>
+        </form>
+      </div>
+
+      <div className="form-section mt-5">
+        <h3 className="section-title">Change Password</h3>
+        <form onSubmit={(e) => handleSubmit(e, 'password')}>
+          <div className="mb-3">
+            <label className="form-label">Current Password</label>
+            <input
+              type="password"
+              className={`form-control ${errors.currentPassword ? 'is-invalid' : ''}`}
+              name="currentPassword"
+              value={passwordData.currentPassword}
+              onChange={handlePasswordChange}
+            />
+            {errors.currentPassword && <div className="invalid-feedback">{errors.currentPassword}</div>}
+          </div>
+          
+          <div className="mb-3">
+            <label className="form-label">New Password</label>
+            <input
+              type="password"
+              className={`form-control ${errors.newPassword ? 'is-invalid' : ''}`}
+              name="newPassword"
+              value={passwordData.newPassword}
+              onChange={handlePasswordChange}
+            />
+            {errors.newPassword && <div className="invalid-feedback">{errors.newPassword}</div>}
+          </div>
+          
+          <div className="mb-3">
+            <label className="form-label">Confirm New Password</label>
+            <input
+              type="password"
+              className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+              name="confirmPassword"
+              value={passwordData.confirmPassword}
+              onChange={handlePasswordChange}
+            />
+            {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
+          </div>
+          
+          <button 
+            type="submit" 
+            className="btn btn-primary"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Updating...' : 'Change Password'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Modal Components
+const RemovePaymentModal = ({ show, onHide, onConfirm, loading }) => (
+  <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Confirm Removal</h5>
+          <button type="button" className="btn-close" onClick={onHide}></button>
         </div>
-        <button type="submit" className="btn btn-primary">Change Password</button>
-      </form>
+        <div className="modal-body">
+          Are you sure you want to remove this payment method?
+        </div>
+        <div className="modal-footer">
+          <button type="button" className="btn btn-secondary" onClick={onHide}>
+            Cancel
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-danger" 
+            onClick={onConfirm}
+            disabled={loading}
+          >
+            {loading ? 'Removing...' : 'Remove'}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 );
 
-export default ProfilePage;
+const CancelSubscriptionModal = ({ show, onHide, onConfirm, loading }) => (
+  <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Cancel Subscription</h5>
+          <button type="button" className="btn-close" onClick={onHide}></button>
+        </div>
+        <div className="modal-body">
+          <p>Are you sure you want to cancel your subscription? You'll lose access to premium features at the end of your billing period.</p>
+          <div className="alert alert-warning mt-3">
+            <strong>Note:</strong> You can reactivate your subscription anytime before the end of your billing period.
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button type="button" className="btn btn-secondary" onClick={onHide}>
+            Close
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-danger" 
+            onClick={onConfirm}
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : 'Yes, Cancel Subscription'}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const AddPaymentModal = ({ show, onHide, onSubmit, isProcessing, stripe }) => (
+  <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Add Payment Method</h5>
+          <button type="button" className="btn-close" onClick={onHide}></button>
+        </div>
+        <div className="modal-body">
+          <form onSubmit={onSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Card Details</label>
+              <div className="p-3 border rounded">
+                <CardElement
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                          color: '#aab7c4',
+                        },
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </div>
+            <button 
+              type="submit" 
+              className="btn btn-primary w-100"
+              disabled={!stripe || isProcessing}
+            >
+              {isProcessing ? 'Processing...' : 'Add Payment Method'}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Wrap the component with Elements provider
+const ProfilePageWrapper = () => (
+  <Elements stripe={stripePromise}>
+    <ProfilePage />
+  </Elements>
+);
+
+export default ProfilePageWrapper;

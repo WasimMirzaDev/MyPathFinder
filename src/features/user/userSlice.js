@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps , updateUserProfileSettings ,userForgotPassword , userResetPassword} from "./userAPI";
+import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps , updateUserProfileSettings ,userForgotPassword , userResetPassword , updateUserCurrentPassword} from "./userAPI";
 import { REHYDRATE } from 'redux-persist';
 
 
@@ -49,6 +49,15 @@ export const updateProfileSettings = createAsyncThunk(
     return await updateUserProfileSettings(formData);
   }
 );
+
+
+export const updateCurrentPassword = createAsyncThunk(
+  "user/update-current-password",  // Fixed typo: was "udpate"
+  async (formData) => {
+    return await updateUserCurrentPassword(formData);
+  }
+);
+
 
 export const ForgotPassword = createAsyncThunk(
   "user/forgot-password-email",
@@ -252,6 +261,15 @@ const userSlice = createSlice({
       .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
         state.forgetPasswordError = action.payload || 'Failed to reset password';
+      })
+      .addCase(updateCurrentPassword.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateCurrentPassword.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(updateCurrentPassword.rejected, (state, action) => {
+        state.loading = false;
       })
 
       .addCase(REHYDRATE, (state) => {
