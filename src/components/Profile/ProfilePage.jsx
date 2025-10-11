@@ -11,7 +11,7 @@ import { useStripe, useElements, CardElement, Elements } from "@stripe/react-str
 import { loadStripe } from '@stripe/stripe-js';
 import { useNavigate } from 'react-router-dom';
 import { updateCurrentPassword } from '../../features/user/userSlice';
-
+import Swal from 'sweetalert2';
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe(stripe_public_key);
 
@@ -276,22 +276,40 @@ const ProfilePage = () => {
     }));
   };
 
-  const handleSubmit = (e, formType) => {
+  const handleSubmit = async (e, type) => {
     e.preventDefault();
-    if (formType === 'profile') {
-      console.log('Updating profile:', editedUser);
-      alert('Profile updated successfully!');
-    } else if (formType === 'password') {
-      if (passwordData.newPassword !== passwordData.confirmPassword) {
-        alert('New passwords do not match!');
-        return;
+    if (!validateForm(type)) return;
+  
+    setIsLoading(true);
+    try {
+      if (type === 'profile') {
+        const formData = new FormData();
+        
+        // Only append fields that have values
+        if (userData.name) formData.append('name', userData.name);
+        if (userData.email) formData.append('email', userData.email);
+        if (userData.phone) formData.append('phone', userData.phone);
+        if (userData.bio) formData.append('bio', userData.bio);
+        else formData.append('bio', ''); // Ensure bio is sent as empty string if empty
+        
+        // Append image if selected
+        if (selectedImage) {
+          formData.append('profile_img', selectedImage);
+        }
+        
+        await onSave(formData, 'profile');
+        
+        // Clear selected image after successful save
+        if (selectedImage) {
+          setSelectedImage(null);
+        }
+      } else {
+        // ... rest of your password change logic
       }
-      console.log('Changing password');
-      alert('Password changed successfully!');
-      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    } else if (formType === 'settings') {
-      console.log('Updating settings:', settings);
-      alert('Settings updated successfully!');
+    } catch (error) {
+      console.error('Error saving changes:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -364,7 +382,7 @@ onPasswordChange={async (passwordData) => {
       new_password_confirmation: passwordData.confirmPassword
     })).unwrap();
 
-    // Show success message
+    
     Swal.fire({
       icon: 'success',
       title: 'Success!',
@@ -714,12 +732,20 @@ const SubscriptionTab = ({
 );
 
 // Edit Profile Tab Component
+// Edit Profile Tab Component
 const EditProfileTab = ({
-  userData: initialUserData,
+  initialUserData,
   onSave,
   onPasswordChange
 }) => {
-  const [userData, setUserData] = useState(initialUserData);
+  const [userData, setUserData] = useState({ 
+    name: '',
+    email: '',
+    phone: '',
+    bio: '',
+    profile_img: ''
+  });
+  
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -729,12 +755,33 @@ const EditProfileTab = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
+  // Update local state when initialUserData changes
+  useEffect(() => {
+    if (initialUserData) {
+      setUserData(prev => ({
+        name: initialUserData.name || '',
+        email: initialUserData.email || '',
+        phone: initialUserData.phone || '',
+        bio: initialUserData.bio || '',
+        profile_img: initialUserData.profile_img || '',
+        profile_img_url: initialUserData.profile_img_url || ''
+      }));
+    }
+  }, [initialUserData]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserData(prev => ({
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -743,6 +790,13 @@ const EditProfileTab = ({
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleImageChange = (e) => {
@@ -793,18 +847,26 @@ const EditProfileTab = ({
 
     setIsLoading(true);
     try {
-      const formData = new FormData();
-      
       if (type === 'profile') {
+        const formData = new FormData();
+        
+        // Append profile data
+        formData.append('name', userData.name);
+        formData.append('email', userData.email);
+        formData.append('phone', userData.phone || '');
+        formData.append('bio', userData.bio || '');
+        
+        // Append image if selected
         if (selectedImage) {
-          formData.append('image', selectedImage);
+          formData.append('profile_img', selectedImage);
         }
-        Object.keys(userData).forEach(key => {
-          if (key !== 'imagePreview') {
-            formData.append(key, userData[key]);
-          }
-        });
+        
         await onSave(formData, 'profile');
+        
+        // Clear selected image after successful save
+        if (selectedImage) {
+          setSelectedImage(null);
+        }
       } else {
         await onPasswordChange(passwordData);
         // Clear password fields after successful change
@@ -829,37 +891,40 @@ const EditProfileTab = ({
         <form onSubmit={(e) => handleSubmit(e, 'profile')}>
           <div className="mb-3">
             <label className="form-label">Profile Image</label>
-            {userData?.profile_img || userData?.imagePreview && (
-              <div className="mb-2">
+            <div className="d-flex align-items-center mb-3">
+              {(userData.imagePreview || userData.profile_img_url) && (
                 <img 
-                  src={ userData?.profile_img || userData?.imagePreview} 
+                  src={userData.imagePreview || userData.profile_img_url} 
                   alt="Profile preview" 
-                  className="img-thumbnail" 
+                  className="img-thumbnail me-3" 
                   style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                 />
+              )}
+              <div>
+                <input
+                  type="file"
+                  className="form-control"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                <div className="form-text">Choose a new profile image (optional)</div>
               </div>
-            )}
-            <input
-              type="file"
-              className="form-control"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
+            </div>
             {errors.image && <div className="text-danger">{errors.image}</div>}
           </div>
           
           <div className="mb-3">
-            <label className="form-label"> Name</label>
+            <label className="form-label">Name</label>
             <input
               type="text"
               className={`form-control ${errors.name ? 'is-invalid' : ''}`}
               name="name"
-              value={userData?.name || ''}
+              value={userData.name}
               onChange={handleInputChange}
+              placeholder="Enter your full name"
             />
             {errors.name && <div className="invalid-feedback">{errors.name}</div>}
           </div>
-        
           
           <div className="mb-3">
             <label className="form-label">Email Address</label>
@@ -867,8 +932,9 @@ const EditProfileTab = ({
               type="email"
               className={`form-control ${errors.email ? 'is-invalid' : ''}`}
               name="email"
-              value={userData?.email || ''}
+              value={userData.email}
               onChange={handleInputChange}
+              placeholder="Enter your email address"
             />
             {errors.email && <div className="invalid-feedback">{errors.email}</div>}
           </div>
@@ -879,8 +945,9 @@ const EditProfileTab = ({
               type="tel"
               className="form-control"
               name="phone"
-              value={userData?.phone || ''}
+              value={userData.phone}
               onChange={handleInputChange}
+              placeholder="Enter your phone number"
             />
           </div>
           
@@ -891,9 +958,10 @@ const EditProfileTab = ({
               name="bio"
               rows="4"
               placeholder="Tell us about yourself"
-              value={userData?.bio || ''}
+              value={userData.bio}
               onChange={handleInputChange}
             />
+            <div className="form-text">Write a short bio about yourself (optional)</div>
           </div>
           
           <button 
@@ -901,7 +969,14 @@ const EditProfileTab = ({
             className="btn btn-primary"
             disabled={isLoading}
           >
-            {isLoading ? 'Saving...' : 'Update Profile'}
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving...
+              </>
+            ) : (
+              'Update Profile'
+            )}
           </button>
         </form>
       </div>
@@ -917,6 +992,7 @@ const EditProfileTab = ({
               name="currentPassword"
               value={passwordData.currentPassword}
               onChange={handlePasswordChange}
+              placeholder="Enter your current password"
             />
             {errors.currentPassword && <div className="invalid-feedback">{errors.currentPassword}</div>}
           </div>
@@ -929,8 +1005,10 @@ const EditProfileTab = ({
               name="newPassword"
               value={passwordData.newPassword}
               onChange={handlePasswordChange}
+              placeholder="Enter your new password"
             />
             {errors.newPassword && <div className="invalid-feedback">{errors.newPassword}</div>}
+            <div className="form-text">Password must be at least 6 characters long</div>
           </div>
           
           <div className="mb-3">
@@ -941,6 +1019,7 @@ const EditProfileTab = ({
               name="confirmPassword"
               value={passwordData.confirmPassword}
               onChange={handlePasswordChange}
+              placeholder="Confirm your new password"
             />
             {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
           </div>
@@ -950,7 +1029,14 @@ const EditProfileTab = ({
             className="btn btn-primary"
             disabled={isLoading}
           >
-            {isLoading ? 'Updating...' : 'Change Password'}
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Updating...
+              </>
+            ) : (
+              'Change Password'
+            )}
           </button>
         </form>
       </div>
