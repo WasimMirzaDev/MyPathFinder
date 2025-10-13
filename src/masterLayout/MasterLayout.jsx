@@ -141,11 +141,11 @@ const MasterLayout = ({ children }) => {
                 <p className="navbar-vertical-label">Support</p>
                 <hr className="navbar-vertical-line" />
 
-                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/get-started')}`} to="/get-started" role="button" data-bs-toggle="" aria-expanded="false">
+                {/* <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/get-started')}`} to="/get-started" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:brand-safari' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Getting Started</span></span>
                   </div>
                 </Link>
-                </div>
+                </div> */}
 
                 <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/career-advice')}`} to="/career-advice" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:help' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Careers Advice</span></span>
