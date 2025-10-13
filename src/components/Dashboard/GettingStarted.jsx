@@ -3,14 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCompletedSteps } from "../../features/user/userSlice";
 
-export default function GettingStarted() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { data, completedSteps } = useSelector((state) => state.user);
+export default function GettingStarted({completedSteps}) {
 
-  useEffect(() => {
-    dispatch(getAllCompletedSteps());
-  }, [dispatch]);
 
   // Step configuration (map API keys to labels)
   const steps = [
