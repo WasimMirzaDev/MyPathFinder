@@ -101,8 +101,6 @@ export default function CVBuilder() {
     const [selectedTemplate, setSelectedTemplate] = useState("Default");
 
 
-
-
     const handleTabClick = (tabName) => {
         setActiveTab((prevTab) => (prevTab === tabName ? '' : tabName)); // toggle if same, else set new
     };
