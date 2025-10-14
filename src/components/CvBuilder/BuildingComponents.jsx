@@ -263,25 +263,25 @@ export default function BuildingComponents() {
 
     toast.info('Uploading your CV for analysis — this may take a moment...', {
       autoClose: 5000,
-      position: 'bottom-center'
+      position: 'top-right'
     });
     // Schedule sequential toasts
 setTimeout(() => {
   toast.info('Parsing your CV content...', {
     autoClose: 5000,
-    position: 'bottom-center'
+    position: 'top-right'
   });
   
   setTimeout(() => {
     toast.info(`Analyzing your CV in ${uploadFormData.languageStyle || 'standard'} style...`, {
       autoClose: 5000,
-      position: 'bottom-center'
+      position: 'top-right'
     });
     
     setTimeout(() => {
       toast.info('Finalizing your CV...', {
         autoClose: 20000,
-        position: 'bottom-center'
+        position: 'top-right'
       });
     }, 9000); // 7 seconds after the second toast (12s total)
   }, 9000); // 7 seconds after the first toast (7s total)
