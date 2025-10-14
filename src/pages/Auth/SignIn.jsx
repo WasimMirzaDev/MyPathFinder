@@ -126,7 +126,7 @@ export default function SignIn() {
                           isSubmitting,
                         }) => (
                           <form onSubmit={handleSubmit} noValidate>
-                            {error && (
+                            {/* {error && (
                               <div
                                 className="alert alert-danger d-flex align-items-center mb-3"
                                 role="alert"
@@ -143,7 +143,7 @@ export default function SignIn() {
                                 </svg>
                                 <div>{error}</div>
                               </div>
-                            )}
+                            )} */}
 
                             {/* Email */}
                             <div className="mb-3 text-start">
