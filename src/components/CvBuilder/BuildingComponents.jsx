@@ -13,6 +13,8 @@ import {
 import { toast } from 'react-toastify';
 import { FiLoader, FiFile, FiX } from "react-icons/fi";
 import { Pagination } from 'react-bootstrap';
+import { Spinner } from "react-bootstrap";
+import { set } from 'lodash';
 
 export default function BuildingComponents() {
   const dispatch = useDispatch();
@@ -30,6 +32,8 @@ export default function BuildingComponents() {
 
   // State for AI CV generation modal
   const [showAiModal, setShowAiModal] = useState(false);
+  const [showFinalize, setShowFinalize] = useState(false);
+  const [message, setMessage] = useState('Uploading your CV for analysis — this may take a moment...')
 
   // State for file upload modal
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -261,31 +265,39 @@ export default function BuildingComponents() {
       formData.append('additionalInfo', uploadFormData.additionalInfo);
     }
 
-    toast.info('Uploading your CV for analysis — this may take a moment...', {
-      autoClose: 5000,
-      position: 'top-right'
-    });
+
+    setShowFinalize(true);
+
+    setMessage('Uploading your CV for analysis — this may take a moment...')
+
+    // toast.info('Uploading your CV for analysis — this may take a moment...', {
+    //   autoClose: 5000,
+    //   position: 'top-right'
+    // });
     // Schedule sequential toasts
-setTimeout(() => {
-  toast.info('Parsing your CV content...', {
-    autoClose: 5000,
-    position: 'top-right'
-  });
-  
-  setTimeout(() => {
-    toast.info(`Analyzing your CV in ${uploadFormData.languageStyle || 'standard'} style...`, {
-      autoClose: 5000,
-      position: 'top-right'
-    });
-    
     setTimeout(() => {
-      toast.info('Finalizing your CV...', {
-        autoClose: 20000,
-        position: 'top-right'
-      });
-    }, 9000); // 7 seconds after the second toast (12s total)
-  }, 9000); // 7 seconds after the first toast (7s total)
-}, 20000); // 20 seconds after initial toast
+      // toast.info('Parsing your CV content...', {
+      //   autoClose: 5000,
+      //   position: 'top-right'
+      // });
+      setMessage('Parsing your CV content...')
+
+      setTimeout(() => {
+        // toast.info(`Analyzing your CV in ${uploadFormData.languageStyle || 'standard'} style...`, {
+        //   autoClose: 5000,
+        //   position: 'top-right'
+        // });
+        setMessage(`Analyzing your CV in ${uploadFormData.languageStyle || 'standard'} style...`)
+
+        setTimeout(() => {
+          // toast.info('Finalizing your CV...', {
+          //   autoClose: 20000,
+          //   position: 'top-right'
+          // });
+          setMessage('Finalizing your CV...')
+        }, 9000); // 7 seconds after the second toast (12s total)
+      }, 9000); // 7 seconds after the first toast (7s total)
+    }, 20000); // 20 seconds after initial toast
 
     try {
       const uploadResult = await dispatch(uploadExistingResume(formData)).unwrap();
@@ -294,6 +306,7 @@ setTimeout(() => {
         const createResult = await dispatch(createEmptyResume(uploadResult.data)).unwrap();
 
         if (createResult?.data?.id) {
+          setShowFinalize(false);
           navigate(`/cv-generate/${createResult.data.id}`);
           toast.success('Resume uploaded and processed successfully!');
         }
@@ -723,6 +736,21 @@ setTimeout(() => {
           </Modal.Footer>
         </Form>
       </Modal>
+
+      <div className={`position-fixed top-50 start-50 translate-middle text-center ${ !showFinalize ? 'd-none' : '' }`} style={{ zIndex: 1050, backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: '2rem', borderRadius: '10px', boxShadow: '0 0 20px rgba(0,0,0,0.2)', width: '100%', maxWidth: '550px' }}>
+        <div className="mb-3">
+          <Spinner animation="border" variant="primary" style={{ width: '3rem', height: '3rem' }} />
+        </div>
+        <h4>{message}</h4>
+        <p className="text-muted">Please wait while Processing...</p>
+        <div className="progress mt-3" style={{ height: '10px' }}>
+          <div
+            className="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar"
+            style={{ width: '100%' }}
+          ></div>
+        </div>
+      </div>
     </>
   );
 }

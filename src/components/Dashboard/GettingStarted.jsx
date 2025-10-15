@@ -58,8 +58,8 @@ export default function GettingStarted({completedSteps}) {
   };
 
   return (
-    <div className="card border todo-list h-100">
-      <div className="card-header border-bottom-0 pb-0">
+    <div className="card border todo-list h-100 overflow-hidden">
+      <div className="card-header border-bottom-0 pb-0 pt-5">
         <div className="row justify-content-between align-items-center mb-4">
           <div className="col-auto">
             <h3>Getting Started</h3>

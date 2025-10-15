@@ -121,9 +121,9 @@ const Dashboard = () => {
               <div className="col-12 col-xl-6">
                 <GettingStarted completedSteps={completedSteps} />
               </div>
-              <div className="col-12 col-xl-6">
+              {/* <div className="col-12 col-xl-6">
                 <HowToLearn />
-              </div>
+              </div> */}
             </div>
           </div>
 
