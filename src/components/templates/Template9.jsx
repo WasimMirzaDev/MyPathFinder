@@ -5,7 +5,6 @@ const Template9 = ({ resumeData }) => {
   const styles = {
     container: {
       fontFamily: "'Arial', sans-serif",
-      margin: 0,
       padding: '20px 30px',
       color: '#333',
       backgroundColor: '#fff',
