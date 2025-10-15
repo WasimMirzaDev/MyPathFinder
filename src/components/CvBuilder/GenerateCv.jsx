@@ -38,8 +38,8 @@ const cardTemplate = [
     // { name: 'Template2', template: ClassicTemplate, image: 'dummy.jpg' },
     // { name: 'Template3', template: ProfessionalTemplate, image: 'dummy.jpg' },
     // { name: 'Template4', template: ProfessionalTemplate2, image: 'dummy.jpg' },
-    { name: 'Chrono', template: Template9, image: 'default1.png', recommended: true },
-    { name: 'Classic', template: Template12, image: 'classic.png' },
+    { name: 'Classic', template: Template9, image: 'default1.png', recommended: true },
+    { name: 'Basic', template: Template12, image: 'classic.png' },
     { name: 'Professional', template: Template5, image: 'professional.png' },
     { name: 'Unique', template: Template11, image: 'unique.png' },
     { name: 'Modern', template: Template8, image: 'modern.png' },
@@ -627,7 +627,7 @@ export default function CVBuilder() {
 
         }
 
-        if (["Chrono", "Default", "Luxe"].includes(selectedTemplate)) {
+        if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
             const downloadUrl = `https://api.mypathfinder.uk/resume/${id}/download?template=${selectedTemplate}`;
             window.open(downloadUrl, '_blank');
             setDownloadPDFLoader(false);

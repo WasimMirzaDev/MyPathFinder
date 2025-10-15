@@ -216,7 +216,15 @@ useEffect(() => {
   </Pagination>
 </div>
 
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
   const handleJobRedirect = async (job, link) => {
+    // Prevent multiple clicks
+    if (isButtonDisabled) return;
+    
+    // Disable the button and set cooldown
+    setIsButtonDisabled(true);
+    
     try {
       // Create a new object with proper boolean values
       const jobData = {
@@ -234,6 +242,7 @@ useEffect(() => {
       console.error('Error saving job application:', error);
       // Still proceed with the redirect even if saving fails
     }
+    
     try {
       const formData = new FormData();
       formData.append("applied_job", "true"); // Send as string "true"
@@ -243,6 +252,11 @@ useEffect(() => {
     } catch (error) {
       console.error("Error updating steps:", error);
       window.open(link, "_blank");
+    } finally {
+      // Re-enable the button after 3 seconds
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+      }, 3000);
     }
   };
 
@@ -420,14 +434,9 @@ useEffect(() => {
                         <div>
                           <h4>{data?.name}</h4>
                           <div className="dropdown">
-                            <a
-                              className="text-body-secondary dropdown-toggle text-decoration-none dropdown-caret-none"
-                              href="#!"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
-                            >
+                            <div>
                               {data?.role?.name}
-                            </a>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -462,13 +471,14 @@ useEffect(() => {
                                         </div> */}
                     <div className="mb-4">
                       <h5 className="mb-0 text-body-highlight mb-2">Location</h5>
-                      <select onChange={(e) => { setLocation(e.target.value == "All" ? "uk" : e.target.value) }} className="form-select mb-3" aria-label="priority">
-                        {ukCities.map((city, index) => (
-                          <option key={index} value={city}>
-                            {city}
-                          </option>
-                        ))}
-                      </select>
+                      <input 
+                        type="text" 
+                        className="form-control mb-3" 
+                        placeholder="Enter location (e.g., London, Manchester)" 
+                        value={location === "uk" ? "" : location}
+                        onChange={(e) => setLocation(e.target.value || "uk")}
+                        aria-label="Enter location"
+                      />
                     </div>
                     {/* <div className="mb-4">
                                             <h5 className="mb-0 text-body-highlight mb-2">Date Posted</h5>
@@ -697,12 +707,18 @@ useEffect(() => {
                       </Button>
                     ))} */}
                   {selectedJob.job_apply_link && (
+                    <>
                     <Button
                       variant="primary"
-                      onClick={() => handleJobRedirect(selectedJob,selectedJob.job_apply_link)}
+                      onClick={() => handleJobRedirect(selectedJob, selectedJob.job_apply_link)}
+                      disabled={isButtonDisabled}
                     >
-                      Apply Now
+                      {isButtonDisabled ? 'Processing...' : 'Apply Now'}
                     </Button>
+                    <center>
+                    <div>We'll add this to your tracker!</div>
+                    </center>
+                    </>
                   )}
                 </div>
               </div>

@@ -2,13 +2,14 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import toggleImage from '../assets/images/P-solid-rgb.svg';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAppliedJobs, updateAppliedJob, setAppliedJobs , deleteAppliedJob } from "../features/job/jobSlice";
+import { fetchAppliedJobs, updateAppliedJob, setAppliedJobs, deleteAppliedJob, JobAppliedCreate } from "../features/job/jobSlice";
 import alertify from "alertifyjs";
 import "alertifyjs/build/css/alertify.css";
 
 export default function ApplicationTracking() {
     const dispatch = useDispatch();
     const { appliedJobs } = useSelector((state) => state.job);
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -290,9 +291,13 @@ export default function ApplicationTracking() {
     ];
 
     return (
-        <div className="row mt-3">
-            <div className="col-12">
-                <div className="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis pt-6 border-top">
+        <div className="card">
+
+            <div className="card-body">
+                {/* Add Application Modal */}
+
+                
+                <div className="table-responsive scrollbar">
                     <DataTable
                         columns={columns}
                         data={formattedJobs}
