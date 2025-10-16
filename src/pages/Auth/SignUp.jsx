@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Formik , useFormik } from 'formik';
+import { Formik, useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,7 +11,7 @@ import logo from '../../assets/images/MPF-logo.svg';
 import { Button, Form as BootstrapForm, Alert, Spinner } from 'react-bootstrap';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
-import { useDispatch ,useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../../features/user/userSlice';
 
 
@@ -52,8 +52,8 @@ export default function SignUp() {
   const dispatch = useDispatch();
 
 
-  
-  
+
+
 
   const {
     values,
@@ -80,7 +80,7 @@ export default function SignUp() {
       try {
         setIsLoading(true);
         setApiError('');
-        
+
         // Clear previous errors
         Object.keys(values).forEach(key => {
           setFieldError(key, '');
@@ -88,13 +88,13 @@ export default function SignUp() {
 
         // Dispatch the register action with user data
         const result = await dispatch(register(values)).unwrap();
-        
+
         // If we get here, the registration was successful
         toast.success('Registration successful! Redirecting...');
         navigate('/upload-profile');
       } catch (error) {
         console.error('Registration error:', error);
-        
+
         // Handle validation errors (422 status code)
         if (error.errors) {
           // Handle field-specific errors
@@ -104,7 +104,7 @@ export default function SignUp() {
             setFieldError(fieldName, errorMessage);
             setFieldTouched(fieldName, true, false);
           });
-          
+
           // Set a general error message if available
           if (error.message) {
             setApiError(error.message);
@@ -173,174 +173,178 @@ export default function SignUp() {
                       </Alert>
                     )}
 
-                        <div className="mb-3 text-start">
-                          <label className="form-label" htmlFor="name">Name</label>
-                          <BootstrapForm.Control
-                            id="name"
-                            name="name"
-                            type="text"
-                            placeholder="Name"
-                            className={`${(touched.name && errors.name) ? 'is-invalid' : ''}`}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values.name}
-                            autoComplete="name"
-                            required
-                          />
-                          {touched.name && errors.name && (
-                            <div className="invalid-feedback d-block">
-                              {errors.name}
-                            </div>
-                          )}
+                    <div className="mb-3 text-start">
+                      <label className="form-label" htmlFor="name">Name</label>
+                      <BootstrapForm.Control
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="Name"
+                        className={`${(touched.name && errors.name) ? 'is-invalid' : ''}`}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name}
+                        autoComplete="name"
+                        required
+                      />
+                      {touched.name && errors.name && (
+                        <div className="invalid-feedback d-block">
+                          {errors.name}
                         </div>
+                      )}
+                    </div>
 
-                        <div className="mb-3 text-start">
-                          <label className="form-label" htmlFor="email">Email address</label>
-                          <BootstrapForm.Control
-                            id="email"
-                            name="email"
-                            type="email"
-                            placeholder="name@example.com"
-                            className={`${touched.email && errors.email ? 'is-invalid' : ''}`}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values.email}
-                            autoComplete="email"
-                            required
-                          />
-                          {touched.email && errors.email && (
-                            <div className="invalid-feedback d-block">
-                              {errors.email}
-                            </div>
-                          )}
+                    <div className="mb-3 text-start">
+                      <label className="form-label" htmlFor="email">Email address</label>
+                      <BootstrapForm.Control
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="name@example.com"
+                        className={`${touched.email && errors.email ? 'is-invalid' : ''}`}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.email}
+                        autoComplete="email"
+                        required
+                      />
+                      {touched.email && errors.email && (
+                        <div className="invalid-feedback d-block">
+                          {errors.email}
                         </div>
+                      )}
+                    </div>
 
-                        <div className="mb-3 text-start">
-                          <label className="form-label" htmlFor="phone">Phone number</label>
-                          <div>
-                            <PhoneInput
-                              id="phone"
-                              name="phone"
-                              international
-                              defaultCountry="GB"
-                              placeholder="+44 3123456789"
-                              value={values.phone}
-                              onChange={(val) => setFieldValue('phone', val)}
+                    <div className="mb-3 text-start">
+                      <label className="form-label" htmlFor="phone">Phone number</label>
+                      <div>
+                        <PhoneInput
+                          id="phone"
+                          name="phone"
+                          international
+                          defaultCountry="GB"
+                          placeholder="+44 3123456789"
+                          value={values.phone}
+                          onChange={(val) => setFieldValue('phone', val)}
+                          onBlur={handleBlur}
+                        />
+                      </div>
+                      {touched.phone && errors.phone && (
+                        <div className="invalid-feedback d-block">
+                          {errors.phone}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="row g-3 mb-3">
+                      <div className="col-sm-6">
+                        <label className="form-label" htmlFor="password">Password</label>
+                        <div className="position-relative">
+                          <div className="position-relative">
+                            <BootstrapForm.Control
+                              id="password"
+                              name="password"
+                              type={showPassword ? 'text' : 'password'}
+                              placeholder="Password"
+                              className={`pe-5 ${touched.password && errors.password ? 'is-invalid' : ''}`}
+                              onChange={handleChange}
                               onBlur={handleBlur}
+                              value={values.password}
+                              autoComplete="new-password"
+                              required
                             />
+                            <div
+                              className="position-absolute top-50 end-0 translate-middle-y me-2"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                            </div>
                           </div>
-                          {touched.phone && errors.phone && (
+                          {touched.password && errors.password && (
                             <div className="invalid-feedback d-block">
-                              {errors.phone}
+                              {errors.password}
                             </div>
                           )}
                         </div>
+                      </div>
 
-                        <div className="row g-3 mb-3">
-                          <div className="col-sm-6">
-                            <label className="form-label" htmlFor="password">Password</label>
-                            <div className="position-relative">
-                              <BootstrapForm.Control
-                                id="password"
-                                name="password"
-                                type={showPassword ? 'text' : 'password'}
-                                placeholder="Password"
-                                className={`pe-5 ${touched.password && errors.password ? 'is-invalid' : ''}`}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                value={values.password}
-                                autoComplete="new-password"
-                                required
-                              />
-                              <div
-                                className="position-absolute top-50 end-0 translate-middle-y me-2"
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => setShowPassword(!showPassword)}
-                              >
-                                {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
-                              </div>
-                              {touched.password && errors.password && (
-                                <div className="invalid-feedback d-block">
-                                  {errors.password}
-                                </div>
-                              )}
+                      <div className="col-sm-6">
+                        <label className="form-label" htmlFor="password_confirmation">Confirm Password</label>
+                        <div className="position-relative">
+                          <div className="position-relative">
+                            <BootstrapForm.Control
+                              id="password_confirmation"
+                              name="password_confirmation"
+                              type={showConfirmPassword ? 'text' : 'password'}
+                              placeholder="Confirm Password"
+                              className={`pe-5 ${touched.password_confirmation && errors.password_confirmation ? 'is-invalid' : ''}`}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.password_confirmation}
+                              autoComplete="new-password"
+                              required
+                            />
+                            <div
+                              className="position-absolute top-50 end-0 translate-middle-y me-2"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                            {showConfirmPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
                             </div>
                           </div>
-
-                          <div className="col-sm-6">
-                            <label className="form-label" htmlFor="password_confirmation">Confirm Password</label>
-                            <div className="position-relative">
-                              <BootstrapForm.Control
-                                id="password_confirmation"
-                                name="password_confirmation"
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                placeholder="Confirm Password"
-                                className={`pe-5 ${touched.password_confirmation && errors.password_confirmation ? 'is-invalid' : ''}`}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                value={values.password_confirmation}
-                                autoComplete="new-password"
-                                required
-                              />
-                              <div
-                                className="position-absolute top-50 end-0 translate-middle-y me-2"
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              >
-                                {showConfirmPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
-                              </div>
-                              {touched.password_confirmation && errors.password_confirmation && (
-                                <div className="invalid-feedback d-block">
-                                  {errors.password_confirmation}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="form-check mb-3">
-                          <input
-                            id="terms"
-                            name="terms"
-                            type="checkbox"
-                            className={`form-check-input me-2 ${touched.terms && errors.terms ? 'is-invalid' : ''}`}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            checked={values.terms}
-                            required
-                          />
-                          <label className="form-check-label fs-9 text-transform-none d-inline" htmlFor="terms">
-                            I accept the <Link to="/terms" className="text-primary">terms</Link> and{' '}
-                            <Link to="/privacy" className="text-primary">privacy policy</Link>
-                          </label>
-                          {touched.terms && errors.terms && (
+                          {touched.password_confirmation && errors.password_confirmation && (
                             <div className="invalid-feedback d-block">
-                              {errors.terms}
+                              {errors.password_confirmation}
                             </div>
                           )}
                         </div>
+                      </div>
+                    </div>
 
-                        <Button 
-                          type="submit" 
-                          variant="primary" 
-                          className="w-100 mb-4"
-                          disabled={isLoading || !Object.keys(errors).length === 0 || isSubmitting}
-                        >
-                          {isLoading ? (
-                            <>
-                              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                              Creating Account...
-                            </>
-                          ) : (
-                            'Create Account'
-                          )}
-                        </Button>
-
-                        <div className="text-center">
-                          <Link to="/sign-in" className="fs-9 fw-bold">
-                            Already a member? Click here to sign in.
-                          </Link>
+                    <div className="form-check mb-3">
+                      <input
+                        id="terms"
+                        name="terms"
+                        type="checkbox"
+                        className={`form-check-input me-2 ${touched.terms && errors.terms ? 'is-invalid' : ''}`}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        checked={values.terms}
+                        required
+                      />
+                      <label className="form-check-label fs-9 text-transform-none d-inline" htmlFor="terms">
+                        I accept the <Link to="/terms" className="text-primary">terms</Link> and{' '}
+                        <Link to="/privacy" className="text-primary">privacy policy</Link>
+                      </label>
+                      {touched.terms && errors.terms && (
+                        <div className="invalid-feedback d-block">
+                          {errors.terms}
                         </div>
+                      )}
+                    </div>
+
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      className="w-100 mb-4"
+                      disabled={isLoading || !Object.keys(errors).length === 0 || isSubmitting}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                          Creating Account...
+                        </>
+                      ) : (
+                        'Create Account'
+                      )}
+                    </Button>
+
+                    <div className="text-center">
+                      <Link to="/sign-in" className="fs-9 fw-bold">
+                        Already a member? Click here to sign in.
+                      </Link>
+                    </div>
                   </BootstrapForm>
                 </div>
               </div>
