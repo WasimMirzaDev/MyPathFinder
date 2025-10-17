@@ -30,7 +30,10 @@ import UpdatePassword from "./pages/Auth/UpdatePassword";
 import Welcome from "./pages/Welcome";
 import UploadProfile from "./pages/Auth/UploadProfile";
 import Feedback from "./pages/Feedback/Feedback";
-import TermsPolicy from "./pages/TermsPolicy/TermsPolicy";
+
+import TermsCondition from "./pages/TermsPolicy/Terms";
+import PrivacyPolicy from "./pages/TermsPolicy/Privacy";
+
 import ProfileSetting from "./pages/Profile/ProfileSetting";
 import ProfilePage from "./pages/Profile/Profile";
 
@@ -40,6 +43,7 @@ import SubscribePlan from "./pages/Subscription/SubscribePlan";
 import UpgradeSubscribePlan from "./pages/Subscription/UpgradeSubscribePlan";
 
 import InterviewFeedback from "./pages/Interview/InterviewFeedback";
+import Career from "./pages/CareerAdvice";
 
 // const Loader = () => (
 //   <div id="preloader">
@@ -66,7 +70,9 @@ const publicRoutes = [
   { path: '/2f-verification', element: <F2Verification /> },
   { path: '/forget-password', element: <ForgetPassword /> },
   { path: '/update-password', element: <UpdatePassword /> },
-  { path: '/terms-policy', element: <TermsPolicy /> },
+  { path: '/terms', element: <TermsCondition /> },
+  { path: '/privacy-policy', element: <PrivacyPolicy /> },
+  { path: '/career-advice', element: <Career /> },
   { path: '*', element: <ErrorPage /> },
 ];
 

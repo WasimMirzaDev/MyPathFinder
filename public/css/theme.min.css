@@ -44729,3 +44729,107 @@ html:not(.navbar-vertical-collapsed) .navbar-vertical .firefox .chat-sidebar .na
 .pagination-btn .page-link {
   padding: 4px !important;
 }
+
+/* Bootstrap Warning Alert Base Styles */
+.alert-warning {
+    color: #926d00;
+    background-color: #fff3cd52;
+    border-color: #f5cf5e;
+}
+
+.alert-warning .alert-link {
+  color: #523e02;
+}
+
+/* Alert Header */
+.alert-warning .alert-heading {
+  color: inherit;
+}
+
+/* Dismissible Alert Close Button */
+.alert-warning .btn-close {
+  background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23664d03'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+}
+
+/* Hover state for dismissible alerts */
+.alert-warning .btn-close:hover {
+  opacity: 0.7;
+}
+
+/* Alert with icons */
+.alert-warning .bi-exclamation-triangle-fill {
+  color: #ffc107;
+}
+
+/* Horizontal rule in alerts */
+.alert-warning hr {
+  border-top-color: #ffeaa7;
+}
+
+/* Additional custom warning variations */
+.alert-warning-light {
+  color: #856404;
+  background-color: #fffdf4;
+  border-color: #ffeaa7;
+}
+
+.alert-warning-dark {
+  color: #533f03;
+  background-color: #fff3cd;
+  border-color: #d4a017;
+}
+
+/* Animation for alert appearance */
+@keyframes slideInWarning {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.alert-warning.slide-in {
+  animation: slideInWarning 0.3s ease-out;
+}
+
+/* Focus styles for accessibility */
+.alert-warning:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .alert-warning {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .alert-warning .alert-heading {
+    font-size: 1rem;
+  }
+}
+
+/* Custom gradient warning alert */
+.alert-warning-gradient {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 1px solid #ffc107;
+  color: #664d03;
+}
+
+/* Warning alert with left border accent */
+.alert-warning-border-left {
+  border-left: 4px solid #ffc107;
+  border-top: 1px solid #ffecb5;
+  border-right: 1px solid #ffecb5;
+  border-bottom: 1px solid #ffecb5;
+}
+
+/* Floating warning alert */
+.alert-warning-floating {
+  box-shadow: 0 4px 6px -1px rgba(255, 193, 7, 0.1), 0 2px 4px -1px rgba(255, 193, 7, 0.06);
+  border: none;
+}
