@@ -314,8 +314,8 @@ export default function SignUp() {
                         required
                       />
                       <label className="form-check-label fs-9 text-transform-none d-inline" htmlFor="terms">
-                        I accept the <Link to="/terms" className="text-primary">terms</Link> and{' '}
-                        <Link to="/privacy" className="text-primary">privacy policy</Link>
+                        I accept the <Link to="/terms" target='_blank' className="text-primary">terms</Link> and{' '}
+                        <Link to="/privacy-policy" target='_blank' className="text-primary">privacy policy</Link>
                       </label>
                       {touched.terms && errors.terms && (
                         <div className="invalid-feedback d-block">
