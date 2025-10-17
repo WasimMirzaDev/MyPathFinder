@@ -133,14 +133,14 @@ const UpgradeSubscribePlan = () => {
                                 <Card.Text className="mb-4">
                                     {plan.subdesc}
                                 </Card.Text>
-                                <ul className="list-unstyled mt-3 mb-4 flex-grow-1">
+                                {/* <ul className="list-unstyled mt-3 mb-4 flex-grow-1">
                                     {plan.features.map((feature, i) => (
                                         <li key={i} className="mb-2">
                                             <i className="fas fa-check text-success me-2"></i>
                                             {feature}
                                         </li>
                                     ))}
-                                </ul>
+                                </ul> */}
                                 <div className="mt-auto">
                                 <Button 
                     variant={plan.interval === 'monthly' ? 'primary' : 'outline-primary'}

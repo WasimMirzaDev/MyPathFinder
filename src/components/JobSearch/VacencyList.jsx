@@ -22,7 +22,7 @@ const VacanciesList = () => {
       recentCVs,
       delResumeLoader
     } = useSelector((state) => state.resume);
-  const [searchQuery, setSearchQuery] = useState("frontend developer");
+  const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("uk");
   const [country, setCountry] = useState("uk");
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -37,6 +37,11 @@ const VacanciesList = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [showModalMPFCV, setShowModalMPFCV] = useState(false);
+
+
+  useEffect(()=>{
+    setSearchQuery(data?.role?.name);
+  },[data])
 
 
     const handleManualCV = async () => {

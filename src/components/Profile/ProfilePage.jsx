@@ -32,14 +32,49 @@ const ProfilePage = () => {
     bio: "I'm a passionate software developer with over 10 years of experience in web technologies. I love creating user-friendly applications that solve real-world problems."
   });
   const [settings, setSettings] = useState({
-    language: 'English',
-    timezone: 'Eastern Time (ET)',
-    theme: 'Light',
-    emailNotifications: true,
-    pushNotifications: true,
-    smsNotifications: false,
-    marketingEmails: false
+    lang: 'en',
+    time_zone: 'UTC',
+    email_notif: true,
+    push_notif: true
   });
+
+  // Load user settings when component mounts
+  useEffect(() => {
+    if (userData) {
+      setSettings({
+        lang: userData.lang || 'en',
+        time_zone: userData.time_zone || 'UTC',
+        email_notif: userData.email_notif !== undefined ? userData.email_notif : true,
+        push_notif: userData.push_notif !== undefined ? userData.push_notif : true
+      });
+    }
+  }, [userData]);
+
+// Save settings to backend
+const saveSettings = async (newSettings, e) => {
+  if (e) e.preventDefault();
+  try {
+    await axios.post('/api/profile-settings', newSettings);
+    toast.success('Settings saved successfully');
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    toast.error('Failed to save settings');
+    // Revert the state on error
+    setSettings(prev => ({ ...prev }));
+  }
+};
+
+// Handle settings change
+const handleSettingsChange = (name, value) => {
+  const newSettings = {
+    ...settings,
+    [name]: value
+  };
+  setSettings(newSettings);
+  saveSettings(newSettings);
+};
+
+
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -261,12 +296,13 @@ const ProfilePage = () => {
     }));
   };
 
-  const handleSettingsChange = (name, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // const handleSettingsChange = (name, value) => {
+  //   setSettings(prev => ({
+  //     ...prev,
+  //     [name]: value
+  //   }));
+  //   saveSettings(null);
+  // };
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -515,36 +551,83 @@ const InfoItem = ({ icon, label, value }) => (
 );
 
 // Settings Tab Component
-const SettingsTab = ({ settings, onSettingsChange, onSubmit }) => (
-  <div className="tab-pane">
-    <h3 className="section-title">Account Settings</h3>
-    <form onSubmit={onSubmit}>
+const SettingsTab = ({ settings, onSettingsChange }) => {
+  const languages = [
+    { value: 'en', label: 'English' },
+    { value: 'es', label: 'Spanish' },
+    { value: 'fr', label: 'French' },
+    { value: 'de', label: 'German' },
+  ];
+
+  const timezones = [
+    'Europe/London', // BST/GMT
+    'UTC',
+    'Europe/Paris', // CEST
+    'Europe/Berlin',
+    'Europe/Moscow',
+    'Asia/Dubai',
+    'Asia/Karachi',
+    'Asia/Dhaka',
+    'Asia/Bangkok',
+    'Asia/Singapore',
+    'Asia/Tokyo',
+    'Australia/Sydney',
+    'Pacific/Auckland',
+    'America/Los_Angeles',
+    'America/Denver',
+    'America/Chicago',
+    'America/New_York',
+    'America/Toronto',
+    'America/Sao_Paulo',
+    'Africa/Cairo',
+    'Africa/Johannesburg',
+    'Asia/Kolkata',
+    'Asia/Shanghai',
+    'Australia/Perth'
+  ];
+
+  // Format timezone for display (e.g., "Europe/London (BST/GMT+1)")
+  const formatTimezone = (tz) => {
+    const date = new Date();
+    const options = { timeZone: tz, timeZoneName: 'short' };
+    const timeZoneName = new Intl.DateTimeFormat('en-US', options)
+      .formatToParts(date)
+      .find(part => part.type === 'timeZoneName').value;
+    
+    return `${tz.replace('_', ' ')} (${timeZoneName})`;
+  };
+
+  return (
+    <div className="tab-pane">
+      <h3 className="section-title">Account Settings</h3>
       <div className="row">
         <div className="col-md-6">
           <div className="mb-4">
             <label className="form-label">Language</label>
             <select
               className="form-select"
-              value={settings.language}
-              onChange={(e) => onSettingsChange('language', e.target.value)}
+              value={settings.lang}
+              onChange={(e) => onSettingsChange('lang', e.target.value)}
             >
-              <option>English</option>
-              <option>Spanish</option>
-              <option>French</option>
-              <option>German</option>
+              {languages.map(lang => (
+                <option key={lang.value} value={lang.value}>
+                  {lang.label}
+                </option>
+              ))}
             </select>
           </div>
           <div className="mb-4">
             <label className="form-label">Time Zone</label>
             <select
               className="form-select"
-              value={settings.timezone}
-              onChange={(e) => onSettingsChange('timezone', e.target.value)}
+              value={settings.time_zone}
+              onChange={(e) => onSettingsChange('time_zone', e.target.value)}
             >
-              <option>Eastern Time (ET)</option>
-              <option>Central Time (CT)</option>
-              <option>Mountain Time (MT)</option>
-              <option>Pacific Time (PT)</option>
+              {timezones.map(tz => (
+                <option key={tz} value={tz}>
+                  {formatTimezone(tz)}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -553,23 +636,20 @@ const SettingsTab = ({ settings, onSettingsChange, onSubmit }) => (
           <ToggleSetting
             label="Email Notifications"
             description="Receive updates via email"
-            checked={settings.emailNotifications}
-            onChange={(checked) => onSettingsChange('emailNotifications', checked)}
+            checked={settings.email_notif}
+            onChange={(checked) => onSettingsChange('email_notif', checked)}
           />
           <ToggleSetting
             label="Push Notifications"
             description="Receive browser notifications"
-            checked={settings.pushNotifications}
-            onChange={(checked) => onSettingsChange('pushNotifications', checked)}
+            checked={settings.push_notif}
+            onChange={(checked) => onSettingsChange('push_notif', checked)}
           />
         </div>
       </div>
-      <div className="mt-4">
-        <button type="submit" className="btn btn-primary">Save Settings</button>
-      </div>
-    </form>
-  </div>
-);
+    </div>
+  );
+};
 
 // Toggle Setting Component
 const ToggleSetting = ({ label, description, checked, onChange }) => (
@@ -632,13 +712,13 @@ const SubscriptionTab = ({
             </p>
           )}
           
-          {subscription.features && subscription.features.length > 0 && (
+          {/* {subscription.features && subscription.features.length > 0 && (
             <ul className="subscription-features">
               {subscription.features.map((feature, index) => (
                 <li key={index}>{feature}</li>
               ))}
             </ul>
-          )}
+          )} */}
           
           <div className="mt-4">
             <button 

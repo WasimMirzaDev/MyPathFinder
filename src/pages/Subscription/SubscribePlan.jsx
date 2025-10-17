@@ -106,12 +106,12 @@ const SubscribePlan = () => {
                                     </div>
                                     
                                     <ul className="list-unstyled mt-3 mb-4 flex-grow-1">
-                                        {plan.features.map((feature, i) => (
+                                        {/* {plan.features.map((feature, i) => (
                                             <li key={i} className="mb-2">
                                                 <i className="fas fa-check text-success me-2"></i>
                                                 {feature}
                                             </li>
-                                        ))}
+                                        ))} */}
                                         <li className="mb-2">
                                             <i className="fas fa-check text-success me-2"></i>
                                             7-day free trial

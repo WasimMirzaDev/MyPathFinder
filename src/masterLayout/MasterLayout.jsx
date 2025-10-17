@@ -152,12 +152,12 @@ const MasterLayout = ({ children }) => {
                   </div>
                 </Link>
                 </div>
-
+{/* 
                 <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/support')}`} to="/support" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:world' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Support</span></span>
                   </div>
                 </Link>
-                </div>
+                </div> */}
 
                 <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/payment-plans')}`} to="/payment-plans" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:tag' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Payment Plans</span></span>
@@ -232,7 +232,7 @@ const MasterLayout = ({ children }) => {
               )}
             </div>
           </li>
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <Link className="nav-link" to="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal">
               <span className="d-block" style={{ height: '20px', width: '20px' }}>
                 <Icon icon='tabler:search' width={'19px'} height={'19px'} />
@@ -329,7 +329,7 @@ const MasterLayout = ({ children }) => {
                 </div>
               </div>
             </div>
-          </li>
+          </li> */}
           <li className="nav-item dropdown"><Link className="nav-link lh-1 pe-0" id="navbarDropdownUser" to="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
             <div className="avatar avatar-l ">
               <img className="rounded-circle " src={data?.profile_img_url || favicon} alt="" />
