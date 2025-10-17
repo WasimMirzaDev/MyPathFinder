@@ -192,7 +192,7 @@ export default function CareerAdvice() {
         </div>
 
         <aside className="col-12 col-lg-4 col-xl-3">
-          <div className="toc-card p-3">
+          <div className="toc-card p-3" style={{position: 'sticky', top: '6rem'}}>
             <div id="pageToc"
               className="list-group list-group-flush small">
               <a className="list-group-item" href="#s1">1. Job
@@ -220,7 +220,7 @@ export default function CareerAdvice() {
         </aside>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .section {
           padding: 1.25rem 1.25rem 1rem;
           border-radius: .75rem;
@@ -243,8 +243,6 @@ export default function CareerAdvice() {
         }
 
         .toc-card {
-          position: sticky;
-          top: 6rem;
           border-radius: .75rem;
           border: 1px solid rgba(255,255,255,.06);
           background: rgba(255,255,255,.02);

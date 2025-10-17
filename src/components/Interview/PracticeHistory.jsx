@@ -86,7 +86,7 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                     {/* Your Score */}
                                     <div className="col-12 col-sm-auto flex-1 text-truncate">
                                         <h6>Your Score</h6>
-                                        <div className="d-flex align-items-center gap-1">
+                                        {/* <div className="d-flex align-items-center gap-1">
                                             <div style={{ "--phoenix-circle-progress-bar": q.evaluation?.breakdown?.total?.score }}>
                                                 <svg
                                                     className="circle-progress-svg"
@@ -116,13 +116,13 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                                 </svg>
                                             </div>
                                             <h6 className="mb-0 text-body">{q.evaluation?.breakdown?.total?.score}%</h6>
-                                        </div>
+                                        </div> */}
                                     </div>
 
                                     {/* Average Score */}
                                     <div className="col-12 col-sm-auto flex-1 text-truncate">
                                         <h6>Average User Score</h6>
-                                        <div className="d-flex align-items-center gap-1">
+                                        {/* <div className="d-flex align-items-center gap-1">
                                             <div style={{ "--phoenix-circle-progress-bar": q.avgScore }}>
                                                 <svg
                                                     className="circle-progress-svg"
@@ -152,7 +152,7 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                                 </svg>
                                             </div>
                                             <h6 className="mb-0 text-body">{q.avgScore}%</h6>
-                                        </div>
+                                        </div> */}
                                     </div>
 
                                     {/* Retry Button */}
