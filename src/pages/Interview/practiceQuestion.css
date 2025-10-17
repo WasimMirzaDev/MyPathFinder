@@ -286,3 +286,56 @@
     align-items: center;
     height: 100vh;
 }
+
+
+/* Video Background Styles */
+.video-background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.background-blur-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.background-blur-video.hidden {
+    opacity: 0;
+}
+
+.background-blur-video.loaded {
+    opacity: 1;
+}
+
+.background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Glass effect for the card */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Smooth transitions */
+.interview-overlay-wrap {
+    transition: all 0.3s ease-in-out;
+}
+
+.video-player {
+    transition: opacity 0.3s ease-in-out;
+}

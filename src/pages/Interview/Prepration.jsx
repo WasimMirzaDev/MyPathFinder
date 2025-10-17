@@ -12,7 +12,7 @@ import "./practiceQuestion.css";
 
 export default function Prepration() {
     const { id } = useParams();
-    const dispatch = useDispatch();``
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const { interviewQuestions, currentQuestion, loading, error, parsedFeedback } = useSelector((state) => state.interview);
@@ -26,6 +26,7 @@ export default function Prepration() {
     const [countdown, setCountdown] = useState(5);
     const [hasMicAccess, setHasMicAccess] = useState(false);
     const videoRef = useRef(null);
+    const backgroundVideoRef = useRef(null); // Ref for background video
     const boxRef = useRef(null);
     const [position, setPosition] = useState({ x: 50, y: 50 });
     const [industry, setIndustry] = useState(null);
@@ -33,11 +34,15 @@ export default function Prepration() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [audioLevel, setAudioLevel] = useState(0);
     const [isVideoLoading, setIsVideoLoading] = useState(true);
+    const [isBackgroundVideoLoaded, setIsBackgroundVideoLoaded] = useState(false);
     const audioContextRef = useRef(null);
     const analyserRef = useRef(null);
     const dataArrayRef = useRef(null);
     const animationFrameRef = useRef(null);
-    const [preparationAudioLevel, setPreparationAudioLevel] = useState(0); // New state for preparation screen
+    const [preparationAudioLevel, setPreparationAudioLevel] = useState(0);
+
+    const [showMainVideo, setShowMainVideo] = useState(false);
+    const [videoUrl, setVideoUrl] = useState(null);
 
     useEffect(() => {
         const dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
@@ -46,8 +51,155 @@ export default function Prepration() {
         });
     }, []);
 
-    const [exitInterview , setExitInterview] = useState(false);
+    const [exitInterview, setExitInterview] = useState(false);
     const exitInterviewRef = useRef(false);
+
+    // Set video URL when currentQuestion is available
+    useEffect(() => {
+        if (currentQuestion?.question?.title) {
+            const url = `${baseUrl}/videos/MPF Interview Questions/${currentQuestion.question.title.replace(/\?+$/, '_')}.mp4`;
+            setVideoUrl(url);
+            console.log('Video URL set:', url);
+        }
+    }, [currentQuestion?.question?.title]);
+
+    // Preload the video when URL is available
+    useEffect(() => {
+        if (videoUrl && backgroundVideoRef.current) {
+            const backgroundVideo = backgroundVideoRef.current;
+            console.log('Preloading video:', videoUrl);
+            
+            backgroundVideo.src = videoUrl;
+            backgroundVideo.preload = 'auto';
+            backgroundVideo.muted = true;
+            
+            const handleLoadedData = () => {
+                console.log('Background video loaded successfully');
+                setIsBackgroundVideoLoaded(true);
+                // Keep it paused but ready
+                backgroundVideo.pause();
+                backgroundVideo.currentTime = 0;
+            };
+            
+            const handleCanPlay = () => {
+                console.log('Background video can play');
+                setIsBackgroundVideoLoaded(true);
+            };
+            
+            const handleError = (e) => {
+                console.error('Failed to load background video:', e);
+                console.error('Video error:', backgroundVideo.error);
+                setIsBackgroundVideoLoaded(false);
+            };
+            
+            backgroundVideo.addEventListener('loadeddata', handleLoadedData);
+            backgroundVideo.addEventListener('canplay', handleCanPlay);
+            backgroundVideo.addEventListener('error', handleError);
+            
+            // Load the video
+            backgroundVideo.load();
+            
+            return () => {
+                backgroundVideo.removeEventListener('loadeddata', handleLoadedData);
+                backgroundVideo.removeEventListener('canplay', handleCanPlay);
+                backgroundVideo.removeEventListener('error', handleError);
+            };
+        }
+    }, [videoUrl]);
+
+
+    useEffect(() => {
+        requestMicrophonePermission();
+    }, [])
+
+    // Handle countdown completion
+    useEffect(() => {
+        if (isReady && countdown > 0) {
+            const timer = setTimeout(() => {
+                setCountdown(countdown - 1);
+            }, 1000);
+            return () => clearTimeout(timer);
+        } else if (isReady && countdown === 0) {
+            // Switch to main video
+            setShowMainVideo(true);
+            requestMicrophonePermission();
+        }
+    }, [isReady, countdown]);
+
+    // Handle main video playback when showMainVideo becomes true
+    useEffect(() => {
+        console.log('showMainVideo changed:', showMainVideo, 'isBackgroundVideoLoaded:', isBackgroundVideoLoaded);
+        if (showMainVideo && videoRef.current && videoUrl) {
+            const playMainVideo = async () => {
+                try {
+                    console.log('Starting main video playback');
+                    const mainVideo = videoRef.current;
+                    const backgroundVideo = backgroundVideoRef.current;
+                    
+                    // Use preloaded video if available, otherwise use URL directly
+                    if (backgroundVideo && backgroundVideo.src && isBackgroundVideoLoaded) {
+                        console.log('Using preloaded video from backgroundVideoRef');
+                        mainVideo.src = backgroundVideo.src;
+                    } else {
+                        console.log('Loading video directly from URL:', videoUrl);
+                        mainVideo.src = videoUrl;
+                    }
+                    mainVideo.currentTime = 0;
+                    
+                    console.log('Main video src set to:', mainVideo.src);
+                    
+                    // Wait for the video to be ready
+                    if (mainVideo.readyState < 3) {
+                        console.log('Waiting for video to be ready...');
+                        await new Promise((resolve, reject) => {
+                            const timeout = setTimeout(() => reject(new Error('Video load timeout')), 10000);
+                            mainVideo.oncanplay = () => {
+                                clearTimeout(timeout);
+                                resolve();
+                            };
+                            mainVideo.onerror = () => {
+                                clearTimeout(timeout);
+                                reject(new Error('Video load error'));
+                            };
+                        });
+                        console.log('Video is ready');
+                    } else {
+                        console.log('Video already ready, readyState:', mainVideo.readyState);
+                    }
+                    
+                    // Start muted first to comply with autoplay policies
+                    mainVideo.muted = true;
+                    await mainVideo.play();
+                    console.log('Main video started playing (muted)');
+                    
+                    // Then unmute after it starts playing
+                    mainVideo.muted = false;
+                    console.log('Main video unmuted');
+                    
+                    // Request fullscreen
+                    if (mainVideo.requestFullscreen) {
+                        await mainVideo.requestFullscreen().catch(err => {
+                            console.log('Fullscreen request failed:', err);
+                        });
+                    }
+                    
+                } catch (error) {
+                    console.error('Error playing main video:', error);
+                    // If autoplay fails, try playing muted
+                    try {
+                        const mainVideo = videoRef.current;
+                        mainVideo.muted = true;
+                        await mainVideo.play();
+                        console.log('Fallback: Playing video muted');
+                    } catch (fallbackError) {
+                        console.error('Fallback also failed:', fallbackError);
+                    }
+                }
+            };
+            
+            playMainVideo();
+        }
+    }, [showMainVideo, videoUrl, isBackgroundVideoLoaded]);
 
     const startRecording = async () => {
         try {
@@ -59,7 +211,7 @@ export default function Prepration() {
             audioContextRef.current = audioContext;
 
             const analyser = audioContext.createAnalyser();
-            analyser.fftSize = 32; // Reduced for better performance
+            analyser.fftSize = 32;
             analyserRef.current = analyser;
 
             const source = audioContext.createMediaStreamSource(stream);
@@ -81,14 +233,12 @@ export default function Prepration() {
                     sum += dataArrayRef.current[i];
                 }
                 const average = sum / bufferLength;
-                // Better normalization - adjust these values based on testing
                 const normalizedLevel = Math.min(Math.max((average - 20) / 50, 0), 1);
                 setAudioLevel(normalizedLevel);
 
                 animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
             };
 
-            // Start the animation loop immediately
             animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
 
             recorder.ondataavailable = (e) => {
@@ -110,7 +260,6 @@ export default function Prepration() {
                     return;
                 }
 
-
                 const blob = new Blob(chunks, { type: 'audio/webm' });
                 const formData = new FormData();
                 formData.append('audio', blob, 'answer.webm');
@@ -121,7 +270,6 @@ export default function Prepration() {
                     const response = await axios.post('/api/interview/submit-audio', formData, {
                         headers: { 'Content-Type': 'multipart/form-data' },
                         onUploadProgress: (progressEvent) => {
-                            // Optional: You can add upload progress here if needed
                             const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                             console.log(`Upload progress: ${progress}%`);
                         }
@@ -131,9 +279,6 @@ export default function Prepration() {
                 } catch (error) {
                     console.error('Upload failed:', error);
                 }
-
-            
-
             };
 
             recorder.start();
@@ -149,35 +294,28 @@ export default function Prepration() {
         stopMicrophoneMonitoring();
         if (mediaRecorder && isRecording) {
             try {
-                // Stop the media recorder
                 mediaRecorder.stop();
-
-                // Stop all tracks in the stream
                 if (mediaRecorder.stream) {
                     mediaRecorder.stream.getTracks().forEach(track => {
                         track.stop();
                     });
                 }
 
-                // Clean up audio context and animation frame
                 if (animationFrameRef.current) {
                     cancelAnimationFrame(animationFrameRef.current);
                     animationFrameRef.current = null;
                 }
 
-                // Close audio context if it exists
                 if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
                     audioContextRef.current.close();
                     audioContextRef.current = null;
                 }
 
-                // Reset analyzer reference
                 if (analyserRef.current) {
                     analyserRef.current.disconnect();
                     analyserRef.current = null;
                 }
 
-                // Reset state
                 setIsRecording(false);
                 setAudioLevel(0);
                 setAudioChunks([]);
@@ -190,24 +328,17 @@ export default function Prepration() {
     };
 
     const mediaStreamRef = useRef(null);
-    
 
-
-
-    // Start monitoring microphone level for preparation screen
     const startMicrophoneMonitoring = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaStreamRef.current = stream;  // Store the stream in the ref
-    
+            mediaStreamRef.current = stream;
+
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const analyser = audioContext.createAnalyser();
             const source = audioContext.createMediaStreamSource(stream);
             source.connect(analyser);
             analyser.fftSize = 256;
-
-            // const source = audioContext.createMediaStreamSource(stream);
-            // source.connect(analyser);
 
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
@@ -227,7 +358,6 @@ export default function Prepration() {
 
             updateAudioLevel();
 
-            // Store for cleanup
             audioContextRef.current = audioContext;
             analyserRef.current = analyser;
 
@@ -236,15 +366,12 @@ export default function Prepration() {
         }
     };
 
-    // Stop microphone monitoring
     const stopMicrophoneMonitoring = () => {
-        // Stop any ongoing animation frame
         if (animationFrameRef.current) {
             cancelAnimationFrame(animationFrameRef.current);
             animationFrameRef.current = null;
         }
     
-        // Close the audio context
         if (audioContextRef.current) {
             if (audioContextRef.current.state !== 'closed') {
                 audioContextRef.current.close();
@@ -252,93 +379,15 @@ export default function Prepration() {
             audioContextRef.current = null;
         }
     
-        // Stop all audio tracks
         if (mediaStreamRef.current) {
             mediaStreamRef.current.getTracks().forEach(track => {
-                track.stop();  // This actually revokes the microphone access
+                track.stop();
             });
             mediaStreamRef.current = null;
         }
     
-        // Reset the audio level
         setPreparationAudioLevel(0);
     };
-
-    // const startRecording = async () => {
-    //     try {
-    //         // First stop the monitoring
-    //         stopMicrophoneMonitoring();
-
-    //         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    //         // Set up audio context and analyzer for recording
-    //         const AudioContext = window.AudioContext || window.webkitAudioContext;
-    //         const audioContext = new AudioContext();
-    //         audioContextRef.current = audioContext;
-
-    //         const analyser = audioContext.createAnalyser();
-    //         analyser.fftSize = 32;
-    //         analyserRef.current = analyser;
-
-    //         const source = audioContext.createMediaStreamSource(stream);
-    //         source.connect(analyser);
-
-    //         const bufferLength = analyser.frequencyBinCount;
-    //         dataArrayRef.current = new Uint8Array(bufferLength);
-
-    //         const recorder = new MediaRecorder(stream);
-    //         let chunks = [];
-
-    //         // Animation loop for audio level during recording
-    //         const updateAudioLevel = () => {
-    //             if (!analyserRef.current) return;
-
-    //             analyserRef.current.getByteFrequencyData(dataArrayRef.current);
-    //             let sum = 0;
-    //             for (let i = 0; i < bufferLength; i++) {
-    //                 sum += dataArrayRef.current[i];
-    //             }
-    //             const average = sum / bufferLength;
-    //             const normalizedLevel = Math.min(Math.max((average - 20) / 50, 0), 1);
-    //             setAudioLevel(normalizedLevel);
-
-    //             animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
-    //         };
-
-    //         animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
-
-    //         recorder.ondataavailable = (e) => {
-    //             chunks.push(e.data);
-    //         };
-
-    //         recorder.onstop = async () => {
-    //             const blob = new Blob(chunks, { type: 'audio/webm' });
-    //             const formData = new FormData();
-    //             formData.append('audio', blob, 'answer.webm');
-    //             formData.append('question_id', id);
-
-    //             try {
-    //                 setIsSubmitting(true);
-    //                 const response = await axios.post('/api/interview/submit-audio', formData, {
-    //                     headers: { 'Content-Type': 'multipart/form-data' }
-    //                 });
-    //                 dispatch(setParsedFeedback(response.data));
-    //                 navigate('/question-feedback');
-    //             } catch (error) {
-    //                 console.error('Upload failed:', error);
-    //             }
-    //         };
-
-    //         recorder.start();
-    //         setMediaRecorder(recorder);
-    //         setAudioChunks(chunks);
-    //         setIsRecording(true);
-    //     } catch (error) {
-    //         console.error("Microphone error:", error);
-    //     }
-    // };
-
-
 
     useEffect(() => {
         let isActive = true;
@@ -357,18 +406,15 @@ export default function Prepration() {
     }, [id, dispatch]);
 
     useEffect(() => {
-        // Start monitoring microphone when component mounts
         if (hasMicAccess) {
             startMicrophoneMonitoring();
         }
 
         return () => {
-            // Cleanup when component unmounts
             stopMicrophoneMonitoring();
         };
     }, [hasMicAccess]);
 
-    // Clean up on unmount
     useEffect(() => {
         return () => {
             if (animationFrameRef.current) {
@@ -380,97 +426,21 @@ export default function Prepration() {
         };
     }, []);
 
-
-    useEffect(() => {
-        let isActive = true;
-        const run = async () => {
-            try {
-                const ReturnAction = await dispatch(fetchInterviewQuestionById(id)).unwrap();
-                if (!isActive) return;
-                console.log(ReturnAction?.business_sector);
-                setIndustry(ReturnAction.industry);
-                setBusinessSector(ReturnAction.business_sector);
-            } catch (e) {
-                // noop
-            }
-        };
-        run();
-        return () => { isActive = false; };
-    }, [id, dispatch]);
-
-
-    // useEffect(() => {
-    //     const fetchQuestion = async () => {
-    //         try {
-    //             const res = await axios.get(`/api/questions/${id}`);
-    //             setQuestion(res.data.question);
-    //             setIndustry(res.data.industry);
-    //             setBusinessSector(res.data.business_sector);
-    //         } catch (error) {
-    //             console.error("Error fetching question:", error);
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     };
-    //     fetchQuestion();
-
-    //     // Disable scrolling on mount
-    //     document.body.style.overflow = 'hidden';
-
-    //     // Re-enable scrolling on unmount
-    //     return () => {
-    //         document.body.style.overflow = 'visible';
-    //     };
-    // }, [id]);
-
-    useEffect(() => {
-        requestMicrophonePermission();
-    }, [])
-
-    useEffect(() => {
-        if (isReady && countdown > 0) {
-            const timer = setTimeout(() => {
-                setCountdown(countdown - 1);
-            }, 1000);
-            return () => clearTimeout(timer);
-        } else if (isReady && countdown === 0) {
-            requestMicrophonePermission();
-        }
-    }, [isReady, countdown]);
-
     const requestMicrophonePermission = async () => {
         console.log("Requesting mic access");
 
-        // Skip if already have microphone access
         if (hasMicAccess) {
             console.log("Microphone access already granted, skipping re-request");
-            if (videoRef.current) {
-                try {
-                    await videoRef.current.requestFullscreen();
-                    videoRef.current.play();
-                } catch (error) {
-                    console.error("Error with fullscreen or video playback:", error);
-                }
-            }
             return;
         }
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             setHasMicAccess(true);
-
-            // Do not stop the stream here; let startRecording handle it
-            // stream.getTracks().forEach(track => track.stop()); // Commented out
-
-            if (videoRef.current) {
-                await videoRef.current.requestFullscreen();
-                videoRef.current.play();
-            }
         } catch (error) {
             console.error("Error accessing microphone:", error);
             setIsReady(false);
             setCountdown(5);
-            // Optionally reset hasMicAccess if permission was revoked
             if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
                 setHasMicAccess(false);
             }
@@ -478,8 +448,19 @@ export default function Prepration() {
     };
 
     const handleStartInterview = () => {
+        console.log('Starting interview, video loaded:', isBackgroundVideoLoaded);
         setIsReady(true);
+        
+        // Start playing the background video (muted) during countdown
+        // if (backgroundVideoRef.current && isBackgroundVideoLoaded) {
+        //     backgroundVideoRef.current.play().then(() => {
+        //         console.log('Background video started playing');
+        //     }).catch(error => {
+        //         console.error('Error playing background video:', error);
+        //     });
+        // }
     };
+
     const [nextQuestion, setNextQuestion] = useState(null);
 
     useEffect(() => {
@@ -501,7 +482,6 @@ export default function Prepration() {
             exitInterviewRef.current = true;
             setExitInterview(true);
             
-            // Stop media recording if active
             if (mediaRecorder && isRecording) {
                 if (exitInterviewRef.current) {
                     mediaRecorder.stream.getTracks().forEach(track => track.stop());
@@ -510,30 +490,35 @@ export default function Prepration() {
                 mediaRecorder.stop();
             }
 
-            // Stop all media tracks
             if (mediaRecorder?.stream) {
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
             }
 
-            // Cancel animation frame
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
                 animationFrameRef.current = null;
             }
 
-            // Close audio context
             if (audioContextRef.current?.state !== 'closed') {
                 audioContextRef.current?.close();
                 audioContextRef.current = null;
             }
 
-            // Clean up analyzer
             if (analyserRef.current) {
                 analyserRef.current.disconnect();
                 analyserRef.current = null;
             }
 
-            // Reset all states
+            // Stop and reset videos
+            if (backgroundVideoRef.current) {
+                backgroundVideoRef.current.pause();
+                backgroundVideoRef.current.currentTime = 0;
+            }
+            if (videoRef.current) {
+                videoRef.current.pause();
+                videoRef.current.currentTime = 0;
+            }
+
             setIsRecording(false);
             setAudioLevel(0);
             setPreparationAudioLevel(0);
@@ -549,11 +534,11 @@ export default function Prepration() {
             setBusinessSector(null);
             setIsSubmitting(false);
             setIsVideoLoading(true);
+            setShowMainVideo(false);
+            setIsBackgroundVideoLoaded(false);
             
-            // Clear data array reference
             dataArrayRef.current = null;
 
-            // Exit fullscreen if active
             if (document.fullscreenElement) {
                 document.exitFullscreen();
             }
@@ -562,23 +547,8 @@ export default function Prepration() {
         } catch (error) {
             console.error('Error during exit cleanup:', error);
         } finally {
-            // Navigate away after cleanup
             navigate('/interview');
         }
-    };
-
-    const handleDragEnd = (event, info) => {
-        const boxWidth = boxRef.current?.offsetWidth || 280;
-        const boxHeight = boxRef.current?.offsetHeight || 200;
-
-        let newX = info.point.x;
-        let newY = info.point.y;
-
-        // Constrain to viewport boundaries
-        newX = Math.max(0, Math.min(newX, window.innerWidth - boxWidth));
-        newY = Math.max(0, Math.min(newY, window.innerHeight - boxHeight));
-
-        setPosition({ x: newX, y: newY });
     };
 
     if (isLoading) {
@@ -592,66 +562,43 @@ export default function Prepration() {
             </MasterLayout>
         );
     }
-    // <motion.div 
-    //     className="interview-intro-container"
-    //     initial={{ opacity: 0 }}
-    //     animate={{ opacity: 1 }}
-    //     transition={{ duration: 0.5 }}
-    // >
-    //     <div className="intro-header">
-    //         {/* {currentQuestion?.map((question) => (
-    //             <>
-    //             <h1>New Question</h1>
-    //             </>
-    //         ))} */}
-    //         <h1>Prepare for your interview</h1>
-    //         <p>{industry?.name} 😊 {businessSector?.name}</p>
-    //     </div>
 
-    //     {/* <div className="navigation-section">
-    //         <motion.div 
-    //             className="nav-item"
-    //             whileHover={{ scale: 1.05 }}
-    //             whileTap={{ scale: 0.95 }}
-    //         >
-    //             <h3>Question Overview</h3>
-    //         </motion.div>
-    //         <motion.div 
-    //             className="nav-item"
-    //             whileHover={{ scale: 1.05 }}
-    //             whileTap={{ scale: 0.95 }}
-    //         >
-    //             <h3>View Feedback History</h3>
-    //         </motion.div>
-    //     </div> */}
-    //     <motion.div style={{display: 'flex', justifyContent: 'center'}}>
-    //     <motion.button 
-    //         onClick={()=> navigate('/')}
-    //         className="start-button bg-warning"
-    //         whileHover={{ scale: 1.05 }}
-    //         whileTap={{ scale: 0.95 }}
-    //         style={{marginRight: '10px'}}
-    //     >
-    //         <h4>Back to Main Menu</h4>
-    //     </motion.button>
-
-    //     <motion.button 
-    //         className="start-button"
-    //         onClick={handleStartInterview}
-    //         whileHover={{ scale: 1.05 }}
-    //         whileTap={{ scale: 0.95 }}
-    //     >
-    //         I'm ready, start this interview
-    //     </motion.button>
-    //     </motion.div>
-    // </motion.div>
-
-    if (!isReady && !hasMicAccess || countdown > 0) {
+    // Show preparation screen with blurred background video
+    if (!showMainVideo) {
         return (
             <MasterLayout>
+                {/* Hidden video for preloading */}
+                <video
+                    ref={backgroundVideoRef}
+                    preload="auto"
+                    muted
+                    playsInline
+                    style={{ display: 'none' }}
+                />
+                
+                {/* Background video with blur effect */}
+                <div className="video-background-container">
+                    <video
+                        ref={backgroundVideoRef}
+                        autoPlay
+                        muted
+                        playsInline
+                        loop
+                        className="background-blur-video"
+                        style={{
+                            filter: 'blur(10px) brightness(0.7)',
+                            transform: 'scale(1.1)',
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                        }}
+                    />
+                    <div className="background-overlay"></div>
+                </div>
+
                 <div className="row mb-3 g-3 feature-cards align-items-center justify-content-center">
                     <div className="col-12 col-xl-5 d-flex justify-content-center">
-                        <div className="card border w-100 overflow-hidden position-relative">
+                        <div className="card border w-100 overflow-hidden position-relative glass-effect">
                             <div className="card-body p-4 d-flex flex-column text-center">
                                 <div className="d-flex justify-content-center mb-3">
                                     <div className="position-relative" style={{ width: '120px', height: '120px' }}>
@@ -694,7 +641,6 @@ export default function Prepration() {
                                     <div className="text-secondary small">Candidate</div>
                                 </div>
 
-                                {/* Show audio level in preparation screen */}
                                 {hasMicAccess && (
                                     <div className="mb-3">
                                         <div className="fw-semibold mb-1">Answer the question</div>
@@ -716,8 +662,15 @@ export default function Prepration() {
                                     </div>
                                 </div>
 
-                                <div className="d-grid" onClick={handleStartInterview}>
-                                    <button className="btn btn-primary btn-sm" id="finaliseBtn" disabled={isReady || !hasMicAccess}>I'm ready</button>
+                                <div className="d-grid">
+                                    <button 
+                                        className="btn btn-primary btn-sm" 
+                                        id="finaliseBtn" 
+                                        onClick={handleStartInterview}
+                                        disabled={isReady || !hasMicAccess || !isBackgroundVideoLoaded}
+                                    >
+                                        {!isBackgroundVideoLoaded ? 'Loading Video...' : 'I\'m ready'}
+                                    </button>
                                 </div>
 
                                 <div className="d-flex gap-2 mt-3">
@@ -736,29 +689,13 @@ export default function Prepration() {
         );
     }
 
-    // if (isReady && !hasMicAccess) {
-    //     return (
-    //         <MasterLayout>
-    //         <motion.div 
-    //             className="countdown-container"
-    //             initial={{ opacity: 0 }}
-    //             animate={{ opacity: 1 }}
-    //         >
-    //             <h2>Starting interview in {countdown} seconds...</h2>
-    //             <p>Please allow microphone access when prompted</p>
-    //         </motion.div>
-    //         </MasterLayout>
-    //     );
-    // }
-
+    // Main interview screen
     return (
         <MasterLayout>
-
             <div className="row mb-4">
                 <div className="col-12 col-xl-12">
                     <div className="card h-100 p-0">
                         <div className="card-body p-0">
-                            {/* Video area with overlay */}
                             <div className="ratio ratio-16x9 interview-overlay-wrap">
                                 {isVideoLoading && (
                                     <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
@@ -767,26 +704,32 @@ export default function Prepration() {
                                         </Spinner>
                                     </div>
                                 )}
+                                
+                                {/* Main Video Player */}
                                 <div className="video-wrapper">
                                     <video
                                         ref={videoRef}
-                                        src={`${baseUrl}/videos/MPF Interview Questions/${currentQuestion?.question?.title.replace(/\?+$/, '_')}.mp4`}
                                         autoPlay
                                         playsInline
                                         controls={false}
                                         disablePictureInPicture
                                         controlsList="nodownload nofullscreen noremoteplayback"
                                         onEnded={startRecording}
-                                        onLoadedData={() => setIsVideoLoading(false)}
-                                        onError={() => setIsVideoLoading(false)}
+                                        onLoadedData={() => {
+                                            console.log('Main video loaded');
+                                            setIsVideoLoading(false);
+                                        }}
+                                        onError={(e) => {
+                                            console.error('Main video error:', e);
+                                            setIsVideoLoading(false);
+                                        }}
                                         className={`video-player ${isRecording || isVideoLoading ? 'd-none' : ''}`}
                                     />
                                 </div>
 
-
+                                {/* Filler Video */}
                                 <div className="video-wrapper">
                                     <video
-                                        ref={videoRef}
                                         src={`${baseUrl}/videos/MPF Interview Filler/Avatar ${currentQuestion?.question?.avatar} FILLER.mp4`}
                                         autoPlay
                                         playsInline
@@ -800,9 +743,7 @@ export default function Prepration() {
                                     />
                                 </div>
 
-
-
-                                {/* Overlay Card (light theme, auto-height, top-right) */}
+                                {/* Overlay Card */}
                                 <div className="card bg-white text-dark border shadow-sm" style={{ position: 'absolute', top: '1rem', left: '1rem', width: '320px', zIndex: 10, borderRadius: '1rem', height: 'auto' }}>
                                     <div className="card-body p-4 d-flex flex-column text-center">
                                         <div className="mb-2">
@@ -811,7 +752,6 @@ export default function Prepration() {
                                         </div>
                                         <div className="mb-3">
                                             <div className="fw-semibold mb-1">Answer the question</div>
-                                            {/* Mic meter (green) */}
                                             <div className="mic-meter" aria-label="Microphone level" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={audioLevel * 100} style={{ height: '10px', background: '#e9ecef', borderRadius: '9999px', overflow: 'hidden' }}>
                                                 <div id="micMeterFill" style={{ height: '100%', width: `${audioLevel * 100}%`, background: 'linear-gradient(90deg, #20c997, #198754)', transition: 'width 100ms linear' }} />
                                             </div>
@@ -819,7 +759,6 @@ export default function Prepration() {
                                                 <i className="fas fa-microphone-alt me-2" /> {audioLevel < 0.2 ? 'Too quiet' : 'Loud and clear'}
                                             </div>
                                         </div>
-                                        {/* Question Section */}
                                         <div className="mb-3">
                                             <div className="fw-semibold text-dark small mb-1">Current Question</div>
                                             <div className="p-2 bg-light rounded border small">
@@ -836,7 +775,6 @@ export default function Prepration() {
                                         </div>
                                     </div>
                                 </div>
-                                {/* /Overlay Card */}
                             </div>
                             {isSubmitting && (
                                 <div className="position-fixed top-50 start-50 translate-middle text-center" style={{ zIndex: 1050, backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: '2rem', borderRadius: '10px', boxShadow: '0 0 20px rgba(0,0,0,0.2)' }}>
@@ -854,44 +792,10 @@ export default function Prepration() {
                                     </div>
                                 </div>
                             )}
-                            {/* /Video area */}
                         </div>
                     </div>
                 </div>
             </div>
         </MasterLayout>
     );
-
-
-
-
-    // return (
-    //     <MasterLayout>
-    //         <div className="row mb-4">
-    //             <div className="col-12 col-xl-12 p-0">
-    //                 <div className="card h-100 p-0">
-    //                     <div className="card-body p-0">
-    //                         <div className="ratio ratio-16x9">
-    //                         <video 
-    //             // ref={videoRef}
-    //             src={`${baseUrl}/videos/MPF Interview Questions/${currentQuestion?.question?.title?.replace(/\?+$/, '_')}.mp4`} 
-    //             autoPlay 
-    //             // muted={!hasMicAccess}
-    //             controls={false}
-    //             // onEnded={startRecording}
-    //             // className={`fullscreen-video ${isRecording ? 'd-none' : ''}`}
-    //         />
-    //                             {/* <iframe id="introVideo"
-    //                                 src={`${baseUrl}/videos/MPF Interview Questions/${currentQuestion?.title.replace(/\?+$/, '_')}.mp4`} 
-    //                                 title="Job Interview Simulation and Training"
-    //                                 allow="autoplay; encrypted-media; clipboard-write; picture-in-picture; web-share"
-    //                                 allowFullScreen loading="eager" referrerPolicy="origin-when-cross-origin">
-    //                             </iframe> */}
-    //                         </div>
-    //                     </div>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     </MasterLayout>
-    // )
 }
