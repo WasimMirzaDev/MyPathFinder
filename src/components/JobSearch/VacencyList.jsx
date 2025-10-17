@@ -27,6 +27,7 @@ const VacanciesList = () => {
   const [country, setCountry] = useState("uk");
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [salaryRange, setSalaryRange] = useState("");
+  const [remoteOnly, setRemoteOnly] = useState(false);
   const { filteredJobs, jobs, loading, error } = useSelector((state) => state.job);
   const [selectedJob, setSelectedJob] = useState(null);
   const { data } = useSelector((state) => state.user);
@@ -137,7 +138,7 @@ const VacanciesList = () => {
 
 
   const handleJobSearch = () => {
-    dispatch(fetchJobs({ searchQuery, location, country }))
+    dispatch(fetchJobs({ searchQuery, location, country, remote: remoteOnly }))
   }
 
 
@@ -543,6 +544,22 @@ useEffect(() => {
                         ))}
                       </select>
                     </div>
+
+                    <div className="mb-4">
+                      <h5 className="mb-0 text-body-highlight mb-2">Work Type</h5>
+                      <Form.Check 
+                        type="switch"
+                        id="remote-switch"
+                        label="Remote/Hybrid Only"
+                        checked={remoteOnly}
+                        onChange={(e) => setRemoteOnly(e.target.checked)}
+                        className="mb-2"
+                      />
+                      <small className="text-muted">
+                        {remoteOnly ? 'Showing only remote and hybrid positions' : 'Showing all positions'}
+                      </small>
+                    </div>
+
                   </div>
                   <Button className="text-align-center d-flex justify-content-center" style={{ height: "40px" }} disabled={loading} onClick={handleJobSearch}>
                     {loading ? <PulseLoader color="#fff" size={13} /> : (

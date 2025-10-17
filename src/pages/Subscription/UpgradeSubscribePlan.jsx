@@ -124,7 +124,7 @@ const UpgradeSubscribePlan = () => {
                                 <Card.Title className="text-center mb-4">
                                     <h3 className="h4">{plan?.title}</h3>
                                     <div className="display-4 fw-bold my-3">
-                                        ${plan.price}
+                                        £{plan.price}
                                         <small className="text-muted fw-normal fs-6">
                                             {getIntervalText(plan.interval)}
                                         </small>

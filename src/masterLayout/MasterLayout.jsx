@@ -159,7 +159,7 @@ const MasterLayout = ({ children }) => {
                 </Link>
                 </div> */}
 
-                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/payment-plans')}`} to="/payment-plans" role="button" data-bs-toggle="" aria-expanded="false">
+                <div className="nav-item-wrapper"><Link className={`nav-link label-1 ${isActive('/upgrade-subscription')}`} to="/upgrade-subscription" role="button" data-bs-toggle="" aria-expanded="false">
                   <div className="d-flex align-items-center"><span className="nav-link-icon"><Icon icon='tabler:tag' width={'18px'} height={'18px'} /></span><span className="nav-link-text-wrapper"><span className="nav-link-text">Payment Plans</span></span>
                   </div>
                 </Link>

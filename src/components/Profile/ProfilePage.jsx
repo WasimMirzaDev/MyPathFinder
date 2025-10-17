@@ -112,7 +112,7 @@ const handleSettingsChange = (name, value) => {
         setSubscription({
           id: subscription.id,
           planName: subscription.plan?.title || subscription.name,
-          amount: `$${subscription.plan?.price || '0.00'}`,
+          amount: `£${subscription.plan?.price || '0.00'}`,
           interval: subscription.plan?.interval || 'monthly',
           status: subscription.status,
           nextBillingDate: subscription.ends_at,
@@ -732,7 +732,7 @@ const SubscriptionTab = ({
               className="btn btn-primary" 
               onClick={onUpgradeSubscription}
             >
-              Upgrade Subscription
+              Change Subscription
             </button>
           </div>
         </>
