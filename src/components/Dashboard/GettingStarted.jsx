@@ -15,6 +15,8 @@ export default function GettingStarted({completedSteps}) {
     { key: "progress_tracker", label: "Used our in-built application progress tracker" },
   ];
 
+  const navigate = useNavigate();
+
 
   const manageRedirect = (step) => {
     if(step?.key == "first_cv"){

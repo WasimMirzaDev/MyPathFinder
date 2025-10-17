@@ -68,11 +68,11 @@ export default function Prepration() {
         if (videoUrl && backgroundVideoRef.current) {
             const backgroundVideo = backgroundVideoRef.current;
             console.log('Preloading video:', videoUrl);
-            
+
             backgroundVideo.src = videoUrl;
             backgroundVideo.preload = 'auto';
             backgroundVideo.muted = true;
-            
+
             const handleLoadedData = () => {
                 console.log('Background video loaded successfully');
                 setIsBackgroundVideoLoaded(true);
@@ -80,25 +80,25 @@ export default function Prepration() {
                 backgroundVideo.pause();
                 backgroundVideo.currentTime = 0;
             };
-            
+
             const handleCanPlay = () => {
                 console.log('Background video can play');
                 setIsBackgroundVideoLoaded(true);
             };
-            
+
             const handleError = (e) => {
                 console.error('Failed to load background video:', e);
                 console.error('Video error:', backgroundVideo.error);
                 setIsBackgroundVideoLoaded(false);
             };
-            
+
             backgroundVideo.addEventListener('loadeddata', handleLoadedData);
             backgroundVideo.addEventListener('canplay', handleCanPlay);
             backgroundVideo.addEventListener('error', handleError);
-            
+
             // Load the video
             backgroundVideo.load();
-            
+
             return () => {
                 backgroundVideo.removeEventListener('loadeddata', handleLoadedData);
                 backgroundVideo.removeEventListener('canplay', handleCanPlay);
@@ -135,7 +135,7 @@ export default function Prepration() {
                     console.log('Starting main video playback');
                     const mainVideo = videoRef.current;
                     const backgroundVideo = backgroundVideoRef.current;
-                    
+
                     // Use preloaded video if available, otherwise use URL directly
                     if (backgroundVideo && backgroundVideo.src && isBackgroundVideoLoaded) {
                         console.log('Using preloaded video from backgroundVideoRef');
@@ -145,9 +145,9 @@ export default function Prepration() {
                         mainVideo.src = videoUrl;
                     }
                     mainVideo.currentTime = 0;
-                    
+
                     console.log('Main video src set to:', mainVideo.src);
-                    
+
                     // Wait for the video to be ready
                     if (mainVideo.readyState < 3) {
                         console.log('Waiting for video to be ready...');
@@ -166,23 +166,23 @@ export default function Prepration() {
                     } else {
                         console.log('Video already ready, readyState:', mainVideo.readyState);
                     }
-                    
+
                     // Start muted first to comply with autoplay policies
                     mainVideo.muted = true;
                     await mainVideo.play();
                     console.log('Main video started playing (muted)');
-                    
+
                     // Then unmute after it starts playing
                     mainVideo.muted = false;
                     console.log('Main video unmuted');
-                    
+
                     // Request fullscreen
                     if (mainVideo.requestFullscreen) {
                         await mainVideo.requestFullscreen().catch(err => {
                             console.log('Fullscreen request failed:', err);
                         });
                     }
-                    
+
                 } catch (error) {
                     console.error('Error playing main video:', error);
                     // If autoplay fails, try playing muted
@@ -196,7 +196,7 @@ export default function Prepration() {
                     }
                 }
             };
-            
+
             playMainVideo();
         }
     }, [showMainVideo, videoUrl, isBackgroundVideoLoaded]);
@@ -254,7 +254,7 @@ export default function Prepration() {
                     console.log('Exiting interview, skipping audio upload');
                     return;
                 }
-            
+
                 if (!chunks.length) {
                     console.log('No audio chunks, skipping upload');
                     return;
@@ -371,21 +371,21 @@ export default function Prepration() {
             cancelAnimationFrame(animationFrameRef.current);
             animationFrameRef.current = null;
         }
-    
+
         if (audioContextRef.current) {
             if (audioContextRef.current.state !== 'closed') {
                 audioContextRef.current.close();
             }
             audioContextRef.current = null;
         }
-    
+
         if (mediaStreamRef.current) {
             mediaStreamRef.current.getTracks().forEach(track => {
                 track.stop();
             });
             mediaStreamRef.current = null;
         }
-    
+
         setPreparationAudioLevel(0);
     };
 
@@ -450,7 +450,7 @@ export default function Prepration() {
     const handleStartInterview = () => {
         console.log('Starting interview, video loaded:', isBackgroundVideoLoaded);
         setIsReady(true);
-        
+
         // Start playing the background video (muted) during countdown
         // if (backgroundVideoRef.current && isBackgroundVideoLoaded) {
         //     backgroundVideoRef.current.play().then(() => {
@@ -481,7 +481,7 @@ export default function Prepration() {
         try {
             exitInterviewRef.current = true;
             setExitInterview(true);
-            
+
             if (mediaRecorder && isRecording) {
                 if (exitInterviewRef.current) {
                     mediaRecorder.stream.getTracks().forEach(track => track.stop());
@@ -536,7 +536,7 @@ export default function Prepration() {
             setIsVideoLoading(true);
             setShowMainVideo(false);
             setIsBackgroundVideoLoaded(false);
-            
+
             dataArrayRef.current = null;
 
             if (document.fullscreenElement) {
@@ -575,111 +575,113 @@ export default function Prepration() {
                     playsInline
                     style={{ display: 'none' }}
                 />
-                
+
                 {/* Background video with blur effect */}
-                <div className="video-background-container">
-                    <video
-                        ref={backgroundVideoRef}
-                        autoPlay
-                        muted
-                        playsInline
-                        loop
-                        className="background-blur-video"
-                        style={{
-                            filter: 'blur(10px) brightness(0.7)',
-                            transform: 'scale(1.1)',
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover'
-                        }}
-                    />
-                    <div className="background-overlay"></div>
-                </div>
+                <div className="perpration-container">
+                    <div className="video-background-container">
+                        <video
+                            ref={backgroundVideoRef}
+                            autoPlay
+                            muted
+                            playsInline
+                            loop
+                            className="background-blur-video"
+                            style={{
+                                filter: 'blur(10px) brightness(0.7)',
+                                transform: 'scale(1.1)',
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                            }}
+                        />
+                        <div className="background-overlay"></div>
+                    </div>
 
-                <div className="row mb-3 g-3 feature-cards align-items-center justify-content-center">
-                    <div className="col-12 col-xl-5 d-flex justify-content-center">
-                        <div className="card border w-100 overflow-hidden position-relative glass-effect">
-                            <div className="card-body p-4 d-flex flex-column text-center">
-                                <div className="d-flex justify-content-center mb-3">
-                                    <div className="position-relative" style={{ width: '120px', height: '120px' }}>
-                                        <svg viewBox="0 0 60 60" className="countdown-ring" style={{ width: '100%', height: '100%' }}>
-                                            <circle
-                                                className="countdown-bg"
-                                                cx="30"
-                                                cy="30"
-                                                r="26"
-                                                fill="none"
-                                                stroke="#e9ecef"
-                                                strokeWidth="4"
-                                            />
-                                            <circle
-                                                className="countdown-progress"
-                                                cx="30"
-                                                cy="30"
-                                                r="26"
-                                                fill="none"
-                                                stroke="#4e73df"
-                                                strokeWidth="4"
-                                                strokeLinecap="round"
-                                                strokeDasharray="163.36"
-                                                strokeDashoffset={163.36 - (countdown * 27.23)}
-                                                style={{
-                                                    transition: 'stroke-dashoffset 1s linear',
-                                                    transform: 'rotate(-90deg)',
-                                                    transformOrigin: '50% 50%'
-                                                }}
-                                            />
-                                        </svg>
-                                        <div className="position-absolute top-50 start-50 translate-middle text-primary fw-bold" style={{ fontSize: '2rem' }}>
-                                            {countdown}
+                    <div className="row mb-3 g-3 feature-cards align-items-center justify-content-center">
+                        <div className="col-12 col-xl-5 d-flex justify-content-center">
+                            <div className="card border w-100 overflow-hidden position-relative glass-effect">
+                                <div className="card-body p-4 d-flex flex-column text-center">
+                                    <div className="d-flex justify-content-center mb-3">
+                                        <div className="position-relative" style={{ width: '120px', height: '120px' }}>
+                                            <svg viewBox="0 0 60 60" className="countdown-ring" style={{ width: '100%', height: '100%' }}>
+                                                <circle
+                                                    className="countdown-bg"
+                                                    cx="30"
+                                                    cy="30"
+                                                    r="26"
+                                                    fill="none"
+                                                    stroke="#e9ecef"
+                                                    strokeWidth="4"
+                                                />
+                                                <circle
+                                                    className="countdown-progress"
+                                                    cx="30"
+                                                    cy="30"
+                                                    r="26"
+                                                    fill="none"
+                                                    stroke="#4e73df"
+                                                    strokeWidth="4"
+                                                    strokeLinecap="round"
+                                                    strokeDasharray="163.36"
+                                                    strokeDashoffset={163.36 - (countdown * 27.23)}
+                                                    style={{
+                                                        transition: 'stroke-dashoffset 1s linear',
+                                                        transform: 'rotate(-90deg)',
+                                                        transformOrigin: '50% 50%'
+                                                    }}
+                                                />
+                                            </svg>
+                                            <div className="position-absolute top-50 start-50 translate-middle text-primary fw-bold" style={{ fontSize: '2rem' }}>
+                                                {countdown}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="mb-2">
-                                    <div className="fw-bold">{data?.name}</div>
-                                    <div className="text-secondary small">Candidate</div>
-                                </div>
+                                    <div className="mb-2">
+                                        <div className="fw-bold">{data?.name}</div>
+                                        <div className="text-secondary small">Candidate</div>
+                                    </div>
 
-                                {hasMicAccess && (
+                                    {hasMicAccess && (
+                                        <div className="mb-3">
+                                            <div className="fw-semibold mb-1">Answer the question</div>
+                                            <div className="mic-meter" aria-label="Microphone level" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={preparationAudioLevel * 100} style={{ height: '10px', background: '#e9ecef', borderRadius: '9999px', overflow: 'hidden' }}>
+                                                <div style={{ height: '100%', width: `${preparationAudioLevel * 100}%`, background: 'linear-gradient(90deg, #20c997, #198754)', transition: 'width 100ms linear' }} />
+                                            </div>
+                                            <div className={`text-secondary mt-2 ${preparationAudioLevel < 0.2 ? 'text-danger' : ''}`} style={{ fontSize: '0.85rem' }}>
+                                                <i className="fas fa-microphone-alt me-2" />
+                                                {preparationAudioLevel < 0.2 ? 'Too quiet' : 'Loud and clear'}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="mb-3">
-                                        <div className="fw-semibold mb-1">Answer the question</div>
-                                        <div className="mic-meter" aria-label="Microphone level" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={preparationAudioLevel * 100} style={{ height: '10px', background: '#e9ecef', borderRadius: '9999px', overflow: 'hidden' }}>
-                                            <div style={{ height: '100%', width: `${preparationAudioLevel * 100}%`, background: 'linear-gradient(90deg, #20c997, #198754)', transition: 'width 100ms linear' }} />
-                                        </div>
-                                        <div className={`text-secondary mt-2 ${preparationAudioLevel < 0.2 ? 'text-danger' : ''}`} style={{ fontSize: '0.85rem' }}>
-                                            <i className="fas fa-microphone-alt me-2" />
-                                            {preparationAudioLevel < 0.2 ? 'Too quiet' : 'Loud and clear'}
+                                        <div className="fw-semibold text-dark small mb-1">Current Question</div>
+                                        <div className="p-2 bg-light rounded border small">
+                                            <span className="fw-bold">#{currentQuestion?.question?.id}: {currentQuestion?.question?.title}</span><br />
+                                            <span className="text-secondary">{currentQuestion?.question?.speech}</span>
                                         </div>
                                     </div>
-                                )}
 
-                                <div className="mb-3">
-                                    <div className="fw-semibold text-dark small mb-1">Current Question</div>
-                                    <div className="p-2 bg-light rounded border small">
-                                        <span className="fw-bold">#{currentQuestion?.question?.id}: {currentQuestion?.question?.title}</span><br />
-                                        <span className="text-secondary">{currentQuestion?.question?.speech}</span>
+                                    <div className="d-grid">
+                                        <button
+                                            className="btn btn-primary btn-sm"
+                                            id="finaliseBtn"
+                                            onClick={handleStartInterview}
+                                            disabled={isReady || !hasMicAccess || !isBackgroundVideoLoaded}
+                                        >
+                                            {!isBackgroundVideoLoaded ? 'Loading Video...' : 'I\'m ready'}
+                                        </button>
                                     </div>
-                                </div>
 
-                                <div className="d-grid">
-                                    <button 
-                                        className="btn btn-primary btn-sm" 
-                                        id="finaliseBtn" 
-                                        onClick={handleStartInterview}
-                                        disabled={isReady || !hasMicAccess || !isBackgroundVideoLoaded}
-                                    >
-                                        {!isBackgroundVideoLoaded ? 'Loading Video...' : 'I\'m ready'}
-                                    </button>
-                                </div>
-
-                                <div className="d-flex gap-2 mt-3">
-                                    <button id="skipBtn" className="btn btn-outline-secondary btn-sm w-100" onClick={handleSkipQuestion} disabled={isReady}>
-                                        Skip question
-                                    </button>
-                                    <button id="exitBtn" className="btn btn-outline-secondary btn-sm w-100" onClick={handleExitInterview} disabled={isReady}>
-                                        Exit interview
-                                    </button>
+                                    <div className="d-flex gap-2 mt-3">
+                                        <button id="skipBtn" className="btn btn-outline-secondary btn-sm w-100" onClick={handleSkipQuestion} disabled={isReady}>
+                                            Skip question
+                                        </button>
+                                        <button id="exitBtn" className="btn btn-outline-secondary btn-sm w-100" onClick={handleExitInterview} disabled={isReady}>
+                                            Exit interview
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -704,7 +706,7 @@ export default function Prepration() {
                                         </Spinner>
                                     </div>
                                 )}
-                                
+
                                 {/* Main Video Player */}
                                 <div className="video-wrapper">
                                     <video
