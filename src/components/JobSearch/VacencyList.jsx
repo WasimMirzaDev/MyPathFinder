@@ -39,9 +39,7 @@ const VacanciesList = () => {
   const [showModalMPFCV, setShowModalMPFCV] = useState(false);
 
 
-  useEffect(()=>{
-    setSearchQuery(data?.role?.name);
-  },[data])
+
 
 
     const handleManualCV = async () => {
@@ -589,6 +587,7 @@ useEffect(() => {
                   <DataTable
                     columns={columns}
                     data={vacancies}
+                    pagination
                     responsive
                     persistTableHead
                   />

@@ -13,7 +13,6 @@ export default function GettingStarted({completedSteps}) {
     { key: "first_interview", label: "Practised your first interview using our simulator" },
     { key: "applied_job", label: "Applied for a vacancy using our smart job search" },
     { key: "progress_tracker", label: "Used our in-built application progress tracker" },
-    { key: "refer_friend", label: "leave a review" },
   ];
 
 
@@ -26,8 +25,6 @@ export default function GettingStarted({completedSteps}) {
         navigate('/application-tracker')
     }else if(step?.key == "applied_job"){
         navigate('/job-search')
-    }else if(step?.key == "refer_friend"){
-        navigate('/')
     }
   }
 

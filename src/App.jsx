@@ -36,6 +36,7 @@ import PrivacyPolicy from "./pages/TermsPolicy/Privacy";
 
 import ProfileSetting from "./pages/Profile/ProfileSetting";
 import ProfilePage from "./pages/Profile/Profile";
+import CareerAdvice from "./pages/CareerAdvice/CareerAdvice";
 
 import { useDispatch, useSelector } from "react-redux";
 import { login, getUser, logout } from "./features/user/userSlice";
@@ -79,6 +80,7 @@ const publicRoutes = [
 const protectedRoutes = [
   { path: '/', element: <Dashboard /> },
   { path: '/welcome', element: <Welcome /> },
+  { path: '/career-advice', element: <CareerAdvice /> },
   { path: '/upgrade-subscription', element:<UpgradeSubscribePlan/> },
   { path: '/subscription', element:<SubscribePlan/> },
   { path: '/upload-profile', element: <UploadProfile /> },
