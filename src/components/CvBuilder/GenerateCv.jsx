@@ -30,7 +30,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
 import CoverLetter from "./components/coverLetter";
 import html2pdf from "html2pdf.js";
-import { baseURL } from "../../api/axios";
+import { baseUrl } from "../../api/axios";
 
 
 const cardTemplate = [
