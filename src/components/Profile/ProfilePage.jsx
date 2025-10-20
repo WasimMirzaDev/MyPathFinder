@@ -704,6 +704,11 @@ const SubscriptionTab = ({
               <span className={`badge-${subscription.status === 'active' ? 'premium' : 'warning'} ms-2`}>
                 {subscription.status}
               </span>
+
+            {subscription.cancel_at_period_end ? (
+             <span className={`badge-${subscription.cancel_at_period_end == true ? 'premium' : 'warning'} ms-2`}>
+                {subscription.cancel_at_period_end == true ? 'Yes' : 'No'}
+              </span>) : null}
             </div>
             <div className="subscription-price">
               {subscription.amount}<span className="text-muted">/{subscription.interval}</span>

@@ -628,7 +628,7 @@ export default function CVBuilder() {
         }
 
         if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
-            const downloadUrl = `${baseURL}/resume/${id}/download?template=${selectedTemplate}`;
+            const downloadUrl = `${baseUrl}/resume/${id}/download?template=${selectedTemplate}`;
             window.open(downloadUrl, '_blank');
             setDownloadPDFLoader(false);
             return;
