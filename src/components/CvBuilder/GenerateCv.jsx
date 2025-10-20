@@ -30,7 +30,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
 import CoverLetter from "./components/coverLetter";
 import html2pdf from "html2pdf.js";
-
+import { baseURL } from "../../api/axios";
 
 
 const cardTemplate = [
@@ -79,7 +79,7 @@ export default function CVBuilder() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader } = useSelector((state) => state.resume);
+    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader , selectedTemplate } = useSelector((state) => state.resume);
     const { data } = useSelector((state) => state.user);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -98,7 +98,7 @@ export default function CVBuilder() {
     const [customSections, setCustomSections] = useState([]);
 
     // State for active tab
-    const [selectedTemplate, setSelectedTemplate] = useState("Default");
+    // const [selectedTemplate, setSelectedTemplate] = useState("Default");
 
 
     const handleTabClick = (tabName) => {
@@ -628,7 +628,7 @@ export default function CVBuilder() {
         }
 
         if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
-            const downloadUrl = `https://api.mypathfinder.uk/resume/${id}/download?template=${selectedTemplate}`;
+            const downloadUrl = `${baseURL}/resume/${id}/download?template=${selectedTemplate}`;
             window.open(downloadUrl, '_blank');
             setDownloadPDFLoader(false);
             return;

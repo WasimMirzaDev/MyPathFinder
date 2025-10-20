@@ -114,7 +114,7 @@ const resumeSlice = createSlice({
       saveChangesLoader: false,
       AiCvLoader: false,
       AiResumeLoader: false,
-      selectedTemplate:"Clasic",
+      selectedTemplate:"Default",
       coverletterjson:{},
       coverletterLoader:false,
       prevParsedResume:{},
@@ -198,6 +198,7 @@ const resumeSlice = createSlice({
         .addCase(fetchResumeById.fulfilled, (state, action) => {
           state.loading = false;
           state.AnalyseResumeData = [];
+          state.selectedTemplate = action.payload?.data?.cv_resumejson?.template ?? "Default";
           if (action.payload?.data?.cv_resumejson) {
             state.prevParsedResume = action.payload.data.cv_resumejson;
             state.parsedResume = action.payload.data.cv_resumejson;
