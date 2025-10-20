@@ -290,11 +290,11 @@ export default function BuildingComponents() {
         setMessage(`Analyzing your CV in ${uploadFormData.languageStyle || 'standard'} style...`)
 
         setTimeout(() => {
-          // toast.info('Finalizing your CV...', {
+          // toast.info('Finalising your CV...', {
           //   autoClose: 20000,
           //   position: 'top-right'
           // });
-          setMessage('Finalizing your CV...')
+          setMessage('Finalising your CV...')
         }, 9000); // 7 seconds after the second toast (12s total)
       }, 9000); // 7 seconds after the first toast (7s total)
     }, 20000); // 20 seconds after initial toast
