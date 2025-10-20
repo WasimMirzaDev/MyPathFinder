@@ -45,6 +45,7 @@ import UpgradeSubscribePlan from "./pages/Subscription/UpgradeSubscribePlan";
 
 import InterviewFeedback from "./pages/Interview/InterviewFeedback";
 import Career from "./pages/CareerAdvice";
+import SignOut from "./pages/Auth/SignOut";
 
 // const Loader = () => (
 //   <div id="preloader">
@@ -75,6 +76,7 @@ const publicRoutes = [
   { path: '/privacy-policy', element: <PrivacyPolicy /> },
   { path: '/career-advice', element: <Career /> },
   { path: '*', element: <ErrorPage /> },
+  { path: '/sign-out', element: <SignOut /> },
 ];
 
 const protectedRoutes = [
