@@ -12,6 +12,8 @@ import { loadStripe } from '@stripe/stripe-js';
 import { useNavigate } from 'react-router-dom';
 import { updateCurrentPassword } from '../../features/user/userSlice';
 import Swal from 'sweetalert2';
+import Alert from "react-bootstrap/Alert";
+
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe(stripe_public_key);
 
@@ -22,6 +24,13 @@ const ProfilePage = () => {
 
   const [activeTab, setActiveTab] = useState('personal');
   const [imagePreview, setImagePreview] = useState(null);
+  const [credit, setCredit] = useState(null);
+
+  useEffect(() => {
+      axios.get('api/customer/credit').then(res => {
+          setCredit(res.data.credit);
+      });
+  }, []);
   const [editedUser, setEditedUser] = useState({
     firstName: 'Johnathan',
     lastName: 'Doe',
@@ -383,6 +392,7 @@ const ProfilePage = () => {
               onMakeDefault={handleMakeDefault}
               onRemovePaymentMethod={setPaymentMethodToRemove}
               formatDate={formatDate}
+              credit={credit}
             />
           )}
 
@@ -683,13 +693,23 @@ const SubscriptionTab = ({
   onAddPaymentMethod,
   onMakeDefault,
   onRemovePaymentMethod,
-  formatDate
+  formatDate,
+  credit
 }) => (
   <div className="tab-pane">
     <h3 className="section-title">Subscription Details</h3>
 
+
+
     {/* Subscription Card */}
+     {credit > 0 && (
+    <Alert variant="success" className="mb-4">
+        You have <strong>£{credit.toFixed(2)}</strong> credit available — it will
+        be automatically applied to your next invoice.
+    </Alert>
+)}
     <div className="subscription-card premium mb-4">
+
       {loading ? (
         <div className="text-center py-4">
           <div className="spinner-border text-primary" role="status">

@@ -94,7 +94,6 @@ const protectedRoutes = [
   { path: '/interview', element: <Interview /> },
   { path: '/prepration/:id', element: <Prepration /> },
   { path: '/job-search', element: <JobSearch /> },
-  { path: '/get-started', element: <GetStarted /> },
   { path: '/payment-plans', element: <PaymentPlans /> },
   { path: '/support', element: <Support /> },
   { path: '/profile-settings', element: <ProfileSetting /> },

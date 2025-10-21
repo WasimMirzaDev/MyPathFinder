@@ -145,7 +145,25 @@ const UpgradeSubscribePlan = () => {
                                 <Button 
                     variant={plan.interval === 'monthly' ? 'primary' : 'outline-primary'}
                     className="w-100"
-                    onClick={() => handleSubscribe(plan.id)}
+                    onClick={() => {
+                            Swal.fire({
+                                title: "Confirm Plan Change",
+                                html: `
+                                    Changing your subscription may result in additional charges or credits.<br>
+                                    Stripe will automatically adjust your next billing cycle based on usage and time left in current plan.<br><br>
+                                    <strong>Do you want to continue?</strong>
+                                `,
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "Yes, proceed",
+                                cancelButtonText: "Cancel",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    handleSubscribe(plan.id); // ✅ proceed only if confirmed
+                                }
+                            });
+                        }}
+                        
                     disabled={userData?.plan_id === plan.id || subscribing}
                 >
                     {subscribing ? (

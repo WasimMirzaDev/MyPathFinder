@@ -80,7 +80,7 @@ export default function Welcome() {
                                 <p className="fs-8">
                                     Head over to your personal dashboard and explore. The opportunities are endless!
                                 </p>
-                                <Link className="stretched-link btn btn-primary w-100" to="/get-started">Get Started</Link>
+                                <Link className="stretched-link btn btn-primary w-100" to="/">Get Started</Link>
                             </div>
                         </div>
                     </div>
