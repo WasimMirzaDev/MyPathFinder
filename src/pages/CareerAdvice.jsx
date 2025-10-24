@@ -120,19 +120,9 @@ const CareerAdviceSection = ({ sectionId, count }) => {
               </div>
             </div>
             <ul className="mb-0">
-              <li>Ignore buzzwords, spot the real needs – highlight recurring verbs (e.g.
-                <em>own</em>, <em>deliver</em>,
-                <em>build</em>) to decode what matters
-                most.</li>
-              <li>Find the pain point – most jobs exist to
-                solve a problem. Can you identify it?</li>
-              <li>Use the "two skills deep" rule – if they ask
-                for X, they also value Y (e.g. if they want
-                "Excel", they likely want "data
-                insight").</li>
-              <li>Flag impossible wishlists – if you meet
-                <strong>60–70%</strong>, you're likely a
-                solid candidate.</li>
+              {section.tips.map((tip, index) => (
+                <li key={index}>{tip}</li>
+              ))}
             </ul>
           </div>
         </div>
