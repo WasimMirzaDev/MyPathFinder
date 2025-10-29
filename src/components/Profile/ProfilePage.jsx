@@ -27,6 +27,14 @@ const ProfilePage = () => {
   const [credit, setCredit] = useState(null);
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const settings = urlParams.get('settings');
+    if (settings === 'true') {
+      setActiveTab('settings');
+    }
+  }, []);
+
+  useEffect(() => {
       axios.get('api/customer/credit').then(res => {
           setCredit(res.data.credit);
       });

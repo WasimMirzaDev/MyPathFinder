@@ -30,9 +30,9 @@ const validationSchema = Yup.object().shape({
       'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
     )
     .required('Password is required'),
-  password_confirmation: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .required('Confirm Password is required'),
+  // password_confirmation: Yup.string()
+  //   .oneOf([Yup.ref('password'), null], 'Passwords must match')
+  //   .required('Confirm Password is required'),
   phone: Yup.string()
     .required('Phone number is required')
     .test('is-valid-e164', 'Enter a valid phone number with country code', (value) => !!value && isValidPhoneNumber(value)),
@@ -71,7 +71,7 @@ export default function SignUp() {
       name: '',
       email: '',
       password: '',
-      password_confirmation: '',
+      // password_confirmation: '',
       phone: '',
       terms: false
     },
@@ -86,8 +86,14 @@ export default function SignUp() {
           setFieldError(key, '');
         });
 
+        // Add password_confirmation with the same value as password
+        const formData = {
+          ...values,
+          password_confirmation: values.password
+        };
+
         // Dispatch the register action with user data
-        const result = await dispatch(register(values)).unwrap();
+        const result = await dispatch(register(formData)).unwrap();
 
         // If we get here, the registration was successful
         toast.success('Registration successful! Redirecting...');
@@ -142,28 +148,29 @@ export default function SignUp() {
                         <img src={logo} alt="MyPathfinder logo" width="200" />
                       </div>
                     </div>
-                    <h3 className="fw-bold">Sign Up</h3>
-                    <p>Create your account today</p>
+                    <h3 className="fw-bold">Access AI-powered CVs, job-matching & interview practise</h3>
+                    
+                    <p>Free and unlimited for 7 days</p>
                   </div>
 
-                  {/* <Button variant="light" className="w-100 mb-3 gap-2 d-flex align-items-center justify-content-center border google-btn" onClick={() => window.location.href = '/auth/google'}>
+                  <Button variant="light" className="w-100 mb-3 gap-2 d-flex align-items-center justify-content-center border google-btn" onClick={() => window.location.href = '/auth/google'}>
                     <svg width={13} className="me-2 text-danger" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                       <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
                     </svg>
-                    Continue with Google
+                    sign in with Google
                   </Button>
 
-                  <Button variant="light" className="w-100 mb-3 gap-2 d-flex align-items-center justify-content-center border facebook-btn" onClick={() => window.location.href = '/auth/facebook'}>
+                  {/* <Button variant="light" className="w-100 mb-3 gap-2 d-flex align-items-center justify-content-center border facebook-btn" onClick={() => window.location.href = '/auth/facebook'}>
                     <svg width={13} className="me-2" style={{ color: '#1877f2' }} aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                       <path fill="currentColor" d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256C0 376 82.7 476.8 194.2 504.5V334.2H141.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287V510.1C413.8 494.8 512 386.9 512 256h0z"></path>
                     </svg>
                     Continue with Facebook
-                  </Button>
+                  </Button> */}
 
                   <div className="position-relative mt-4">
                     <hr className="bg-body-secondary" />
                     <div className="divider-content-center bg-body-emphasis">or use email</div>
-                  </div> */}
+                  </div>
 
                   <BootstrapForm onSubmit={handleSubmit}>
                     {apiError && (
@@ -236,8 +243,8 @@ export default function SignUp() {
                       )}
                     </div>
 
-                    <div className="row g-3 mb-3">
-                      <div className="col-sm-6">
+                    {/* <div className="row g-3 mb-3"> */}
+                      <div className="col-sm-12">
                         <label className="form-label" htmlFor="password">Password</label>
                         <div className="position-relative">
                           <div className="position-relative">
@@ -269,7 +276,7 @@ export default function SignUp() {
                         </div>
                       </div>
 
-                      <div className="col-sm-6">
+                      {/* <div className="col-sm-6">
                         <label className="form-label" htmlFor="password_confirmation">Confirm Password</label>
                         <div className="position-relative">
                           <div className="position-relative">
@@ -299,8 +306,8 @@ export default function SignUp() {
                             </div>
                           )}
                         </div>
-                      </div>
-                    </div>
+                      </div> */}
+                    {/* </div> */}
 
                     <div className="form-check mb-3">
                       <input

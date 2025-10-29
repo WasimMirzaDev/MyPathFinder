@@ -54,10 +54,10 @@ const Interview = () => {
                     slug: "E"
                 }
             }));
-
-
-            dispatch(fetchInterviewQuestions());
+            console.log("Dispatching fetchInterviewHistory action");
             dispatch(fetchInterviewHistory());
+            console.log("Dispatching fetchInterviewQuestions action");
+            dispatch(fetchInterviewQuestions());
         } else {
             dispatch(setFilters({
                 subcategory: null,
@@ -166,10 +166,14 @@ const Interview = () => {
     useEffect(() => {
         if (filters) {
             dispatch(fetchInterviewQuestions());
-            // dispatch(fetchInterviewHistory());
+
         }
     }, [filters]);
 
+
+    useEffect(()=>{
+        dispatch(fetchInterviewHistory());
+    },[])
 
     const resetFilters = () => {
         dispatch(setFilters({

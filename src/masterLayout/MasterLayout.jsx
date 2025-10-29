@@ -349,7 +349,7 @@ const MasterLayout = ({ children }) => {
                   <ul className="nav d-flex flex-column mb-2 pb-1">
                     <li className="nav-item"><Link className="nav-link px-3 d-block" to="/profile"> <span className="me-2 align-bottom" data-feather="user"></span><span>Profile</span></Link></li>
                     <li className="nav-item"><Link className="nav-link px-3 d-block" to="/"><span className="me-2 align-bottom" data-feather="pie-chart"></span>Dashboard</Link></li>
-                    <li className="nav-item"><Link className="nav-link px-3 d-block" to="#"> <span className="me-2 align-bottom" data-feather="settings"></span>Settings &amp; Privacy </Link></li>
+                    <li className="nav-item"><Link className="nav-link px-3 d-block" to="/profile?settings=true"> <span className="me-2 align-bottom" data-feather="settings"></span>Settings &amp; Privacy </Link></li>
                     {/* <li className="nav-item"><Link className="nav-link px-3 d-block" to="#"> <span className="me-2 align-bottom" data-feather="help-circle"></span>Help Center</Link></li> */}
                   </ul>
                 </div>
