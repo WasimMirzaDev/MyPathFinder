@@ -235,6 +235,7 @@ export default function SignUp() {
                           value={values.phone}
                           onChange={(val) => setFieldValue('phone', val)}
                           onBlur={handleBlur}
+                          className='form-control'
                         />
                       </div>
                       {touched.phone && errors.phone && (

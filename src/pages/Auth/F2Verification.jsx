@@ -31,7 +31,7 @@ export default function F2Verification() {
 
 
                                             <fieldset className="border-0 p-0 m-0" aria-describedby="otpHelp" role="group">
-                                                <legend className="visually-hidden">One-time verification code</legend>
+                                                <legend className="visually-hidden">Your one-time verification code</legend>
                                                 <div className="otp-group mb-2">
                                                     <input
                                                         className="form-control otp-input"
