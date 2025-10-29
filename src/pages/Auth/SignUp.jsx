@@ -159,7 +159,7 @@ export default function SignUp() {
                     </svg>
                     sign in with Google
                   </Button> */}
-                  <GoogleSignIn />
+                  {/* <GoogleSignIn /> */}
 
                   {/* <Button variant="light" className="w-100 mb-3 gap-2 d-flex align-items-center justify-content-center border facebook-btn" onClick={() => window.location.href = '/auth/facebook'}>
                     <svg width={13} className="me-2" style={{ color: '#1877f2' }} aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">

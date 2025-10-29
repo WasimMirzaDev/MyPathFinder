@@ -104,7 +104,7 @@ export default function SignIn() {
                         <h3 className="fw-bold">Sign In</h3>
                         <p>Get access to your account</p>
                       </div>
-                      <GoogleSignIn />
+                      {/* <GoogleSignIn /> */}
                       <div className="position-relative">
                         <hr className="bg-body-secondary mt-5 mb-4" />
                         <div className="divider-content-center bg-body-emphasis">
