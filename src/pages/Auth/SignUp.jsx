@@ -225,6 +225,7 @@ export default function SignUp() {
 
                     <div className="mb-3 text-start">
                       <label className="form-label" htmlFor="phone">Phone number</label>
+                      <label className="form-label" htmlFor="phone" style={{fontSize:"9px", color:"#6c757d" , margin:"0" , padding:"0 8px"}}>(Your one-time verification code)</label>
                       <div>
                         <PhoneInput
                           id="phone"
@@ -311,7 +312,7 @@ export default function SignUp() {
                       </div> */}
                     {/* </div> */}
 
-                    <div className="form-check mb-3">
+                    <div className="form-check mb-3 mt-2">
                       <input
                         id="terms"
                         name="terms"
