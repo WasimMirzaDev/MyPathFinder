@@ -77,6 +77,15 @@ export const updateUserCurrentPassword = async (formData) => {
   return response.data;
 }
 
+export const userGoogleSignIn = async (formData) => {
+  const response = await axios.post('/auth/firebase', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+}
+
 export const userForgotPassword = async (formData) => {
   try {
     const response = await axios.post('/password/email', formData, {

@@ -4,21 +4,32 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../utils/firebase";
 import axios from "../../utils/axios";
 import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { googleSignIn } from "../../features/user/userSlice";
 
 export default function GoogleSignIn() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   async function handleGoogleSignIn() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       // Get Firebase ID token (JWT)
       const idToken = await result.user.getIdToken(/* forceRefresh = */ true);
 
-      // Send token to your Laravel backend
-      const res = await axios.post("/api/auth/firebase", {
-        idToken
-      });
-      const data = await res.data;
-      // data should include your Laravel auth token / user details
-      console.log("Backend response:", data);
+      const formData = new FormData();
+      formData.append("idToken", idToken);
+
+      // // Send token to your Laravel backend
+      // const res = await axios.post("/api/auth/firebase", {
+      //   idToken
+      // });
+      // const data = await res.data;
+      // // data should include your Laravel auth token / user details
+      // console.log("Backend response:", data);
+      const response = await dispatch(googleSignIn(formData)).unwrap();
+      navigate("/");
+      console.log(response);
     } catch (err) {
       console.error("Google sign-in error", err);
     }

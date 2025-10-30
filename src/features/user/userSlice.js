@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps , updateUserProfileSettings ,userForgotPassword , userResetPassword , updateUserCurrentPassword} from "./userAPI";
+import { registerUser, loginUser, fetchUser, updateUserProfile, getAllIndustries, getAllRoles , getAllEducationLevels , getAllUserCompletedSteps ,updateUserCompletedSteps , updateUserProfileSettings ,userForgotPassword , userResetPassword , updateUserCurrentPassword , userGoogleSignIn} from "./userAPI";
 import { REHYDRATE } from 'redux-persist';
 
 
@@ -57,6 +57,15 @@ export const updateCurrentPassword = createAsyncThunk(
     return await updateUserCurrentPassword(formData);
   }
 );
+
+export const googleSignIn = createAsyncThunk(
+  "user/google-sign-in",
+  async (formData) => {
+    return await userGoogleSignIn(formData);
+  }
+);
+
+
 
 
 export const ForgotPassword = createAsyncThunk(
@@ -271,7 +280,18 @@ const userSlice = createSlice({
       .addCase(updateCurrentPassword.rejected, (state, action) => {
         state.loading = false;
       })
-
+      .addCase(googleSignIn.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(googleSignIn.fulfilled, (state, action) => {
+        state.data = action.payload.user;
+        state.accessToken = action.payload.token;
+        localStorage.setItem("access_token", action.payload.token);
+        state.loading = false;
+      })
+      .addCase(googleSignIn.rejected, (state, action) => {
+        state.loading = false;
+      })
       .addCase(REHYDRATE, (state) => {
         state.loading = false;
         state.bootstrapping = false;
