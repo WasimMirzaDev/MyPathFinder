@@ -120,7 +120,7 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                     </div>
 
                                     {/* Average Score */}
-                                    <div className="col-12 col-sm-auto flex-1 text-truncate">
+                                    {/* <div className="col-12 col-sm-auto flex-1 text-truncate">
                                         <h6>Average User Score</h6>
                                         <div className="d-flex align-items-center gap-1">
                                             <div style={{ "--phoenix-circle-progress-bar": q.latest_avg_score }}>
@@ -153,7 +153,7 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                             </div>
                                             <h6 className="mb-0 text-body">{q.latest_avg_score}%</h6>
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     {/* Retry Button */}
                                     <div className="col-12 col-sm-auto">
