@@ -9,8 +9,8 @@ import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { FaExclamationCircle } from 'react-icons/fa';
 import logo from '../../assets/images/MPF-logo.svg';
 import { Button, Form as BootstrapForm, Alert, Spinner } from 'react-bootstrap';
-import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
+// import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
+// import 'react-phone-number-input/style.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../../features/user/userSlice';
 import GoogleSignIn from './GoogleSignIn';
@@ -33,9 +33,9 @@ const validationSchema = Yup.object().shape({
   // password_confirmation: Yup.string()
   //   .oneOf([Yup.ref('password'), null], 'Passwords must match')
   //   .required('Confirm Password is required'),
-  phone: Yup.string()
-    .required('Phone number is required')
-    .test('is-valid-e164', 'Enter a valid phone number with country code', (value) => !!value && isValidPhoneNumber(value)),
+  // phone: Yup.string()
+  //   .required('Phone number is required')
+  //   .test('is-valid-e164', 'Enter a valid phone number with country code', (value) => !!value && isValidPhoneNumber(value)),
   terms: Yup.boolean()
     .oneOf([true], 'You must accept the terms and conditions')
     .required('You must accept the terms and conditions')
@@ -72,7 +72,7 @@ export default function SignUp() {
       email: '',
       password: '',
       // password_confirmation: '',
-      phone: '',
+      // phone: '',
       terms: false
     },
     validationSchema,
@@ -97,7 +97,7 @@ export default function SignUp() {
 
         // If we get here, the registration was successful
         toast.success('Registration successful! Redirecting...');
-        navigate('/');
+        navigate('/verification');
       } catch (error) {
         console.error('Registration error:', error);
 
@@ -159,7 +159,7 @@ export default function SignUp() {
                     </svg>
                     sign in with Google
                   </Button> */}
-                  {/* <GoogleSignIn /> */}
+                  <GoogleSignIn />
 
                   {/* <Button variant="light" className="w-100 mb-3 gap-2 d-flex align-items-center justify-content-center border facebook-btn" onClick={() => window.location.href = '/auth/facebook'}>
                     <svg width={13} className="me-2" style={{ color: '#1877f2' }} aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -223,7 +223,7 @@ export default function SignUp() {
                       )}
                     </div>
 
-                    <div className="mb-3 text-start">
+                    {/* <div className="mb-3 text-start">
                       <label className="form-label" htmlFor="phone">Phone number</label>
                       <label className="form-label" htmlFor="phone" style={{fontSize:"9px", color:"#6c757d" , margin:"0" , padding:"0 8px"}}>(Your one-time verification code)</label>
                       <div>
@@ -244,7 +244,7 @@ export default function SignUp() {
                           {errors.phone}
                         </div>
                       )}
-                    </div>
+                    </div> */}
 
                     {/* <div className="row g-3 mb-3"> */}
                       <div className="col-sm-12">

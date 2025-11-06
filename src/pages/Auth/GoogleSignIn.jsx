@@ -28,8 +28,12 @@ export default function GoogleSignIn() {
       // // data should include your Laravel auth token / user details
       // console.log("Backend response:", data);
       const response = await dispatch(googleSignIn(formData)).unwrap();
-      navigate("/");
       console.log(response);
+      if(response.user?.phone == null){
+        navigate("/verification");
+      }else{
+        navigate("/");
+      }
     } catch (err) {
       console.error("Google sign-in error", err);
     }

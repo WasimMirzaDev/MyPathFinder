@@ -1,10 +1,11 @@
 import React from 'react'
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 
 import logo from '../../assets/images/MPF-logo.svg'
 
 export default function F2Verification() {
+    const navigate = useNavigate();
     return (
         <main className="main" id="top">
             <div className="container-fluid bg-body-tertiary dark__bg-gray-1200">
@@ -96,7 +97,7 @@ export default function F2Verification() {
                                                 <label className="form-check-label" htmlFor="remember-device">Don’t ask again on this device</label>
                                             </div>
 
-                                            <button type="submit" className="btn btn-secondary w-100 mb-3">Verify</button>
+                                            <button type="button" onClick={() => navigate('/')} className="btn btn-secondary w-100 mb-3" >Verify</button>
                                             <Link className="fs-9" to="#!">Didn’t receive the code? Contact us.</Link>
                                         </form>
                                     </div>

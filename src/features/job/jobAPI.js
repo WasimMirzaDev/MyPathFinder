@@ -3,8 +3,7 @@ import axios from "../../api/axios";
 export const fetchUserJobs = async (formData) => {
   const response = await axios.get(`/fetch-jobs?q=${encodeURIComponent(
     formData.searchQuery + " job"
-        )}&gl=${formData.country}&location=${encodeURIComponent(formData.location)}&remote=${formData.remote}`); // e.g. /me endpoint
-//   console.log("request hit",response.data);
+        )}&gl=${formData.country}&location=${encodeURIComponent(formData.location)}&remote=${formData.remote}&page=${formData.page}`); // e.g. /me endpoint
   return response.data;
 };
 

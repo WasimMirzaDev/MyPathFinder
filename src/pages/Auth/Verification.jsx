@@ -1,11 +1,28 @@
-import React from 'react'
+import React, { useState , useEffect} from 'react'
 import { Link } from "react-router-dom";
-
-
+import { updateProfileSettings } from '../../features/user/userSlice';
+import { useDispatch } from 'react-redux';
 import logo from '../../assets/images/MPF-logo.svg'
-
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function Verification() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [phone, setPhone] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateProfileSettings({ phone }));
+      navigate('/2f-verification');
+    } catch (error) {
+      console.error('Error verifying phone number:', error);
+      toast.error('Failed to verify phone number');
+    }
+  };
+
   return (
     <main className="main" id="top">
       <div className="container-fluid bg-body-tertiary dark__bg-gray-1200">
@@ -30,7 +47,7 @@ export default function Verification() {
                           We’ll text a 6-digit verification code to the phone number below.
                         </p>
 
-                        <form action="2fa.html" method="post" data-2fa-form="data-2fa-form" noValidate="novalidate">
+                        <form onSubmit={handleSubmit} data-2fa-form="data-2fa-form" noValidate="novalidate">
                           <div className="mb-3 text-start">
                             <label className="form-label" htmlFor="tel">Phone number</label>
                             <div className="form-icon-container">
@@ -45,6 +62,8 @@ export default function Verification() {
                                 autoCapitalize="off"
                                 required
                                 pattern="^\+?[1-9]\d{1,14}$"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
                               />
                               <svg width={11} className="svg-inline--fa fa-phone form-icon fs-9 text-body" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="phone" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"></path></svg>
                             </div>
