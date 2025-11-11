@@ -136,7 +136,8 @@ const ProfilePage = () => {
           features: subscription.plan?.features || [],
           subId: subscription.sub_id,
           cus_id: subscription.cus_id,
-          subscriptionDetails: subscription
+          subscriptionDetails: subscription,
+          cancel_at_period_end: subscription.cancel_at_period_end
         });
       }
     } catch (error) {
@@ -732,11 +733,11 @@ const SubscriptionTab = ({
               <span className={`badge-${subscription.status === 'active' ? 'premium' : 'warning'} ms-2`}>
                 {subscription.status}
               </span>
-
+{/* 
             {subscription.cancel_at_period_end ? (
              <span className={`badge-${subscription.cancel_at_period_end == true ? 'premium' : 'warning'} ms-2`}>
                 {subscription.cancel_at_period_end == true ? 'Yes' : 'No'}
-              </span>) : null}
+              </span>) : null} */}
             </div>
             <div className="subscription-price">
               {subscription.amount}<span className="text-muted">/{subscription.interval}</span>
@@ -745,7 +746,7 @@ const SubscriptionTab = ({
 
           {subscription.nextBillingDate && (
             <p className="text-muted">
-              Next billing date: <strong>{formatDate(subscription.nextBillingDate)}</strong>
+              {subscription.cancel_at_period_end ? 'Cancel at period end date: ' : 'Next billing date: ' } <strong>{formatDate(subscription.nextBillingDate)}</strong>
             </p>
           )}
 
