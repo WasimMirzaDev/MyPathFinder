@@ -18,6 +18,7 @@ export default function Prepration() {
     const { interviewQuestions, currentQuestion, loading, error, parsedFeedback } = useSelector((state) => state.interview);
     const { data } = useSelector((state) => state.user);
     const [isRecording, setIsRecording] = useState(false);
+    const [loadingText, setLoadingText] = useState('');
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [audioChunks, setAudioChunks] = useState([]);
     const [question, setQuestion] = useState(null);
@@ -266,18 +267,82 @@ export default function Prepration() {
                 formData.append('question_id', id);
 
                 try {
+                    // Set initial loading state
+                    setLoadingText('Processing your audio...');
                     setIsSubmitting(true);
-                    const response = await axios.post('/api/interview/submit-audio', formData, {
+                    
+                    // First API call - Audio transcription
+                    const transcriptionResponse = await axios.post('/api/interview/submit-audio', formData, {
                         headers: { 'Content-Type': 'multipart/form-data' },
                         onUploadProgress: (progressEvent) => {
                             const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                             console.log(`Upload progress: ${progress}%`);
                         }
                     });
-                    dispatch(setParsedFeedback(response.data));
+
+                    if (!transcriptionResponse.data.transcription) {
+                        throw new Error('No transcription received from server');
+                    }
+
+                    // Update loading state for evaluation
+                    setLoadingText('Evaluating your response...');
+                    
+                    // Second API call - Evaluation
+                    const evaluationFormData = new FormData();
+                    evaluationFormData.append('audio_time', transcriptionResponse.data.audio_time);
+                    evaluationFormData.append('whisper_time', transcriptionResponse.data.whisper_time);
+                    evaluationFormData.append('transcription', transcriptionResponse.data.transcription);
+                    evaluationFormData.append('audio_path', transcriptionResponse.data.audio_path);
+                    evaluationFormData.append('question_id', id);
+
+                    const evaluationResponse = await axios.post('/api/interview/submit-evaluation', evaluationFormData, {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                    });
+
+                    if (!evaluationResponse.data.evaluation) {
+                        throw new Error('Failed to evaluate response');
+                    }
+
+                    // Store the evaluation data
+                    dispatch(setParsedFeedback(evaluationResponse.data));
                     navigate('/question-feedback');
+
                 } catch (error) {
-                    console.error('Upload failed:', error);
+                    console.error('Error:', error);
+                    // Set appropriate error message based on the error type
+                    const errorMessage = error.response?.data?.error 
+                        ? `Error: ${error.response.data.error}`
+                        : 'An error occurred while processing your response. Please try again.';
+                    
+                        // Reset loading state
+                        setIsSubmitting(false);
+                        setLoadingText('');
+                         // Show SweetAlert2 error dialog
+                    Swal.fire({
+                        title: 'Error',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonText: 'Retry',
+                        showCancelButton: true,
+                        cancelButtonText: 'Back to Interviews',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        showLoaderOnConfirm: true,
+                        preConfirm: () => {
+                            // This function is called when retry is clicked
+                            return new Promise((resolve) => {
+                                window.location.reload();
+                                resolve();
+                            });
+                        }
+                    }).then((result) => {
+                        if (result.isDismissed) {
+                            // User clicked "Back to Interviews" or clicked outside
+                            navigate('/interview'); // Adjust the path as needed
+                        }
+                        // If user clicks "Retry", the preConfirm will handle it
+                    });
                 }
             };
 
@@ -784,7 +849,7 @@ export default function Prepration() {
                                         <Spinner animation="border" variant="primary" style={{ width: '3rem', height: '3rem' }} />
                                     </div>
                                     <h4>Finalising Your Report</h4>
-                                    <p className="text-muted">Please wait while we analyze your response...</p>
+                                    <p className="text-muted">Please wait while we analyze your response <br></br>{loadingText}...</p>
                                     <div className="progress mt-3" style={{ height: '10px' }}>
                                         <div
                                             className="progress-bar progress-bar-striped progress-bar-animated"

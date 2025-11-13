@@ -493,11 +493,12 @@ export default function BuildingComponents() {
                                 >
                                   View
                                 </Button>
+                                {/* ?download=true */}
                                 <Button
                                   variant="primary"
                                   size="sm"
                                   className="me-2 p-1 px-3"
-                                  href={`/cv-generate/${item?.resume?.id}?download=true`}
+                                  href={`/cv-generate/${item?.resume?.id}`}
                                   target="_blank"
                                 >
                                   Download
