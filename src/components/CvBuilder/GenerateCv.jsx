@@ -1,5 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus, FiLoader, FiDownload } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiMinus, FiLoader, FiDownload, FiX } from "react-icons/fi";
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Swal from 'sweetalert2';
 import BulletPointsEditor from './BulletPointsEditor';
 import avatar from '../../assets/images/default_avatar.jpeg'
@@ -391,7 +393,7 @@ export default function CVBuilder() {
     useEffect(() => {
         if (AiResumeLoader) {
             Swal.fire({
-                title: 'Analyzing Resume',
+                title: 'Analysing CV',
                 html: 'Please wait while we analyze your resume...',
                 allowOutsideClick: false,
                 didOpen: () => {
@@ -500,6 +502,31 @@ export default function CVBuilder() {
         setCurrentHobby('');
     };
 
+    const handleAddCustomSection = () => {
+        const newSection = {
+            id: `custom-${Date.now()}`,
+            title: 'New Custom Section',
+            content: ''
+        };
+        
+        dispatch(updateField({ 
+            path: "customSections", 
+            value: [...(parsedResume.customSections || []), newSection] 
+        }));
+        setActiveAccordion(newSection.id);
+    };
+    
+    const handleUpdateCustomSection = (id, updates) => {
+        const updatedSections = (parsedResume.customSections || []).map(section => 
+            section.id === id ? { ...section, ...updates } : section
+        );
+        dispatch(updateField({ path: "customSections", value: updatedSections }));
+    };
+        
+    const handleRemoveCustomSection = (id) => {
+        const updatedSections = (parsedResume.customSections || []).filter(section => section.id !== id);
+        dispatch(updateField({ path: "customSections", value: updatedSections }));
+    };
 
     const handleAddLanguage = () => {
         if (!currentLanguage.trim()) {
@@ -1889,7 +1916,7 @@ export default function CVBuilder() {
                                                                         onClick={() => toggleSection('employment')}
                                                                         style={{ background: 'none', border: 'none', textAlign: 'left' }}
                                                                     >
-                                                                        {parsedResume?.employmentTitle || "Employment"}
+                                                                        {parsedResume?.employmentTitle || "Experience"}
                                                                         <span
                                                                             type="button"
                                                                             className=""
@@ -1931,7 +1958,7 @@ export default function CVBuilder() {
                                                                                 <div className="experience-edit-form">
                                                                                     <div className="d-flex justify-content-between align-items-center mb-2">
                                                                                         <small className="fw-bold text-muted">
-                                                                                            Experience #{expIndex + 1}
+                                                                                            {parsedResume?.employmentTitle || "Experience"} #{expIndex + 1}
                                                                                         </small>
                                                                                         <button
                                                                                             type="button"
@@ -2135,7 +2162,7 @@ export default function CVBuilder() {
                                                                                 // Display completed experience item
                                                                                 <>
                                                                                     <div className="d-flex justify-content-between align-items-center mb-2">
-                                                                                        <small className="fw-bold text-muted">Experience #{expIndex + 1}</small>
+                                                                                        <small className="fw-bold text-muted">{parsedResume?.employmentTitle || "Experience"} #{expIndex + 1}</small>
                                                                                         <button
                                                                                             type="button"
                                                                                             className="btn btn-sm btn-outline-danger"
@@ -2197,7 +2224,7 @@ export default function CVBuilder() {
                                                                             <line x1="12" y1="5" x2="12" y2="19"></line>
                                                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                                                         </svg>
-                                                                        Add Experience
+                                                                        Add {parsedResume?.employmentTitle || "Experience"}
                                                                     </button>
                                                                 </div>
                                                             ) : (
@@ -2341,7 +2368,7 @@ export default function CVBuilder() {
                                                                     {parsedResume.education?.map((eduItem, eduIndex) => (
                                                                         <div key={eduIndex} className="mb-3 p-3 border rounded">
                                                                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                                                                <small className="fw-bold text-muted">Education #{eduIndex + 1}</small>
+                                                                                <small className="fw-bold text-muted">{parsedResume?.educationTitle || "Education"} #{eduIndex + 1}</small>
                                                                                 <button
                                                                                     type="button"
                                                                                     className="btn btn-sm btn-outline-danger"
@@ -2391,7 +2418,7 @@ export default function CVBuilder() {
                                                                         <div className="mb-3 p-3 border rounded">
                                                                             <div className="d-flex justify-content-between align-items-center mb-2">
                                                                                 <small className="fw-bold text-muted">
-                                                                                    {eduList.length > 0 ? `Education #${eduList.length + 1}` : 'Education #1'}
+                                                                                    {eduList.length > 0 ? `${parsedResume?.educationTitle || "Education"} #${eduList.length + 1}` : 'Education #1'}
                                                                                 </small>
                                                                             </div>
                                                                             <div className="mb-2">
@@ -2514,7 +2541,7 @@ export default function CVBuilder() {
                                                                             <line x1="12" y1="5" x2="12" y2="19"></line>
                                                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                                                         </svg>
-                                                                        Add Education
+                                                                        Add {parsedResume?.educationTitle || "Education"}
                                                                     </button>
                                                                 </div>
                                                             ) : (
@@ -2659,9 +2686,9 @@ export default function CVBuilder() {
                                                             {!parsedResume?.skillsDisabled ? (
                                                                 <div className="card border-0 shadow-none p-2">
                                                                     <div className="border rounded p-3">
-                                                                        <label className="form-label">Add Skills (one per line)</label>
+                                                                        <label className="form-label">Add {parsedResume?.skillsTitle || "Skills"} (one per line)</label>
                                                                         <div className='d-flex'>
-                                                                            <input type="text" className="form-control me-2" placeholder="Type a skill and press Enter to add it"
+                                                                            <input type="text" className="form-control me-2" placeholder={(parsedResume?.skillsTitle ? parsedResume.skillsTitle + ' name' : "Type a skill and press Enter to add it")}
                                                                                 value={currentSkill}
                                                                                 onChange={(e) => setCurrentSkill(e.target.value)}
                                                                                 onKeyDown={(e) => {
@@ -2690,7 +2717,7 @@ export default function CVBuilder() {
 
                                                                     <div className="mt-3">
                                                                         <div className="mb-3">
-                                                                            <h6>Selected Skills</h6>
+                                                                            <h6>Selected {parsedResume?.skillsTitle || "Skills"}</h6>
                                                                             <div className="d-flex flex-wrap gap-2">
                                                                                 {parsedResume?.skill
                                                                                     ?.filter(skill => skill.selected)
@@ -2718,7 +2745,7 @@ export default function CVBuilder() {
                                                                             </div>
                                                                         </div>
                                                                         <div>
-                                                                            <h6>Suggested Skills</h6>
+                                                                            <h6>Suggested {parsedResume?.skillsTitle || "Skills"}</h6>
                                                                             <div className="d-flex flex-wrap gap-2">
                                                                                 {parsedResume?.skill
                                                                                     ?.filter(skill => !skill.selected)
@@ -2894,10 +2921,10 @@ export default function CVBuilder() {
                                                             {!parsedResume?.languagesDisabled ? (
                                                                 <div className="card border-0 shadow-none">
                                                                     <div className="border rounded p-3">
-                                                                        <label className="form-label">Add Language</label>
+                                                                        <label className="form-label">Add {parsedResume?.languagesTitle || "Language"}</label>
                                                                         <div className="row g-2">
                                                                             <div className="col-md-8">
-                                                                                <input type="text" className="form-control" placeholder="Language name"
+                                                                                <input type="text" className="form-control" placeholder={(parsedResume?.languagesTitle ? parsedResume.languagesTitle + ' name' : "Language name")}
                                                                                     value={currentLanguage}
                                                                                     onChange={(e) => setCurrentLanguage(e.target.value)}
                                                                                     onKeyDown={(e) => {
@@ -3098,9 +3125,9 @@ export default function CVBuilder() {
                                                             {!parsedResume?.hobbiesDisabled ? (
                                                                 <div className="card border-0 shadow-none">
                                                                     <div className="border rounded p-3">
-                                                                        <label className="form-label">Add Hobby</label>
+                                                                        <label className="form-label">Add {parsedResume?.hobbiesTitle || "Hobby"}</label>
                                                                         <div className='d-flex'>
-                                                                            <input type="text" className="form-control me-2" placeholder="Hobby name"
+                                                                            <input type="text" className="form-control me-2" placeholder={(parsedResume?.hobbiesTitle ? parsedResume.hobbiesTitle + ' name' : "Hobby name")}
                                                                                 value={currentHobby}
                                                                                 onChange={(e) => setCurrentHobby(e.target.value)}
                                                                                 onKeyDown={(e) => {
@@ -3158,6 +3185,62 @@ export default function CVBuilder() {
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <div>
+
+
+                                                   {parsedResume?.customSections?.map((section, index) => (
+                                                        <div key={section.id} className="card mt-3">
+                                                            <div className="card-header d-flex justify-content-between align-items-center">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control border-0 fw-bold"
+                                                                    value={section?.title}
+                                                                    onChange={(e) => {
+                                                                        handleUpdateCustomSection(section.id, { title: e.target.value });
+                                                                    }}
+                                                                />
+                                                                <button 
+                                                                    className="btn btn-sm btn-outline-danger"
+                                                                    onClick={() => {
+                                                                       handleRemoveCustomSection(section.id)
+                                                                    }}
+                                                                >
+                                                                    <FiX />
+                                                                </button>
+                                                            </div>
+                                                            <div className="card-body">
+                                                                <CKEditor
+                                                                    editor={ClassicEditor}
+                                                                    data={section?.content}
+                                                                    onChange={(event, editor) => {
+                                                                        const data = editor.getData();
+                                                                        handleUpdateCustomSection(section.id, { content: data });
+                                                                    }}
+                                                                    config={{
+                                                                        toolbar: [
+                                                                            'heading', '|',
+                                                                            'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                                                                            'outdent', 'indent', '|',
+                                                                            'undo', 'redo'
+                                                                        ]
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+
+
+                                                    <button
+                                                        onClick={() => {
+                                                          handleAddCustomSection()
+                                                        }}
+                                                        className='btn btn-primary mt-3'
+                                                    >
+                                                        Add Custom Section
+                                                    </button>
+                                                </div>
+
                                             </div>
                                         </div>
 
@@ -3601,9 +3684,9 @@ export default function CVBuilder() {
                                                     website: [''],
                                                     certifications: [],
                                                     languages: [],
-                                                    hobbies: []
+                                                    hobbies: [],
+                                                    customSections: [],
                                                 }),
-                                                customSections
                                             }}
                                         />
                                     );

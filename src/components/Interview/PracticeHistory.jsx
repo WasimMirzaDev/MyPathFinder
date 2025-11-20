@@ -72,8 +72,9 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                             <a
                                                 className="fw-bold fs-8 lh-sm title line-clamp-1"
                                                 onClick={() => handleViewDetails(q)}
+                                                title={q?.question?.title}
                                             >
-                                                {q.question?.title}
+                                                {q?.question?.title}
                                             </a>
                                         </div>
                                     </div>
@@ -84,10 +85,13 @@ export default function PracticeHistory({history , handleViewDetails}) {
 
                                 <div className="row g-1 g-sm-3 mt-2 lh-1">
                                     {/* Your Score */}
-                                    <div className="col-12 col-sm-auto flex-1 text-truncate">
+                                    <div className="col-12 col-sm-auto flex-1 text-truncate hover-card"
+                                    onClick={() => handleViewDetails(q)}
+                                    title='view feedback'
+                                    >
                                         <h6>Your Score</h6>
                                         <div className="d-flex align-items-center gap-1">
-                                            <div style={{ "--phoenix-circle-progress-bar": q.evaluation?.breakdown?.total?.score }}>
+                                            <div style={{ "--phoenix-circle-progress-bar": q?.evaluation?.breakdown?.total?.score }}>
                                                 <svg
                                                     className="circle-progress-svg"
                                                     width="38"
@@ -110,12 +114,90 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                                         r="54"
                                                         fill="none"
                                                         strokeLinecap="round"
-                                                        stroke={q.evaluation?.breakdown?.total?.score <= 20 ? "red" : q.evaluation?.breakdown?.total?.score <= 60 ? "orange" : "green"}
+                                                        stroke={q?.evaluation?.breakdown?.total?.score <= 20 ? "red" : q?.evaluation?.breakdown?.total?.score <= 60 ? "orange" : "green"}
                                                         strokeWidth="12"
                                                     ></circle>
                                                 </svg>
                                             </div>
-                                            <h6 className="mb-0 text-body">{q.evaluation?.breakdown?.total?.score}%</h6>
+                                            <h6 className="mb-0 text-body">{q?.evaluation?.breakdown?.total?.score}%</h6>
+                                        </div>
+                                    </div>
+
+
+                                    <div className="col-12 col-sm-auto flex-1 text-truncate hover-card"
+                                    onClick={() => handleViewDetails(q?.min_history[0])}
+                                    title='view feedback'
+                                    >
+                                        <h6>Min Score</h6>
+                                        <div className="d-flex align-items-center gap-1">
+                                            <div style={{ "--phoenix-circle-progress-bar": q?.min_score }}>
+                                                <svg
+                                                    className="circle-progress-svg"
+                                                    width="38"
+                                                    height="38"
+                                                    viewBox="0 0 125 125"
+                                                >
+                                                    <circle
+                                                        className="progress-bar-rail"
+                                                        cx="65"
+                                                        cy="45"
+                                                        r="54"
+                                                        fill="none"
+                                                        strokeLinecap="round"
+                                                        strokeWidth="15"
+                                                    ></circle>
+                                                    <circle
+                                                        className="progress-bar-top"
+                                                        cx="65"
+                                                        cy="45"
+                                                        r="54"
+                                                        fill="none"
+                                                        strokeLinecap="round"
+                                                        stroke={q?.min_score <= 20 ? "red" : q?.min_score <= 60 ? "orange" : "green"}
+                                                        strokeWidth="12"
+                                                    ></circle>
+                                                </svg>
+                                            </div>
+                                            <h6 className="mb-0 text-body">{q?.min_score}%</h6>
+                                        </div>
+                                    </div>
+
+
+                                    <div className="col-12 col-sm-auto flex-1 text-truncate hover-card"
+                                    onClick={() => handleViewDetails(q?.max_history[0])}
+                                    title='view feedback'
+                                    >
+                                        <h6>Max Score</h6>
+                                        <div className="d-flex align-items-center gap-1">
+                                            <div style={{ "--phoenix-circle-progress-bar": q?.max_score }}>
+                                                <svg
+                                                    className="circle-progress-svg"
+                                                    width="38"
+                                                    height="38"
+                                                    viewBox="0 0 125 125"
+                                                >
+                                                    <circle
+                                                        className="progress-bar-rail"
+                                                        cx="65"
+                                                        cy="45"
+                                                        r="54"
+                                                        fill="none"
+                                                        strokeLinecap="round"
+                                                        strokeWidth="15"
+                                                    ></circle>
+                                                    <circle
+                                                        className="progress-bar-top"
+                                                        cx="65"
+                                                        cy="45"
+                                                        r="54"
+                                                        fill="none"
+                                                        strokeLinecap="round"
+                                                        stroke={q?.max_score <= 20 ? "red" : q?.max_score <= 60 ? "orange" : "green"}
+                                                        strokeWidth="12"
+                                                    ></circle>
+                                                </svg>
+                                            </div>
+                                            <h6 className="mb-0 text-body">{q?.max_score}%</h6>
                                         </div>
                                     </div>
 
@@ -157,7 +239,7 @@ export default function PracticeHistory({history , handleViewDetails}) {
 
                                     {/* Retry Button */}
                                     <div className="col-12 col-sm-auto">
-                                        <Link className="fw-semibold fs-9" to={`/prepration/${q.question.id}`}>
+                                        <Link className="fw-semibold fs-9" to={`/prepration/${q?.question?.id}`}>
                                             Retry Question
                                             <span className="fa-solid fa-arrow-right ms-2"></span>
                                         </Link>

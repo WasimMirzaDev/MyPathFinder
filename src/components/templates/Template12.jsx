@@ -103,13 +103,15 @@ const Template12 = ({ resumeData }) => {
       <div style={styles.container}>
       {!(resumeData?.personalDisabled) && (
         <>
-        <div style={styles.profileImage}>
-          <img
-            src={resumeData?.profilePic || demo_profile}
-            alt="Profile"
-            style={styles.image}
+        {resumeData?.profilePic ? (
+          <div style={styles.profileImage}>
+            <img
+              src={resumeData?.profilePic}
+              alt="Profile"
+              style={styles.image}
           />
         </div>
+        ) : ""}
         <h1 style={styles.resumeTitle}>
           {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
         </h1>

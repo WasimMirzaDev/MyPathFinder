@@ -153,7 +153,7 @@ const FeedbackComponent = () => {
 
 
                 <div className="chat-row">
-                  <div className="meta">Ideal Response by <strong>MyPathfinder</strong></div>
+                  <div className="meta"><strong>MyPathfinder</strong> suggested response structure</div>
                   <div className="bubble bubble--ideal">
                     {parsedFeedback?.evaluation?.ideal_response ?? "NAN"}
                   </div>

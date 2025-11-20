@@ -52,7 +52,8 @@ const Interview = () => {
                     id: 1,
                     name: "Easy",
                     slug: "E"
-                }
+                },
+                searchQuery: ""
             }));
             console.log("Dispatching fetchInterviewHistory action");
             dispatch(fetchInterviewHistory());
@@ -62,7 +63,8 @@ const Interview = () => {
             dispatch(setFilters({
                 subcategory: null,
                 questionType: null,
-                difficulty: null
+                difficulty: null,
+                searchQuery: ""
             }));
         }
     }, [data]);
@@ -154,6 +156,7 @@ const Interview = () => {
         if (filterType == 'questionType') {
             newFilters.subcategory = null;
         }
+        newFilters.searchQuery = "";
         dispatch(setFilters(newFilters));
     };
 
@@ -166,7 +169,6 @@ const Interview = () => {
     useEffect(() => {
         if (filters) {
             dispatch(fetchInterviewQuestions());
-
         }
     }, [filters]);
 

@@ -101,7 +101,7 @@ a:hover {
 }
 
 .btn-primary:hover {
-    background-color: #191E31 !important;
+    background-color: #BA67EF !important;
 }
 
 .btn-phoenix-secondary {
@@ -589,4 +589,14 @@ a:hover {
     border: 0 !important;
     outline: none !important;
     padding-left: 10px !important;
+}
+
+.hover-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }

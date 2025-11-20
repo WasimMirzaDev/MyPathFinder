@@ -58,3 +58,8 @@ export const delUserCreatedCv = async (id) => {
   const response = await axios.delete('/v1/resume/'+id);
   return response.data;
 }
+
+export const updateUserResumeName = async ({id , name}) => {
+  const response = await axios.put("/v1/resume/"+id , {title : name});
+  return response.data;
+}

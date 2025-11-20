@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAppliedJobs, updateAppliedJob, setAppliedJobs, deleteAppliedJob, JobAppliedCreate } from "../features/job/jobSlice";
 import alertify from "alertifyjs";
 import "alertifyjs/build/css/alertify.css";
+import Swal from "sweetalert2";
 
 export default function ApplicationTracking() {
     const dispatch = useDispatch();
@@ -24,13 +25,36 @@ export default function ApplicationTracking() {
     }, [dispatch]);
 
     const handleDelete = async (id) => {
-        try {
-            await dispatch(deleteAppliedJob(id)).unwrap();
-            const updatedJobs = appliedJobs.filter(job => job.id !== id);
-            dispatch(setAppliedJobs(updatedJobs));
-        } catch (error) {
-            console.error('Failed to delete job:', error);
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to delete this job!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await dispatch(deleteAppliedJob(id)).unwrap();
+                    const updatedJobs = appliedJobs.filter(job => job.id !== id);
+                    dispatch(setAppliedJobs(updatedJobs));
+                    // Swal.fire(
+                    //     'Deleted!',
+                    //     'Job has been deleted.',
+                    //     'success'
+                    // );
+                } catch (error) {
+                    console.error('Failed to delete job:', error);
+                    // Swal.fire(
+                    //     'Failed!',
+                    //     'Failed to delete job.',
+                    //     'error'
+                    // );
+                }
+            }
+        });
     };
 
     // ✅ Update job status

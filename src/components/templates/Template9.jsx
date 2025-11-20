@@ -289,6 +289,16 @@ const Template9 = ({ resumeData }) => {
             </ul>
           </div>
         )}
+
+{resumeData?.customSections?.map((section, index) => (
+  <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+    <h2 style={styles.sectionTitle}>{section.title}</h2>
+    <div 
+      style={styles.profileText}
+      dangerouslySetInnerHTML={{ __html: section.content }} 
+    />
+  </div>
+))}
       </div>
     </div>
   );

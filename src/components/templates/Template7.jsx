@@ -185,11 +185,13 @@ const Template7 = ({ resumeData }) => {
         {/* Header */}
         {!(resumeData?.personalDisabled) && (
           <div style={styles.header}>
+            {resumeData?.profilePic ? (
             <img 
               src={resumeData?.profilePic || demo_profile} 
               alt="Profile" 
               style={styles.profileImage} 
             />
+            ) : ""}
             <div>
               <h1 style={styles.name}>
                 {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}

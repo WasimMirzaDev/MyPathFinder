@@ -354,7 +354,7 @@ export default function CVBuilder() {
     useEffect(() => {
         if (AiResumeLoader) {
             Swal.fire({
-                title: 'Analyzing Resume',
+                title: 'Analysing CV',
                 html: 'Please wait while we analyze your resume...',
                 allowOutsideClick: false,
                 didOpen: () => {

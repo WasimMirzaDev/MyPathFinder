@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Modal, Button, Card, Form } from "react-bootstrap";
+import { Modal, Button, Card, Form, Dropdown } from "react-bootstrap";
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createEmptyResume,
@@ -8,13 +8,16 @@ import {
   updateResumeById,
   generateCvAi,
   getrecentCvsCreated,
-  delCreatedCv
+  delCreatedCv,
+  updateResumeName
 } from '../../features/resume/resumeSlice';
 import { toast } from 'react-toastify';
 import { FiLoader, FiFile, FiX } from "react-icons/fi";
 import { Pagination } from 'react-bootstrap';
 import { Spinner } from "react-bootstrap";
 import { set } from 'lodash';
+import RecentCVsTable from './RecentCVsTable';
+
 
 export default function BuildingComponents() {
   const dispatch = useDispatch();
@@ -287,7 +290,7 @@ export default function BuildingComponents() {
         //   autoClose: 5000,
         //   position: 'top-right'
         // });
-        setMessage(`Analyzing your CV in ${uploadFormData.languageStyle || 'standard'} style...`)
+        setMessage(`Analysing your CV in ${uploadFormData.languageStyle || 'standard'} style...`)
 
         setTimeout(() => {
           // toast.info('Finalising your CV...', {
@@ -321,15 +324,30 @@ export default function BuildingComponents() {
   };
 
   // Delete CV handler
-  const handleDeleteCv = async (id) => {
-    if (window.confirm('Are you sure you want to delete this CV?')) {
+  const handleDeleteCv = (resumeId) => {
+    dispatch(delCreatedCv(resumeId))
+      .unwrap()
+      .then(() => {
+        toast.success('CV deleted successfully');
+        dispatch(getrecentCvsCreated());
+      })
+      .catch((error) => {
+        toast.error(error.message || 'Failed to delete CV');
+      });
+  };
+
+  const handleRenameCv = async (resumeId, title) => {
+    const newName = prompt('Enter new name for CV:', title);
+    if (newName && newName.trim() && newName !== title) {
       try {
-        await dispatch(delCreatedCv(id)).unwrap();
-        toast.success('CV deleted successfully!');
-        dispatch(getrecentCvsCreated()); // Refresh the list
+        const updateResult = await dispatch(updateResumeName({id: resumeId, name: newName})).unwrap();
+        console.log(updateResult);
+        if (updateResult?.data) {
+          dispatch(getrecentCvsCreated({}));
+          toast.success('CV renamed successfully');
+        }
       } catch (error) {
-        console.error('Error deleting CV:', error);
-        toast.error('Failed to delete CV. Please try again.');
+        toast.error(error.message || 'Failed to rename CV');
       }
     }
   };
@@ -457,127 +475,16 @@ export default function BuildingComponents() {
 
                     </div>
 
-                    <div className="table-responsive">
-                      <table className="table table-hover align-middle mb-0 cv-table">
-                        <thead className="table-light">
-                          <tr>
-                            <th scope="col" className="text-start ps-0 bg-white" style={{ maxWidth: 300 }}>CV Title</th>
-                            <th scope="col" className="bg-white">Date Created</th>
-                            <th scope="col" className="bg-white text-end">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {recentCVs?.data.map((item, index) => (
-                            <tr key={index}>
-                              <td className="text-start text-truncate" style={{ maxWidth: 300, fontSize: 14 }}>
-                                {item?.resume?.cv_resumejson?.candidateName?.[0]?.firstName || 'Untitled'}{" "}
-                                {item?.resume?.cv_resumejson?.candidateName?.[0]?.familyName || 'CV'}
-                                {item?.resume?.cv_resumejson?.headline ? (
-                                  " | " +
-                                  item.resume.cv_resumejson.headline
-                                    .split(' ')
-                                    .slice(0, 5)
-                                    .join(' ') +
-                                  (item.resume.cv_resumejson.headline.split(' ').length > 5 ? '...' : '')
-                                ) : ""}
-                              </td>
-                              <td style={{ fontSize: 14 }}>
-                                {item?.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
-                              </td>
-                              <td className="text-end">
-                                <Button
-                                  variant="outline-primary"
-                                  size="sm"
-                                  className="me-2 p-1 px-3"
-                                  href={`/cv-generate/${item?.resume?.id}`}
-                                >
-                                  View
-                                </Button>
-                                {/* ?download=true */}
-                                <Button
-                                  variant="primary"
-                                  size="sm"
-                                  className="me-2 p-1 px-3"
-                                  href={`/cv-generate/${item?.resume?.id}`}
-                                  target="_blank"
-                                >
-                                  Download
-                                </Button>
-                                <Button
-                                  variant="outline-danger"
-                                  size="sm"
-                                  className="p-1 px-3"
-                                  onClick={() => handleDeleteCv(item?.resume?.id)}
-                                  disabled={delResumeLoader}
-                                >
-                                  {delResumeLoader ? "Deleting..." : "Delete"}
-                                </Button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Pagination */}
-                    {recentCVs.last_page > 1 && (
-                      <div className="d-flex justify-content-center mt-3">
-                        <Pagination className="mb-0">
-                          <Pagination.First
-                            onClick={() => setCurrentPage(1)}
-                            disabled={currentPage === 1}
-                            className='pagination-btn'
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-chevrons-left"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M11 7l-5 5l5 5" /><path d="M17 7l-5 5l5 5" /></svg>
-                          </Pagination.First>
-                          <Pagination.Prev
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            className='pagination-btn'
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-left"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg>
-                          </Pagination.Prev>
-
-                          {Array.from({ length: Math.min(5, recentCVs.last_page) }, (_, i) => {
-                            let pageNum;
-                            if (recentCVs.last_page <= 5) {
-                              pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                              pageNum = i + 1;
-                            } else if (currentPage >= recentCVs.last_page - 2) {
-                              pageNum = recentCVs.last_page - 4 + i;
-                            } else {
-                              pageNum = currentPage - 2 + i;
-                            }
-
-                            return (
-                              <Pagination.Item
-                                key={pageNum}
-                                active={pageNum === currentPage}
-                                onClick={() => setCurrentPage(pageNum)}
-                              >
-                                {pageNum}
-                              </Pagination.Item>
-                            );
-                          })}
-
-                          <Pagination.Next
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, recentCVs.last_page))}
-                            disabled={currentPage === recentCVs.last_page}
-                            className='pagination-btn'
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg>
-                          </Pagination.Next>
-                          <Pagination.Last
-                            onClick={() => setCurrentPage(recentCVs.last_page)}
-                            disabled={currentPage === recentCVs.last_page}
-                            className='pagination-btn'
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevrons-right"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7l5 5l-5 5" /><path d="M13 7l5 5l-5 5" /></svg>
-                          </Pagination.Last>
-                        </Pagination>
-                      </div>
-                    )}
+                      <RecentCVsTable
+                        data={recentCVs.data}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        lastPage={recentCVs.last_page}
+                        delResumeLoader={delResumeLoader}
+                        handleRenameCv={handleRenameCv}
+                        handleDeleteCv={handleDeleteCv}
+                        compact={true} 
+                      />
                   </Card.Body>
                 </Card>
               </div>

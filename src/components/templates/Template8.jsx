@@ -204,13 +204,15 @@ const Template8 = ({ resumeData }) => {
           <h1 style={styles.profileName}>
             {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
           </h1>
-          <div style={styles.profileImageContainer}>
-            <img 
-              src={resumeData?.profilePic || demo_profile} 
-              alt="Profile" 
-              style={styles.profileImage} 
+          {resumeData?.profilePic ? (
+            <div style={styles.profileImageContainer}>
+              <img 
+                src={resumeData?.profilePic || demo_profile} 
+                alt="Profile" 
+                style={styles.profileImage} 
             />
           </div>
+          ) : null}
         </div>
 
         {/* Personal Details */}

@@ -92,19 +92,20 @@ export default function InterviewPractice({interviewQuestions , setShowModal , f
                                         <div className="d-sm-flex align-items-center">
                                             <Link
                                                 className="fw-bold fs-8 lh-sm title line-clamp-1"
-                                                to={`/prepration/${question.id}`}
+                                                to={`/prepration/${question?.id}`}
+                                                title={question?.title}
                                             >
-                                            {question.title}
+                                            {question?.title}
                                             </Link>
                                         </div>
                                     </div>
                                     <p className="fs-9 fw-semibold text-body text mb-4">
-                                        {question.speech}
+                                        {question?.speech}
                                     </p>
                                 </div>
                                 <div className="row g-1 g-sm-3 mt-2 lh-1">
                                     <div className="col-12 col-sm-auto flex-1 text-truncate">
-                                        <Link className="fw-semibold fs-9" to={`/prepration/${question.id}`}>
+                                        <Link className="fw-semibold fs-9" to={`/prepration/${question?.id}`}>
                                             Practise Now
                                             <span className="fa-solid fa-arrow-right ms-2"></span>
                                         </Link>

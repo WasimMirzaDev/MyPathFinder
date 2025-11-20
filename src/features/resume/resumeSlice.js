@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserResumeAi , generateUserCoverLetter , recentUserCvsCreated  , delUserCreatedCv } from "./resumeAPI";
+import { createEmptyUserResume, fetchUserResumeById , updateUserResumeById , uploadExistingUserResume , generateUserCvAi , analyzeUserResumeAi , generateUserCoverLetter , recentUserCvsCreated  , delUserCreatedCv , updateUserResumeName} from "./resumeAPI";
 import { REHYDRATE } from 'redux-persist';
 
 
@@ -104,6 +104,17 @@ export const delCreatedCv = createAsyncThunk("resume/delete-resume-created",
   }
 );
 
+export const updateResumeName = createAsyncThunk("resume/update-resume-name", 
+  async ({id , name}, { rejectWithValue }) => {
+    try {
+      const response = await updateUserResumeName({id , name});
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 const resumeSlice = createSlice({
     name: "resume",
     initialState: {
@@ -112,6 +123,7 @@ const resumeSlice = createSlice({
       recentCVs:[],
       recentCVsLoader:false,
       saveChangesLoader: false,
+      saveRenameLoader: false,
       AiCvLoader: false,
       AiResumeLoader: false,
       selectedTemplate:"Default",
@@ -321,6 +333,17 @@ const resumeSlice = createSlice({
         .addCase(delCreatedCv.rejected, (state, action) => {
           state.delResumeLoader = false;
           state.error = action.payload.message || 'Failed to generate CV';
+        })
+        .addCase(updateResumeName.pending, (state) => {
+          state.saveRenameLoader = true;
+          state.error = null;
+        })
+        .addCase(updateResumeName.fulfilled, (state, action) => {
+          state.saveRenameLoader = false;
+        })
+        .addCase(updateResumeName.rejected, (state, action) => {
+          state.saveRenameLoader = false;
+          state.error = action.payload || 'Failed to update resume';
         })
         .addCase(REHYDRATE, (state) => {
           state.loading = false;
