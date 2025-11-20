@@ -1,7 +1,7 @@
 import React from "react";
 import "./Feedback.css";
 import FeedbackGraph from "./FeedbackGraph";
-import { useSelector , useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 
@@ -14,10 +14,10 @@ const FeedbackComponent = () => {
   const { data } = useSelector((state) => state.interview);
   return (
     <>
-      <FeedbackGraph parsedFeedback={parsedFeedback} />  
+      <FeedbackGraph parsedFeedback={parsedFeedback} />
 
-      <div className="row mt-2 gx-2 mb-4">
-        <div className="col-6">
+      <div className="row mt-2 g-2 mb-4">
+        <div className="col-12 col-md-6">
           <div className="card">
             <div className="card-header py-3">
               <div
@@ -31,25 +31,26 @@ const FeedbackComponent = () => {
               <div className="feedback-checklist p-0">
 
 
-              {/* {parsedFeedback?.evaluation?.top_improvements?.map((issue, index) => (
+                {/* {parsedFeedback?.evaluation?.top_improvements?.map((issue, index) => (
                                 <li key={index}>
                                     <strong>{issue.title}</strong><br />
                                     {issue.description}
                                 </li> */}
-                            
- {parsedFeedback?.evaluation?.top_improvements?.map((issue, index) => (
-                <div className="item d-flex align-items-start gap-3">
-                  <div className="icon flex-shrink-0">
-                    <svg className="svg-inline--fa fa-check text-success" width={12} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg>
+
+                {parsedFeedback?.evaluation?.top_improvements?.map((issue, index) => (
+                  <div className="item d-flex align-items-start gap-3">
+                    <div className="icon flex-shrink-0">
+                      {/* <svg className="svg-inline--fa fa-check text-success" width={12} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg> */}
+                      <svg xmlns="http://www.w3.org/2000/svg" width={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right  text-success"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
+                    </div>
+                    <div>
+                      <h5 className="mb-1">{issue.title}</h5>
+                      <p>
+                        {issue.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h5 className="mb-1">{issue.title}</h5>
-                    <p>
-                    {issue.description}
-                    </p>
-                  </div>
-                </div>
-))}
+                ))}
 
                 {/* <div className="item d-flex align-items-start gap-3">
                   <div className="icon flex-shrink-0">
@@ -123,7 +124,7 @@ const FeedbackComponent = () => {
             </div>
           </div>
         </div>
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <div className="card">
             <div className="card-header py-3">
               <div
@@ -140,7 +141,7 @@ const FeedbackComponent = () => {
                 <div className="chat-row">
                   <div className="meta">Question asked by <strong>MyPathfinder</strong></div>
                   <div className="bubble bubble--mpf">
-                  {parsedFeedback?.question?.speech ?? "NAN"}
+                    {parsedFeedback?.question?.speech ?? "NAN"}
                   </div>
                 </div>
 

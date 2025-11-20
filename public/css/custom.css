@@ -101,7 +101,7 @@ a:hover {
 }
 
 .btn-primary:hover {
-    background-color: #BA67EF !important;
+    background-color: #001433 !important;
 }
 
 .btn-phoenix-secondary {
@@ -599,4 +599,9 @@ a:hover {
 .hover-card:hover {
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+
+.dropdown-toggle::before{
+    content: unset !important;
 }

@@ -46,7 +46,7 @@ export default function Activity({ recentActivities }) {
                         return (
                             <div className="timeline-item position-relative">
                                 <div className="row g-md-3">
-                                    <div className="col-12 col-md-3 d-flex justify-content-end">
+                                    <div className="col-12 col-md-3 d-flex justify-content-start justify-content-md-end">
                                         <div className="timeline-item-date order-1 order-md-0 me-md-3">
                                             <p className="fs-10 fw-semibold text-body-tertiary text-opacity-85 text-end">{formatDate(item.created_at)}<br className="d-none d-md-block" /> {formatTime(item.created_at)}</p>
                                         </div>

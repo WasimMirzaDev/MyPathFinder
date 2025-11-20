@@ -515,7 +515,7 @@ const ChartComponent = ({parsedFeedback}) => {
   }, []);
 
   return (
-    <div className="row gx-2 align-items-stretch">
+    <div className="row g-2 align-items-stretch">
       <div className="col-12 col-xl-2">
         <div className="card h-100">
           <div className="card-header py-3">
@@ -530,7 +530,7 @@ const ChartComponent = ({parsedFeedback}) => {
         </div>
       </div>
       <div className="col-12 col-xl-10">
-        <div className="row gx-2 align-items-stretch h-100">
+        <div className="row g-2 align-items-stretch h-100">
           <div className="col-12 col-xl-4">
             <div className="card h-100">
               <div ref={radarCustomizedRef} className="echart-radar-customized-chart-example" style={{ minHeight: '420px' }}></div>

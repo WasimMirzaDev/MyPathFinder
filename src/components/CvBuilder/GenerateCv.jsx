@@ -81,7 +81,7 @@ export default function CVBuilder() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader , selectedTemplate } = useSelector((state) => state.resume);
+    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader, selectedTemplate } = useSelector((state) => state.resume);
     const { data } = useSelector((state) => state.user);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -502,27 +502,44 @@ export default function CVBuilder() {
         setCurrentHobby('');
     };
 
+    // const handleAddCustomSection = () => {
+    //     const newSection = {
+    //         id: `custom-${Date.now()}`,
+    //         title: 'New Custom Section',
+    //         content: ''
+    //     };
+
+    //     dispatch(updateField({
+    //         path: "customSections",
+    //         value: [...(parsedResume.customSections || []), newSection]
+    //     }));
+    //     setActiveAccordion(newSection.id);
+    // };
+
     const handleAddCustomSection = () => {
         const newSection = {
             id: `custom-${Date.now()}`,
             title: 'New Custom Section',
-            content: ''
+            content: '',
+            disabled: false,
+            editingTitle: false
         };
-        
-        dispatch(updateField({ 
-            path: "customSections", 
-            value: [...(parsedResume.customSections || []), newSection] 
+
+        dispatch(updateField({
+            path: "customSections",
+            value: [...(parsedResume.customSections || []), newSection]
         }));
         setActiveAccordion(newSection.id);
+        toggleSection(`custom-${newSection.id}`);
     };
-    
+
     const handleUpdateCustomSection = (id, updates) => {
-        const updatedSections = (parsedResume.customSections || []).map(section => 
+        const updatedSections = (parsedResume.customSections || []).map(section =>
             section.id === id ? { ...section, ...updates } : section
         );
         dispatch(updateField({ path: "customSections", value: updatedSections }));
     };
-        
+
     const handleRemoveCustomSection = (id) => {
         const updatedSections = (parsedResume.customSections || []).filter(section => section.id !== id);
         dispatch(updateField({ path: "customSections", value: updatedSections }));
@@ -1236,24 +1253,24 @@ export default function CVBuilder() {
 
     const expHandleSaveExperience = async () => {
         const { index, data } = editingExperience;
-    
+
         // Validate required fields
         if (!data.workExperienceJobTitle || !data.workExperienceOrganization ||
             !data.workExperienceDates?.start?.date || !data.workExperienceDates?.end?.date) {
             toast.error('Please fill all the required fields');
             return;
         }
-    
+
         // Update the experience in the main state
         const updatedExperience = [...parsedResume.workExperience];
         updatedExperience[index] = data;
-    
+
         try {
             const result = await dispatch(updateField({
                 path: "workExperience",
                 value: updatedExperience
             }));
-            
+
             // // Only save changes if the field update was successful
             // if (result) {
             //     await handleSaveChanges();
@@ -1262,7 +1279,7 @@ export default function CVBuilder() {
             console.error('Failed to update work experience:', error);
             toast.error('Failed to save work experience');
         }
-    
+
         // Reset editing state
         setEditingExperience({ index: null, data: null });
     };
@@ -1475,6 +1492,7 @@ export default function CVBuilder() {
                                                                         </span>
                                                                     </button>
                                                                 )}
+
                                                             </div>
                                                         </div>
                                                     </h2>
@@ -2067,75 +2085,75 @@ export default function CVBuilder() {
                                                                                             ></textarea>
                                                                                         </div>
                                                                                         <div className="d-flex justify-content-between align-items-center mb-2">
-  <label className="form-label">Key Achievements</label>
-  <button
-    type="button"
-    className="btn btn-sm btn-outline-primary"
-    onClick={() => {
-      setEditingExperience(prev => ({
-        ...prev,
-        data: {
-          ...prev.data,
-          highlights: {
-            ...prev.data.highlights,
-            items: [
-              ...(prev.data.highlights?.items || []),
-              { id: Date.now(), bullet: '' }
-            ]
-          }
-        }
-      }));
-    }}
-  >
-    <FiPlus size={14} className="me-1" /> Add Bullet Point
-  </button>
-</div>
+                                                                                            <label className="form-label">Key Achievements</label>
+                                                                                            <button
+                                                                                                type="button"
+                                                                                                className="btn btn-sm btn-outline-primary"
+                                                                                                onClick={() => {
+                                                                                                    setEditingExperience(prev => ({
+                                                                                                        ...prev,
+                                                                                                        data: {
+                                                                                                            ...prev.data,
+                                                                                                            highlights: {
+                                                                                                                ...prev.data.highlights,
+                                                                                                                items: [
+                                                                                                                    ...(prev.data.highlights?.items || []),
+                                                                                                                    { id: Date.now(), bullet: '' }
+                                                                                                                ]
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }));
+                                                                                                }}
+                                                                                            >
+                                                                                                <FiPlus size={14} className="me-1" /> Add Bullet Point
+                                                                                            </button>
+                                                                                        </div>
 
-{editingExperience.data.highlights?.items?.map((bullet, bulletIndex) => (
-  <div key={bullet.id || bulletIndex} className="d-flex align-items-start mb-2">
-    <span className="me-2 mt-2">•</span>
-    <div className="flex-grow-1">
-      <input
-        type="text"
-        className="form-control form-control-sm"
-        value={bullet.bullet}
-        onChange={(e) => {
-          setEditingExperience(prev => ({
-            ...prev,
-            data: {
-              ...prev.data,
-              highlights: {
-                ...prev.data.highlights,
-                items: prev.data.highlights.items.map((b, i) =>
-                  i === bulletIndex ? { ...b, bullet: e.target.value } : b
-                )
-              }
-            }
-          }));
-        }}
-        placeholder="Enter achievement or responsibility"
-      />
-    </div>
-    <button
-      type="button"
-      className="btn btn-sm btn-link text-danger ms-2"
-      onClick={() => {
-        setEditingExperience(prev => ({
-          ...prev,
-          data: {
-            ...prev.data,
-            highlights: {
-              ...prev.data.highlights,
-              items: prev.data.highlights.items.filter((_, i) => i !== bulletIndex)
-            }
-          }
-        }));
-      }}
-    >
-      <FiTrash2 size={14} />
-    </button>
-  </div>
-))}
+                                                                                        {editingExperience.data.highlights?.items?.map((bullet, bulletIndex) => (
+                                                                                            <div key={bullet.id || bulletIndex} className="d-flex align-items-start mb-2">
+                                                                                                <span className="me-2 mt-2">•</span>
+                                                                                                <div className="flex-grow-1">
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        className="form-control form-control-sm"
+                                                                                                        value={bullet.bullet}
+                                                                                                        onChange={(e) => {
+                                                                                                            setEditingExperience(prev => ({
+                                                                                                                ...prev,
+                                                                                                                data: {
+                                                                                                                    ...prev.data,
+                                                                                                                    highlights: {
+                                                                                                                        ...prev.data.highlights,
+                                                                                                                        items: prev.data.highlights.items.map((b, i) =>
+                                                                                                                            i === bulletIndex ? { ...b, bullet: e.target.value } : b
+                                                                                                                        )
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }));
+                                                                                                        }}
+                                                                                                        placeholder="Enter achievement or responsibility"
+                                                                                                    />
+                                                                                                </div>
+                                                                                                <button
+                                                                                                    type="button"
+                                                                                                    className="btn btn-sm btn-link text-danger ms-2"
+                                                                                                    onClick={() => {
+                                                                                                        setEditingExperience(prev => ({
+                                                                                                            ...prev,
+                                                                                                            data: {
+                                                                                                                ...prev.data,
+                                                                                                                highlights: {
+                                                                                                                    ...prev.data.highlights,
+                                                                                                                    items: prev.data.highlights.items.filter((_, i) => i !== bulletIndex)
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }));
+                                                                                                    }}
+                                                                                                >
+                                                                                                    <FiTrash2 size={14} />
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        ))}
 
 
 
@@ -3186,54 +3204,166 @@ export default function CVBuilder() {
                                                     </div>
                                                 </div>
 
-                                                <div>
+                                                {parsedResume?.customSections?.map((section, index) => (
+                                                    <div key={section.id} className="accordion-item">
+                                                        <h2 className="accordion-header" id={`headingCustom-${section.id}`}>
+                                                            <div className="d-flex justify-content-between align-items-center w-100">
+                                                                <div className="d-flex align-items-center w-100 gap-2">
+                                                                    <button
+                                                                        className={`icon-toggle border-0 bg-transparent ${!section?.disabled ? 'is-active' : ''}`}
+                                                                        type="button"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleUpdateCustomSection(section.id, {
+                                                                                disabled: !section?.disabled
+                                                                            });
+                                                                        }}
+                                                                    >
+                                                                        {!section?.disabled ? (
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                                <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                                                                <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                                                                            </svg>
+                                                                        ) : (
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye-off">
+                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                                <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
+                                                                                <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" />
+                                                                                <path d="M3 3l18 18" />
+                                                                            </svg>
+                                                                        )}
+                                                                    </button>
 
+                                                                    {section?.editingTitle ? (
+                                                                        <div className="d-flex align-items-center">
+                                                                            <input
+                                                                                type="text"
+                                                                                className="form-control form-control-sm me-2"
+                                                                                style={{ width: '200px' }}
+                                                                                value={section?.title || "Custom Section"}
+                                                                                onChange={(e) => {
+                                                                                    handleUpdateCustomSection(section.id, {
+                                                                                        title: e.target.value
+                                                                                    });
+                                                                                }}
+                                                                                onBlur={() => {
+                                                                                    handleUpdateCustomSection(section.id, {
+                                                                                        editingTitle: false
+                                                                                    });
+                                                                                }}
+                                                                                onKeyDown={(e) => {
+                                                                                    if (e.key === 'Enter') {
+                                                                                        handleUpdateCustomSection(section.id, {
+                                                                                            editingTitle: false
+                                                                                        });
+                                                                                    }
+                                                                                }}
+                                                                                autoFocus
+                                                                            />
+                                                                            <span
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    handleUpdateCustomSection(section.id, {
+                                                                                        editingTitle: false
+                                                                                    });
+                                                                                }}
+                                                                            >
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                                    <path d="M5 12l5 5l10 -10" />
+                                                                                </svg>
+                                                                            </span>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <button
+                                                                            className={`accordion-button flex-grow-1 w-100 d-flex gap-2 ${openSections[`custom-${section.id}`] ? '' : 'collapsed'} ${section?.disabled ? 'text-muted' : ''}`}
+                                                                            type="button"
+                                                                            onClick={() => toggleSection(`custom-${section.id}`)}
+                                                                            style={{ background: 'none', border: 'none', textAlign: 'left' }}
+                                                                        >
+                                                                            {section?.title || "Custom Section"}
+                                                                            <span
+                                                                                type="button"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    handleUpdateCustomSection(section.id, {
+                                                                                        editingTitle: true
+                                                                                    });
+                                                                                }}
+                                                                            >
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                                    <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                                                                                    <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                                                                                    <path d="M16 5l3 3" />
+                                                                                </svg>
+                                                                            </span>
+                                                                        </button>
+                                                                    )}
 
-                                                   {parsedResume?.customSections?.map((section, index) => (
-                                                        <div key={section.id} className="card mt-3">
-                                                            <div className="card-header d-flex justify-content-between align-items-center">
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control border-0 fw-bold"
-                                                                    value={section?.title}
-                                                                    onChange={(e) => {
-                                                                        handleUpdateCustomSection(section.id, { title: e.target.value });
-                                                                    }}
-                                                                />
-                                                                <button 
-                                                                    className="btn btn-sm btn-outline-danger"
-                                                                    onClick={() => {
-                                                                       handleRemoveCustomSection(section.id)
-                                                                    }}
-                                                                >
-                                                                    <FiX />
-                                                                </button>
+                                                                    <button
+                                                                        className="btn btn-sm btn-outline-danger ms-2"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleRemoveCustomSection(section.id);
+                                                                        }}
+                                                                        title="Delete this section"
+                                                                    >
+                                                                        <FiTrash2 size={14} />
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                            <div className="card-body">
-                                                                <CKEditor
-                                                                    editor={ClassicEditor}
-                                                                    data={section?.content}
-                                                                    onChange={(event, editor) => {
-                                                                        const data = editor.getData();
-                                                                        handleUpdateCustomSection(section.id, { content: data });
-                                                                    }}
-                                                                    config={{
-                                                                        toolbar: [
-                                                                            'heading', '|',
-                                                                            'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
-                                                                            'outdent', 'indent', '|',
-                                                                            'undo', 'redo'
-                                                                        ]
-                                                                    }}
-                                                                />
+                                                        </h2>
+                                                        <div
+                                                            id={`collapseCustom-${section.id}`}
+                                                            className={`accordion-collapse collapse ${openSections[`custom-${section.id}`] ? 'show' : ''}`}
+                                                            aria-labelledby={`headingCustom-${section.id}`}
+                                                        >
+                                                            <div className="accordion-body">
+                                                                {!section?.disabled ? (
+                                                                    <div className="card border-0 shadow-none">
+                                                                        <CKEditor
+                                                                            editor={ClassicEditor}
+                                                                            data={section?.content}
+                                                                            onChange={(event, editor) => {
+                                                                                const data = editor.getData();
+                                                                                handleUpdateCustomSection(section.id, { content: data });
+                                                                            }}
+                                                                            config={{
+                                                                                toolbar: [
+                                                                                    'heading', '|',
+                                                                                    'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                                                                                    'outdent', 'indent', '|',
+                                                                                    'undo', 'redo'
+                                                                                ]
+                                                                            }}
+                                                                        />
+                                                                        <div className="mt-2 text-muted small">
+                                                                            Use the editor above to add content to your custom section.
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="text-muted text-center py-3 d-flex flex-column gap-2">
+                                                                        <span className={`icon-toggle border-0 bg-transparent`}>
+                                                                            <img
+                                                                                src={toggleImage}
+                                                                                alt="Complete icon"
+                                                                                width="36"
+                                                                                height="36"
+                                                                            />
+                                                                        </span>
+                                                                        This section is disabled
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
-                                                    ))}
-
-
+                                                    </div>
+                                                ))}
+                                                <div>
                                                     <button
                                                         onClick={() => {
-                                                          handleAddCustomSection()
+                                                            handleAddCustomSection()
                                                         }}
                                                         className='btn btn-primary mt-3'
                                                     >
@@ -3243,9 +3373,6 @@ export default function CVBuilder() {
 
                                             </div>
                                         </div>
-
-
-
                                     </>
                                 )}
 
