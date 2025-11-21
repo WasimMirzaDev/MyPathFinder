@@ -101,8 +101,8 @@ const Template6 = ({ resumeData }) => {
         {resumeData?.candidateName?.[0]?.familyName ? ` ${resumeData?.candidateName?.[0]?.familyName}` : ''}
         {resumeData?.email?.[0] ? ` | ${resumeData?.email?.[0]}` : ''}
         {resumeData?.phoneNumber?.[0]?.formattedNumber ? ` | ${resumeData?.phoneNumber?.[0]?.formattedNumber}` : ''}
-        {resumeData?.location?.formatted ? ` | ${resumeData.location?.formatted},` : ''}
-        {resumeData?.location?.city ? `${resumeData.location?.city}` : ''}
+        {resumeData?.location?.formatted ? ` | ${resumeData.location?.formatted}` : ''}
+        {resumeData?.location?.city ? ` ${resumeData.location?.city}` : ''}
         {resumeData?.location?.postCode ? ` (${resumeData.location?.postCode})` : ''}
         <br></br>
         {resumeData?.socialLinks?.github ? ` Github: ${resumeData.socialLinks.github}` : ''}
