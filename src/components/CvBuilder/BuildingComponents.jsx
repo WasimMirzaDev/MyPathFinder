@@ -650,7 +650,7 @@ export default function BuildingComponents() {
           <Spinner animation="border" variant="primary" style={{ width: '3rem', height: '3rem' }} />
         </div>
         <h4>{message}</h4>
-        <p className="text-muted">Please wait while Processing...</p>
+        <p className="text-muted">Please wait while processing...</p>
         <div className="progress mt-3" style={{ height: '10px' }}>
           <div
             className="progress-bar progress-bar-striped progress-bar-animated"
