@@ -4106,7 +4106,6 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                     </Card> */}
                 </Col>
             </div>
-            // Add this component at the end of your JSX, just before the final closing tag
 {isGeneratingPDF && (
     <div style={{
         position: 'fixed',
