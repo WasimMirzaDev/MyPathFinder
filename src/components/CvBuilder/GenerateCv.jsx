@@ -691,27 +691,35 @@ export default function CVBuilder() {
 const hasAutoDownloaded = useRef(false);
 
 // Update the auto-download effect
+// Add this state at the top with other states
+const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+
+
 useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const shouldAutoDownload = urlParams.get('download') === 'true';
 
     if (shouldAutoDownload && !downloadPDFLoader && parsedResume && !hasAutoDownloaded.current && !fetchingResumeLoader) {
         hasAutoDownloaded.current = true; // Mark as downloaded
-        const downloadAndClose = async () => {
-            // First set the template
-            if(!fetchingResumeLoader){
-                dispatch(setSelectedTemplate(parsedResume.template));
-                // Force a re-render to ensure template is applied
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                // Now proceed with download
-                await handleDownloadPDF();
-            }
-            
-        };
+const downloadAndClose = async () => {
+    setIsGeneratingPDF(true);
+    try {
+        // Show loading for at least 1 second for better UX
+        const loadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Start the download process
+        const downloadPromise = handleDownloadPDF();
+        
+        // Wait for both the minimum loading time and the download to complete
+        await Promise.all([loadingPromise, downloadPromise]);
+    } finally {
+        setIsGeneratingPDF(false);
+    }
+};
         downloadAndClose();
     }
-}, [parsedResume, downloadPDFLoader, fetchingResumeLoader, selectedTemplate]); // Added selectedTemplate to dependencies
+}, [parsedResume, downloadPDFLoader, fetchingResumeLoader, selectedTemplate]);
 
 const handleDownloadPDF = async () => {
     setDownloadPDFLoader(true);
@@ -4098,6 +4106,78 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                     </Card> */}
                 </Col>
             </div>
+            // Add this component at the end of your JSX, just before the final closing tag
+{isGeneratingPDF && (
+    <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+        backdropFilter: 'blur(5px)'
+    }}>
+        <div style={{
+            backgroundColor: 'white',
+            padding: '2rem',
+            borderRadius: '12px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+            textAlign: 'center',
+            maxWidth: '400px',
+            width: '90%'
+        }}>
+            <div style={{
+                display: 'inline-block',
+                width: '50px',
+                height: '50px',
+                border: '4px solid rgba(122, 30, 55, 0.2)',
+                borderRadius: '50%',
+                borderTopColor: '#7a1e37',
+                animation: 'spin 1s ease-in-out infinite',
+                marginBottom: '1rem'
+            }} />
+            <h3 style={{ 
+                color: '#333',
+                marginBottom: '0.5rem',
+                fontWeight: '600'
+            }}>Generating Your CV</h3>
+            <p style={{ 
+                color: '#666',
+                margin: '0.5rem 0 1rem'
+            }}>Please wait while we prepare your document...</p>
+            <div style={{
+                height: '4px',
+                width: '100%',
+                backgroundColor: '#f0f0f0',
+                borderRadius: '2px',
+                overflow: 'hidden',
+                marginTop: '1rem'
+            }}>
+                <div style={{
+                    height: '100%',
+                    width: '100%',
+                    backgroundColor: '#7a1e37',
+                    borderRadius: '2px',
+                    animation: 'loading 1.5s ease-in-out infinite'
+                }} />
+            </div>
+        </div>
+        <style jsx>{`
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+            @keyframes loading {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+            }
+        `}</style>
+    </div>
+)}
         </div>
     );
 }
