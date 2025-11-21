@@ -45,7 +45,7 @@ export default function GettingStarted({completedSteps}) {
     return (
       <span
         className="badge badge-phoenix ms-auto fs-10 bg-secondary-subtle text-secondary-dark border cursor-pointer"
-        onClick={() => manageRedirect(step)} // you can link to step-specific routes
+        // onClick={() => manageRedirect(step)} // you can link to step-specific routes
       >
         TAKE ME THERE
         <svg xmlns="http://www.w3.org/2000/svg" width="1.7em" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-arrow-right ms-1 small">
@@ -69,11 +69,11 @@ export default function GettingStarted({completedSteps}) {
         {steps.map((step, index) => {
           const isComplete = completedSteps?.[step.key];
           return (
-            <div key={step.key} className="d-flex py-3 border-translucent border-top">
-              <div className="row justify-content-between align-items-md-center btn-reveal-trigger border-translucent gx-0 flex-1 cursor-pointer">
+            <div key={step.key} className="d-flex py-3 border-translucent border-top cursor-pointer" onClick={() => manageRedirect(step)}>
+              <div className="row justify-content-between align-items-md-center btn-reveal-trigger border-translucent gx-0 flex-1">
                 <div className="col-12 col-md-auto col-xl-12 col-xxl-auto">
                   <div className="mb-1 mb-md-0 d-flex align-items-center lh-1">
-                    <p className="form-check-label mb-1 mb-md-0 mb-xl-1 mb-xxl-0 fs-8 me-2 text-body cursor-pointer fs-7"  onClick={() => manageRedirect(step)}>
+                    <p className="form-check-label mb-1 mb-md-0 mb-xl-1 mb-xxl-0 fs-8 me-2 text-body cursor-pointer fs-7">
                       {isComplete ? <del><strong>Step {index + 1}:</strong> {step.label}</del> : <><strong>Step {index + 1}:</strong> {step.label}</>}
                     </p>
                   </div>

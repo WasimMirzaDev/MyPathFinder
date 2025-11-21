@@ -9,43 +9,39 @@ p,
     color: #161c52;
 }
 
-
-
-
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-    font-family: figtree !important;
-    color: #161c52 ;
+    font-family: figtree;
+    color: #161c52;
 }
-
-
 
 .video-wrapper {
     /* position: relative; */
     width: 100%;
     height: auto;
-  }
-  
-  .video-player {
+}
+
+.video-player {
     width: 100%;
     height: auto;
     object-fit: cover;
-    pointer-events: none !important; /* ✅ no clicks/taps */
+    pointer-events: none !important;
+    /* ✅ no clicks/taps */
     user-select: none !important;
-  }
-  
-  .video-wrapper::after {
+}
+
+.video-wrapper::after {
     content: "";
     position: absolute;
     inset: 0;
     background: transparent;
-    pointer-events: all; /* ✅ blocks touches completely */
-  }
-  
+    pointer-events: all;
+    /* ✅ blocks touches completely */
+}
 
 h4 {
     line-height: 1.5rem !important;
@@ -585,7 +581,7 @@ a:hover {
     background: #555;
 }
 
-.PhoneInput .PhoneInputInput{
+.PhoneInput .PhoneInputInput {
     border: 0 !important;
     outline: none !important;
     padding-left: 10px !important;
@@ -596,10 +592,10 @@ a:hover {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.dropdown-toggle::before{
+.dropdown-toggle::before {
     content: unset !important;
 }
 
-.ck.ck-balloon-panel.ck-powered-by-balloon .ck.ck-powered-by{
+.ck.ck-balloon-panel.ck-powered-by-balloon .ck.ck-powered-by {
     display: none !important;
 }

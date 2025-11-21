@@ -32,7 +32,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
 import CoverLetter from "./components/coverLetter";
 import html2pdf from "html2pdf.js";
-import { baseUrl} from "../../api/axios";
+import { baseUrl } from "../../api/axios";
 import axios from "axios";
 
 
@@ -285,7 +285,42 @@ export default function CVBuilder() {
     }, [hasUnsavedChanges, saveChangesLoader, isNavigating, navigate]);
 
     // Update your save function
+    // const handleSaveChanges = () => {
+    //     if (parsedResume != prevParsedResume) {
+    //         dispatch(updateResumeById({ id, parsedResume })).then(() => {
+    //             setHasUnsavedChanges(false);
+    //             toast.success('Changes saved successfully!');
+    //         }).catch((error) => {
+    //             toast.error('Failed to save changes');
+    //         });
+    //     }
+    // };
+
+
     const handleSaveChanges = () => {
+        // Check for empty CKEditor content in custom sections
+        const emptyCustomSections = (parsedResume.customSections || [])
+            .filter(section => !section.disabled) // Only check enabled sections
+            .filter(section => {
+                // Check if content is empty (remove HTML tags and check if it's empty)
+                const plainText = section.content?.replace(/<[^>]*>/g, '').trim();
+                return !plainText;
+            });
+
+        if (emptyCustomSections.length > 0) {
+            toast.error(`Please add content to your custom sections: ${emptyCustomSections.map(s => s.title).join(', ')}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            return; // Stop the save operation
+        }
+
         if (parsedResume != prevParsedResume) {
             dispatch(updateResumeById({ id, parsedResume })).then(() => {
                 setHasUnsavedChanges(false);
@@ -518,10 +553,30 @@ export default function CVBuilder() {
     //     setActiveAccordion(newSection.id);
     // };
 
+    // const handleAddCustomSection = () => {
+    //     const newSection = {
+    //         id: `custom-${Date.now()}`,
+    //         title: 'New Custom Section',
+    //         content: '',
+    //         disabled: false,
+    //         editingTitle: false
+    //     };
+
+    //     dispatch(updateField({
+    //         path: "customSections",
+    //         value: [...(parsedResume.customSections || []), newSection]
+    //     }));
+    //     setActiveAccordion(newSection.id);
+    //     toggleSection(`custom-${newSection.id}`);
+    // };
+
     const handleAddCustomSection = () => {
+        const customSectionsCount = parsedResume.customSections?.length || 0;
+        const sectionNumber = customSectionsCount > 0 ? ` ${customSectionsCount + 1}` : '';
+
         const newSection = {
             id: `custom-${Date.now()}`,
-            title: 'New Custom Section',
+            title: `New Custom Section${sectionNumber}`,
             content: '',
             disabled: false,
             editingTitle: false
@@ -649,179 +704,179 @@ export default function CVBuilder() {
         }
     }, [parsedResume, downloadPDFLoader]);
 
-const handleDownloadPDF = async () => {
-    setDownloadPDFLoader(true);
-    try {
-        // Save changes first and wait for it to complete
-        if (parsedResume !== prevParsedResume) {
-            await new Promise((resolve, reject) => {
-                dispatch(updateResumeById({ id, parsedResume }))
-                    .unwrap()
-                    .then(() => {
-                        setHasUnsavedChanges(false);
-                        toast.success('Changes saved successfully!');
-                        resolve();
-                    })
-                    .catch((error) => {
-                        toast.error('Failed to save changes');
-                        reject(error);
-                    });
-            });
-        }
-    } catch {
-        // Handle save error if needed
-    }
-
-    // For all templates including Classic, Default, Luxe, and Modern
-    if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
+    const handleDownloadPDF = async () => {
+        setDownloadPDFLoader(true);
         try {
-            const response = await axios.get(`${baseUrl}/api/resume/${id}/download?template=${selectedTemplate}`, {
-                responseType: 'blob'
-            });
-            
-            // Create a blob from the PDF stream
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-            
+            // Save changes first and wait for it to complete
+            if (parsedResume !== prevParsedResume) {
+                await new Promise((resolve, reject) => {
+                    dispatch(updateResumeById({ id, parsedResume }))
+                        .unwrap()
+                        .then(() => {
+                            setHasUnsavedChanges(false);
+                            toast.success('Changes saved successfully!');
+                            resolve();
+                        })
+                        .catch((error) => {
+                            toast.error('Failed to save changes');
+                            reject(error);
+                        });
+                });
+            }
+        } catch {
+            // Handle save error if needed
+        }
+
+        // For all templates including Classic, Default, Luxe, and Modern
+        if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
+            try {
+                const response = await axios.get(`${baseUrl}/api/resume/${id}/download?template=${selectedTemplate}`, {
+                    responseType: 'blob'
+                });
+
+                // Create a blob from the PDF stream
+                const blob = new Blob([response.data], { type: 'application/pdf' });
+
+                // Create object URL
+                const fileURL = URL.createObjectURL(blob);
+
+                // Create iframe to display PDF
+                const iframe = document.createElement('iframe');
+                iframe.style.width = '100%';
+                iframe.style.height = '100vh';
+                iframe.style.border = 'none';
+                iframe.src = fileURL;
+
+                // Clear current page content and show PDF
+                document.body.innerHTML = '';
+                document.body.appendChild(iframe);
+
+                // Add a back button
+                const backButton = document.createElement('button');
+                backButton.textContent = '← Back to Resume';
+                backButton.style.position = 'fixed';
+                backButton.style.top = '10px';
+                backButton.style.left = '10px';
+                backButton.style.zIndex = '1000';
+                backButton.style.padding = '10px 15px';
+                backButton.style.backgroundColor = '#7a1e37';
+                backButton.style.color = 'white';
+                backButton.style.border = 'none';
+                backButton.style.borderRadius = '5px';
+                backButton.style.cursor = 'pointer';
+                backButton.style.fontSize = '14px';
+                backButton.style.fontWeight = 'bold';
+                backButton.onclick = () => {
+                    window.location.reload(); // Reload to get back to the resume editor
+                };
+                document.body.appendChild(backButton);
+
+                // Add some styles to the body
+                document.body.style.margin = '0';
+                document.body.style.padding = '0';
+                document.body.style.overflow = 'hidden';
+
+                // Clean up URL when iframe is closed
+                iframe.onload = () => {
+                    setTimeout(() => {
+                        URL.revokeObjectURL(fileURL);
+                    }, 1000);
+                };
+
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                toast.error('Failed to generate PDF');
+            } finally {
+                setDownloadPDFLoader(false);
+            }
+            return;
+        }
+
+        // For other templates that use html2pdf (if any)
+        if (!cvRef.current) {
+            setDownloadPDFLoader(false);
+            return;
+        }
+
+        const element = cvRef.current;
+        const opt = {
+            margin: 5,
+            filename: `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+            pagebreak: { mode: ["css", "legacy"] }
+        };
+
+        try {
+            // Generate PDF as blob instead of saving directly
+            const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
+
             // Create object URL
-            const fileURL = URL.createObjectURL(blob);
-            
-            // Create iframe to display PDF
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
+            // Open in same tab using iframe
             const iframe = document.createElement('iframe');
             iframe.style.width = '100%';
             iframe.style.height = '100vh';
             iframe.style.border = 'none';
-            iframe.src = fileURL;
-            
-            // Clear current page content and show PDF
-            document.body.innerHTML = '';
+            iframe.style.position = 'fixed';
+            iframe.style.top = '0';
+            iframe.style.left = '0';
+            iframe.style.zIndex = '9999';
+            iframe.style.background = 'white';
+            iframe.src = pdfUrl;
+
+            // Create overlay container
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'white';
+            overlay.style.zIndex = '9998';
+            overlay.id = 'pdf-overlay';
+
+            // Add close button
+            const closeButton = document.createElement('button');
+            closeButton.textContent = '✕ Close PDF';
+            closeButton.style.position = 'fixed';
+            closeButton.style.top = '15px';
+            closeButton.style.right = '15px';
+            closeButton.style.zIndex = '10000';
+            closeButton.style.padding = '10px 15px';
+            closeButton.style.backgroundColor = '#7a1e37';
+            closeButton.style.color = 'white';
+            closeButton.style.border = 'none';
+            closeButton.style.borderRadius = '5px';
+            closeButton.style.cursor = 'pointer';
+            closeButton.style.fontSize = '14px';
+            closeButton.style.fontWeight = 'bold';
+            closeButton.onclick = () => {
+                // Remove overlay and iframe
+                document.body.removeChild(overlay);
+                document.body.removeChild(iframe);
+                document.body.removeChild(closeButton);
+                // Clean up URL
+                URL.revokeObjectURL(pdfUrl);
+            };
+
+            // Add elements to page
+            document.body.appendChild(overlay);
             document.body.appendChild(iframe);
-            
-            // Add a back button
-            const backButton = document.createElement('button');
-            backButton.textContent = '← Back to Resume';
-            backButton.style.position = 'fixed';
-            backButton.style.top = '10px';
-            backButton.style.left = '10px';
-            backButton.style.zIndex = '1000';
-            backButton.style.padding = '10px 15px';
-            backButton.style.backgroundColor = '#7a1e37';
-            backButton.style.color = 'white';
-            backButton.style.border = 'none';
-            backButton.style.borderRadius = '5px';
-            backButton.style.cursor = 'pointer';
-            backButton.style.fontSize = '14px';
-            backButton.style.fontWeight = 'bold';
-            backButton.onclick = () => {
-                window.location.reload(); // Reload to get back to the resume editor
-            };
-            document.body.appendChild(backButton);
-            
-            // Add some styles to the body
-            document.body.style.margin = '0';
-            document.body.style.padding = '0';
+            document.body.appendChild(closeButton);
+
+            // Prevent body scroll
             document.body.style.overflow = 'hidden';
-            
-            // Clean up URL when iframe is closed
-            iframe.onload = () => {
-                setTimeout(() => {
-                    URL.revokeObjectURL(fileURL);
-                }, 1000);
-            };
-            
+
         } catch (error) {
-            console.error('Error loading PDF:', error);
+            console.error('Error generating PDF with html2pdf:', error);
             toast.error('Failed to generate PDF');
         } finally {
             setDownloadPDFLoader(false);
         }
-        return;
-    }
-    
-// For other templates that use html2pdf (if any)
-if (!cvRef.current) {
-    setDownloadPDFLoader(false);
-    return;
-}
-
-const element = cvRef.current;
-const opt = {
-    margin: 5,
-    filename: `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`,
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    pagebreak: { mode: ["css", "legacy"] }
-};
-
-try {
-    // Generate PDF as blob instead of saving directly
-    const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
-    
-    // Create object URL
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    
-    // Open in same tab using iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.width = '100%';
-    iframe.style.height = '100vh';
-    iframe.style.border = 'none';
-    iframe.style.position = 'fixed';
-    iframe.style.top = '0';
-    iframe.style.left = '0';
-    iframe.style.zIndex = '9999';
-    iframe.style.background = 'white';
-    iframe.src = pdfUrl;
-    
-    // Create overlay container
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'white';
-    overlay.style.zIndex = '9998';
-    overlay.id = 'pdf-overlay';
-    
-    // Add close button
-    const closeButton = document.createElement('button');
-    closeButton.textContent = '✕ Close PDF';
-    closeButton.style.position = 'fixed';
-    closeButton.style.top = '15px';
-    closeButton.style.right = '15px';
-    closeButton.style.zIndex = '10000';
-    closeButton.style.padding = '10px 15px';
-    closeButton.style.backgroundColor = '#7a1e37';
-    closeButton.style.color = 'white';
-    closeButton.style.border = 'none';
-    closeButton.style.borderRadius = '5px';
-    closeButton.style.cursor = 'pointer';
-    closeButton.style.fontSize = '14px';
-    closeButton.style.fontWeight = 'bold';
-    closeButton.onclick = () => {
-        // Remove overlay and iframe
-        document.body.removeChild(overlay);
-        document.body.removeChild(iframe);
-        document.body.removeChild(closeButton);
-        // Clean up URL
-        URL.revokeObjectURL(pdfUrl);
     };
-    
-    // Add elements to page
-    document.body.appendChild(overlay);
-    document.body.appendChild(iframe);
-    document.body.appendChild(closeButton);
-    
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-    
-} catch (error) {
-    console.error('Error generating PDF with html2pdf:', error);
-    toast.error('Failed to generate PDF');
-} finally {
-    setDownloadPDFLoader(false);
-}
-};
 
 
     const previewContainerRef = useRef(null);
