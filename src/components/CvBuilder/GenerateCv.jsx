@@ -83,7 +83,7 @@ export default function CVBuilder() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader, selectedTemplate } = useSelector((state) => state.resume);
+    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader, selectedTemplate , fetchingResumeLoader } = useSelector((state) => state.resume);
     const { data } = useSelector((state) => state.user);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -632,22 +632,31 @@ export default function CVBuilder() {
 
     const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
 
-    // Handle auto-download when URL contains download=true
-    useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const shouldAutoDownload = urlParams.get('download') === 'true';
+// Add this ref at the top of your component with other hooks
+const hasAutoDownloaded = useRef(false);
 
-        if (shouldAutoDownload && !downloadPDFLoader && parsedResume) {
-            const downloadAndClose = async () => {
+// Update the auto-download effect
+useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldAutoDownload = urlParams.get('download') === 'true';
+
+    if (shouldAutoDownload && !downloadPDFLoader && parsedResume && !hasAutoDownloaded.current && !fetchingResumeLoader) {
+        hasAutoDownloaded.current = true; // Mark as downloaded
+        const downloadAndClose = async () => {
+            // First set the template
+            if(!fetchingResumeLoader){
+                dispatch(setSelectedTemplate(parsedResume.template));
+                // Force a re-render to ensure template is applied
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Now proceed with download
                 await handleDownloadPDF();
-                // Small delay to ensure download starts before closing
-                setTimeout(() => {
-                    window.close();
-                }, 1000);
-            };
-            downloadAndClose();
-        }
-    }, [parsedResume, downloadPDFLoader]);
+            }
+            
+        };
+        downloadAndClose();
+    }
+}, [parsedResume, downloadPDFLoader, fetchingResumeLoader, selectedTemplate]); // Added selectedTemplate to dependencies
 
 const handleDownloadPDF = async () => {
     setDownloadPDFLoader(true);
@@ -669,10 +678,9 @@ const handleDownloadPDF = async () => {
             });
         }
     } catch {
-        // Handle save error if needed
     }
 
-    // For all templates including Classic, Default, Luxe, and Modern
+    // For all templates including Classic, Default, Luxe
     if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
         try {
             const response = await axios.get(`${baseUrl}/api/resume/${id}/download?template=${selectedTemplate}`, {
@@ -685,48 +693,8 @@ const handleDownloadPDF = async () => {
             // Create object URL
             const fileURL = URL.createObjectURL(blob);
             
-            // Create iframe to display PDF
-            const iframe = document.createElement('iframe');
-            iframe.style.width = '100%';
-            iframe.style.height = '100vh';
-            iframe.style.border = 'none';
-            iframe.src = fileURL;
-            
-            // Clear current page content and show PDF
-            document.body.innerHTML = '';
-            document.body.appendChild(iframe);
-            
-            // Add a back button
-            const backButton = document.createElement('button');
-            backButton.textContent = '← Back to Resume';
-            backButton.style.position = 'fixed';
-            backButton.style.top = '10px';
-            backButton.style.left = '10px';
-            backButton.style.zIndex = '1000';
-            backButton.style.padding = '10px 15px';
-            backButton.style.backgroundColor = '#7a1e37';
-            backButton.style.color = 'white';
-            backButton.style.border = 'none';
-            backButton.style.borderRadius = '5px';
-            backButton.style.cursor = 'pointer';
-            backButton.style.fontSize = '14px';
-            backButton.style.fontWeight = 'bold';
-            backButton.onclick = () => {
-                window.location.reload(); // Reload to get back to the resume editor
-            };
-            document.body.appendChild(backButton);
-            
-            // Add some styles to the body
-            document.body.style.margin = '0';
-            document.body.style.padding = '0';
-            document.body.style.overflow = 'hidden';
-            
-            // Clean up URL when iframe is closed
-            iframe.onload = () => {
-                setTimeout(() => {
-                    URL.revokeObjectURL(fileURL);
-                }, 1000);
-            };
+            // Create PDF viewer with download option
+            createPDFViewer(fileURL, blob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
             
         } catch (error) {
             console.error('Error loading PDF:', error);
@@ -737,41 +705,42 @@ const handleDownloadPDF = async () => {
         return;
     }
     
-// For other templates that use html2pdf (if any)
-if (!cvRef.current) {
-    setDownloadPDFLoader(false);
-    return;
-}
+    // For other templates that use html2pdf (if any)
+    if (!cvRef.current) {
+        setDownloadPDFLoader(false);
+        return;
+    }
 
-const element = cvRef.current;
-const opt = {
-    margin: 5,
-    filename: `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`,
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    pagebreak: { mode: ["css", "legacy"] }
+    const element = cvRef.current;
+    const opt = {
+        margin: 5,
+        filename: `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] }
+    };
+
+    try {
+        // Generate PDF as blob instead of saving directly
+        const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
+        
+        // Create object URL
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        
+        // Create PDF viewer with download option
+        createPDFViewer(pdfUrl, pdfBlob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
+        
+    } catch (error) {
+        console.error('Error generating PDF with html2pdf:', error);
+        toast.error('Failed to generate PDF');
+    } finally {
+        setDownloadPDFLoader(false);
+    }
 };
 
-try {
-    // Generate PDF as blob instead of saving directly
-    const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
-    
-    // Create object URL
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    
-    // Open in same tab using iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.width = '100%';
-    iframe.style.height = '100vh';
-    iframe.style.border = 'none';
-    iframe.style.position = 'fixed';
-    iframe.style.top = '0';
-    iframe.style.left = '0';
-    iframe.style.zIndex = '9999';
-    iframe.style.background = 'white';
-    iframe.src = pdfUrl;
-    
+// Helper function to create PDF viewer with consistent layout
+const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
     // Create overlay container
     const overlay = document.createElement('div');
     overlay.style.position = 'fixed';
@@ -783,13 +752,70 @@ try {
     overlay.style.zIndex = '9998';
     overlay.id = 'pdf-overlay';
     
-    // Add close button
+    // Create iframe to display PDF
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = 'calc(100vh - 60px)'; // Leave space for header
+    iframe.style.border = 'none';
+    iframe.style.position = 'fixed';
+    iframe.style.top = '60px'; // Space for header
+    iframe.style.left = '0';
+    iframe.style.zIndex = '9999';
+    iframe.style.background = 'white';
+    iframe.src = pdfUrl;
+    
+    // Create header container for buttons
+    const header = document.createElement('div');
+    header.style.position = 'fixed';
+    header.style.top = '0';
+    header.style.left = '0';
+    header.style.width = '100%';
+    header.style.height = '60px';
+    header.style.backgroundColor = '#f8f9fa';
+    header.style.borderBottom = '1px solid #dee2e6';
+    header.style.zIndex = '10000';
+    header.style.display = 'flex';
+    header.style.alignItems = 'center';
+    header.style.justifyContent = 'space-between';
+    header.style.padding = '0 20px';
+    
+    // Create title
+    const title = document.createElement('div');
+    title.textContent = 'PDF Preview';
+    title.style.fontSize = '18px';
+    title.style.fontWeight = 'bold';
+    title.style.color = '#7a1e37';
+    
+    // Create buttons container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.gap = '10px';
+    
+    // Create download button
+    const downloadButton = document.createElement('button');
+    downloadButton.textContent = '⬇ Download PDF';
+    downloadButton.style.padding = '10px 15px';
+    downloadButton.style.backgroundColor = '#28a745';
+    downloadButton.style.color = 'white';
+    downloadButton.style.border = 'none';
+    downloadButton.style.borderRadius = '5px';
+    downloadButton.style.cursor = 'pointer';
+    downloadButton.style.fontSize = '14px';
+    downloadButton.style.fontWeight = 'bold';
+    downloadButton.onclick = () => {
+        // Create download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pdfUrl;
+        downloadLink.download = filename;
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+    
+    // Create close button
     const closeButton = document.createElement('button');
     closeButton.textContent = '✕ Close PDF';
-    closeButton.style.position = 'fixed';
-    closeButton.style.top = '15px';
-    closeButton.style.right = '15px';
-    closeButton.style.zIndex = '10000';
     closeButton.style.padding = '10px 15px';
     closeButton.style.backgroundColor = '#7a1e37';
     closeButton.style.color = 'white';
@@ -799,30 +825,57 @@ try {
     closeButton.style.fontSize = '14px';
     closeButton.style.fontWeight = 'bold';
     closeButton.onclick = () => {
-        // Remove overlay and iframe
+        // Remove all elements
         document.body.removeChild(overlay);
         document.body.removeChild(iframe);
-        document.body.removeChild(closeButton);
+        document.body.removeChild(header);
+        // Restore body scroll
+        document.body.style.overflow = '';
         // Clean up URL
         URL.revokeObjectURL(pdfUrl);
     };
     
+    // Add buttons to container
+    buttonsContainer.appendChild(downloadButton);
+    buttonsContainer.appendChild(closeButton);
+    
+    // Add title and buttons to header
+    header.appendChild(title);
+    header.appendChild(buttonsContainer);
+    
     // Add elements to page
     document.body.appendChild(overlay);
     document.body.appendChild(iframe);
-    document.body.appendChild(closeButton);
+    document.body.appendChild(header);
     
     // Prevent body scroll
     document.body.style.overflow = 'hidden';
     
-} catch (error) {
-    console.error('Error generating PDF with html2pdf:', error);
-    toast.error('Failed to generate PDF');
-} finally {
-    setDownloadPDFLoader(false);
-}
+    // Clean up URL when viewer is closed
+    const cleanup = () => {
+        if (document.body.contains(header)) {
+            document.body.removeChild(overlay);
+            document.body.removeChild(iframe);
+            document.body.removeChild(header);
+            document.body.style.overflow = '';
+            URL.revokeObjectURL(pdfUrl);
+        }
+    };
+    
+    // Also allow closing with Escape key
+    const handleEscape = (event) => {
+        if (event.key === 'Escape') {
+            cleanup();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    
+    // Store cleanup function on elements for potential external use
+    overlay.cleanup = cleanup;
+    header.cleanup = cleanup;
 };
-
 
     const previewContainerRef = useRef(null);
 

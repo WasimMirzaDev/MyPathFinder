@@ -120,6 +120,7 @@ const resumeSlice = createSlice({
     initialState: {
       parsedResume: {},
       delResumeLoader:false,
+      fetchingResumeLoader:false,
       recentCVs:[],
       recentCVsLoader:false,
       saveChangesLoader: false,
@@ -204,6 +205,7 @@ const resumeSlice = createSlice({
         // Fetch Resume By ID
         .addCase(fetchResumeById.pending, (state) => {
           state.loading = true;
+          state.fetchingResumeLoader = true;
           state.AnalyseResumeData = [];
           state.error = null;
         })
@@ -215,9 +217,11 @@ const resumeSlice = createSlice({
             state.prevParsedResume = action.payload.data.cv_resumejson;
             state.parsedResume = action.payload.data.cv_resumejson;
           }
+          state.fetchingResumeLoader = false;
         })
         .addCase(fetchResumeById.rejected, (state, action) => {
           state.loading = false;
+          state.fetchingResumeLoader = false;
           state.AnalyseResumeData = [];
           state.error = action.payload || 'Failed to fetch resume';
         })
