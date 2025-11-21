@@ -4,9 +4,9 @@ import demo_profile from '../../assets/images/default_avatar.jpeg';
 const Template9 = ({ resumeData }) => {
   const styles = {
     container: {
-      fontFamily: "'Arial', sans-serif",
+      fontFamily: "'Times New Roman', sans-serif",
       padding: '20px 30px',
-      color: '#333',
+      color: 'rgb(106, 106, 106)',
       backgroundColor: '#fff',
       lineHeight: 1.4,
       fontSize: '14px',
@@ -23,6 +23,7 @@ const Template9 = ({ resumeData }) => {
       marginBottom: '25px'
     },
     nameTitle: {
+      fontFamily: "'Times New Roman', sans-serif",
       fontSize: '24px',
       fontWeight: 'bold',
       margin: '0 0 5px 0',
@@ -30,6 +31,7 @@ const Template9 = ({ resumeData }) => {
       letterSpacing: '0.5px'
     },
     subtitle: {
+      fontFamily: "'Times New Roman', sans-serif",
       margin: 0,
       fontStyle: 'italic',
       color: '#555'
@@ -47,7 +49,7 @@ const Template9 = ({ resumeData }) => {
       objectFit: 'cover'
     },
     sectionTitle: {
-      
+      fontFamily: "'Times New Roman', sans-serif",
       fontSize: '16px',
       pageBreakInside: "avoid",
       pageBreakBefore: "auto",
@@ -60,11 +62,13 @@ const Template9 = ({ resumeData }) => {
       textTransform: 'uppercase'
     },
     detailsTable: {
+      fontFamily: "'Times New Roman', sans-serif",
       width: '100%',
       borderCollapse: 'collapse',
       marginBottom: '25px'
     },
     tableLabel: {
+      fontFamily: "'Times New Roman', sans-serif",
       width: '120px',
       padding: '3px 0',
       fontWeight: 'bold',
@@ -76,6 +80,7 @@ const Template9 = ({ resumeData }) => {
     profileText: {
       margin: '0 0 25px 0',
       textAlign: 'justify',
+      fontFamily: "'Times New Roman', sans-serif",
       
       pageBreakInside: "avoid",
       pageBreakBefore: "auto",

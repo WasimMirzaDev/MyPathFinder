@@ -84,7 +84,7 @@ export default function InterviewPractice({interviewQuestions , setShowModal , f
             </div>
             <div className="row g-3 list feature-cards">
                 {interviewQuestions?.map((question, index) => (
-                    <div className="col-12 col-xl-4" key={index}>
+                    <div className="col-12 col-md-6 col-xl-4" key={index}>
                         <div className="card h-100">
                             <div className="card-body">
                                 <div className="border-bottom border-translucent">

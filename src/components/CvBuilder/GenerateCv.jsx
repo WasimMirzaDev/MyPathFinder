@@ -32,7 +32,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
 import CoverLetter from "./components/coverLetter";
 import html2pdf from "html2pdf.js";
-import { baseUrl} from "../../api/axios";
+import { baseUrl } from "../../api/axios";
 import axios from "axios";
 
 
@@ -285,7 +285,42 @@ export default function CVBuilder() {
     }, [hasUnsavedChanges, saveChangesLoader, isNavigating, navigate]);
 
     // Update your save function
+    // const handleSaveChanges = () => {
+    //     if (parsedResume != prevParsedResume) {
+    //         dispatch(updateResumeById({ id, parsedResume })).then(() => {
+    //             setHasUnsavedChanges(false);
+    //             toast.success('Changes saved successfully!');
+    //         }).catch((error) => {
+    //             toast.error('Failed to save changes');
+    //         });
+    //     }
+    // };
+
+
     const handleSaveChanges = () => {
+        // Check for empty CKEditor content in custom sections
+        const emptyCustomSections = (parsedResume.customSections || [])
+            .filter(section => !section.disabled) // Only check enabled sections
+            .filter(section => {
+                // Check if content is empty (remove HTML tags and check if it's empty)
+                const plainText = section.content?.replace(/<[^>]*>/g, '').trim();
+                return !plainText;
+            });
+
+        if (emptyCustomSections.length > 0) {
+            toast.error(`Please add content to your custom sections: ${emptyCustomSections.map(s => s.title).join(', ')}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            return; // Stop the save operation
+        }
+
         if (parsedResume != prevParsedResume) {
             dispatch(updateResumeById({ id, parsedResume })).then(() => {
                 setHasUnsavedChanges(false);
@@ -518,10 +553,30 @@ export default function CVBuilder() {
     //     setActiveAccordion(newSection.id);
     // };
 
+    // const handleAddCustomSection = () => {
+    //     const newSection = {
+    //         id: `custom-${Date.now()}`,
+    //         title: 'New Custom Section',
+    //         content: '',
+    //         disabled: false,
+    //         editingTitle: false
+    //     };
+
+    //     dispatch(updateField({
+    //         path: "customSections",
+    //         value: [...(parsedResume.customSections || []), newSection]
+    //     }));
+    //     setActiveAccordion(newSection.id);
+    //     toggleSection(`custom-${newSection.id}`);
+    // };
+
     const handleAddCustomSection = () => {
+        const customSectionsCount = parsedResume.customSections?.length || 0;
+        const sectionNumber = customSectionsCount > 0 ? ` ${customSectionsCount + 1}` : '';
+
         const newSection = {
             id: `custom-${Date.now()}`,
-            title: 'New Custom Section',
+            title: `New Custom Section${sectionNumber}`,
             content: '',
             disabled: false,
             editingTitle: false
