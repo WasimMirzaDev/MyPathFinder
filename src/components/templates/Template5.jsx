@@ -248,25 +248,25 @@ const Template5 = ({ resumeData }) => {
                     <span style={styles.period}>{edu.educationDates?.start?.date} – {edu.educationDates?.end?.date}</span>
                   </p>
                   {edu.educationMajor.length > 0 ? (
-                <>
-                  <div className='d-flex' style={styles.pagecontentfull}>
-                    <div>
-                       Subjects : 
-                    </div>
-                    <div className='ms-1'>
-                      {edu.educationMajor.map((major, i) => (
-                        <span key={i}> {i > 0 ? ', ' : ''}{major}</span>
-                      ))}
-                    </div>
-                  </div>
-                  {/* <br /> */}
-                </>
-              ) : ""}
+                    <>
+                      <div className='d-flex' style={styles.pagecontentfull}>
+                        <div>
+                          Subjects :
+                        </div>
+                        <div className='ms-1'>
+                          {edu.educationMajor.map((major, i) => (
+                            <span key={i}> {i > 0 ? ', ' : ''}{major}</span>
+                          ))}
+                        </div>
+                      </div>
+                      {/* <br /> */}
+                    </>
+                  ) : ""}
                   {edu.achievedGrade ? (
                     <>
                       <div className='d-flex'>
                         <div>
-                          Grade : 
+                          Grade :
                         </div>
                         <div className='ms-1'>
                           {edu.achievedGrade}
@@ -284,53 +284,74 @@ const Template5 = ({ resumeData }) => {
               ))}
             </section>
           )}
+
+
+          {resumeData?.customSections?.map((section, index) => (
+            <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+              <h2 style={styles.sectionTitle}>{section.title}</h2>
+              <div
+                style={{ marginTop: "15px" }}
+                dangerouslySetInnerHTML={{ __html: section.content }}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Right Sidebar */}
         <div style={styles.rightSidebar}>
-          {/* Personal Details - Keeping this section but making it more dynamic */}
-          {!resumeData?.personalDisabled && resumeData?.website?.[0] && (
-            <section style={styles.sidebarSection}>
-              <h3 style={styles.sidebarTitle}>Personal Details</h3>
-              <p style={styles.sidebarText}>
-                Website<br />
-                <a href={resumeData.website[0].startsWith('http') ? resumeData.website[0] : `https://${resumeData.website[0]}`}
-                  style={styles.link}
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  {resumeData.website[0].replace(/^https?:\/\//, '')}
-                </a>
-              </p>
-            </section>
-          )}
+
+
+          {/* Social Links */}
+          <div>
+              <section style={styles.sidebarSection}>
+                <h3 style={styles.sidebarTitle}>Social Links</h3>
+                {resumeData?.socialLinks?.github && (
+                  <p style={styles.contactParagraph}>
+                    <strong>Github:</strong> {resumeData?.socialLinks?.github}
+                  </p>
+                )}
+                {resumeData?.socialLinks?.linkedin && (
+                  <p style={styles.contactParagraph}>
+                    <strong>LinkedIn:</strong> {resumeData?.socialLinks?.linkedin}
+                  </p>
+                )}
+                {resumeData?.socialLinks?.website && (
+                  <p style={styles.contactParagraph}>
+                    <strong>Website:</strong> {resumeData?.socialLinks?.website}
+                  </p>
+                )}
+              </section>
+          </div>
+
 
           {/* Languages */}
-{resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
-  <section style={styles.sidebarSection}>
-    <h3 style={styles.sidebarTitle}>{resumeData?.languagesTitle || 'Languages'}</h3>
-    {resumeData.languages.map((lang, idx) => {
-      let width;
-      switch (lang.level) {
-        case 'Native': width = '100%'; break;
-        case 'Advanced': width = '70%'; break;
-        case 'Intermediate': width = '50%'; break;
-        case 'Beginner': width = '30%'; break;
-        default: width = '50%';
-      }
 
-      return (
-        lang.level == null ? null : (
-          <div key={idx} style={styles.languageBar}>
-            <span>{lang.name}</span>
-            <div style={styles.barBackground}>
-              <div style={{ ...styles.barFill, width }}></div>
-            </div>
-          </div>
-        )
-      );
-    })}
-  </section>
-)}
+          {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+            <section style={styles.sidebarSection}>
+              <h3 style={styles.sidebarTitle}>{resumeData?.languagesTitle || 'Languages'}</h3>
+              {resumeData.languages.map((lang, idx) => {
+                let width;
+                switch (lang.level) {
+                  case 'Native': width = '100%'; break;
+                  case 'Advanced': width = '70%'; break;
+                  case 'Intermediate': width = '50%'; break;
+                  case 'Beginner': width = '30%'; break;
+                  default: width = '50%';
+                }
+
+                return (
+                  lang.level == null ? null : (
+                    <div key={idx} style={styles.languageBar}>
+                      <span>{lang.name}</span>
+                      <div style={styles.barBackground}>
+                        <div style={{ ...styles.barFill, width }}></div>
+                      </div>
+                    </div>
+                  )
+                );
+              })}
+            </section>
+          )}
 
 
           {/* Hobbies */}

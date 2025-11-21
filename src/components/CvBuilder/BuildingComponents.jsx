@@ -163,11 +163,11 @@ export default function BuildingComponents() {
 
       if (resultAction?.data?.id) {
         navigate(`/cv-generate/${resultAction.data.id}`);
-        toast.success('Empty resume created successfully! Start editing your CV.');
+        toast.success('Empty CV created successfully! Start editing your CV.');
       }
     } catch (error) {
-      console.error('Error creating empty resume:', error);
-      toast.error(error?.message || "Failed to create empty resume. Please try again.");
+      console.error('Error creating empty CV:', error);
+      toast.error(error?.message || "Failed to create empty CV. Please try again.");
     }
   };
 
@@ -207,15 +207,15 @@ export default function BuildingComponents() {
 
           await dispatch(updateResumeById({ id: resumeId, parsedResume: updatedResume }));
           navigate(`/cv-generate/${resumeId}`);
-          toast.success('AI-generated resume created successfully!');
+          toast.success('AI-generated CV created successfully!');
         } catch (error) {
-          console.error('Error generating AI resume:', error);
-          toast.error(error?.message || "Failed to generate AI resume. Please try again.");
+          console.error('Error generating AI CV:', error);
+          toast.error(error?.message || "Failed to generate AI CV. Please try again.");
         }
       }
     } catch (error) {
-      console.error('Error creating empty resume:', error);
-      toast.error(error?.message || "Failed to create resume. Please try again.");
+      console.error('Error creating empty CV:', error);
+      toast.error(error?.message || "Failed to create CV. Please try again.");
     }
   };
 
@@ -311,7 +311,7 @@ export default function BuildingComponents() {
         if (createResult?.data?.id) {
           setShowFinalize(false);
           navigate(`/cv-generate/${createResult.data.id}`);
-          toast.success('Resume uploaded and processed successfully!');
+          toast.success('CV uploaded and processed successfully!');
         }
       } else {
         throw new Error('Invalid response from server');
@@ -533,7 +533,7 @@ export default function BuildingComponents() {
                 <option value="Professional">Professional</option>
                 <option value="Creative">Creative</option>
                 <option value="Analytical">Analytical</option>
-                <option value="ResultsDriven">ResultsDriven</option>
+                <option value="Results Driven">Results Driven</option>
                 <option value="Strategic">Strategic</option>
                 <option value="Technical">Technical</option>
                 <option value="Collaborative">Collaborative</option>

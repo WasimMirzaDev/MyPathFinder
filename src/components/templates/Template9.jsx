@@ -47,8 +47,8 @@ const Template9 = ({ resumeData }) => {
       objectFit: 'cover'
     },
     sectionTitle: {
-      fontSize: '16px',
       
+      fontSize: '16px',
       pageBreakInside: "avoid",
       pageBreakBefore: "auto",
       pageBreakAfter: "auto",
@@ -56,7 +56,8 @@ const Template9 = ({ resumeData }) => {
       margin: '0 0 12px 0',
       color: '#000',
       paddingBottom: '3px',
-      borderBottom: '1px solid #ddd'
+      borderBottom: '1px solid #ddd',
+      textTransform: 'uppercase'
     },
     detailsTable: {
       width: '100%',
@@ -190,6 +191,24 @@ const Template9 = ({ resumeData }) => {
                     <td style={styles.tableValue}>{resumeData.location.postCode}</td>
                   </tr>
                 )}
+                {resumeData?.socialLinks?.github && (
+              <tr>
+                <td style={styles.tableLabel}>Github</td>
+                <td style={styles.tableValue}>{resumeData?.socialLinks?.github}</td>
+              </tr>
+            )}
+            {resumeData?.socialLinks?.linkedin && (
+              <tr>
+                <td style={styles.tableLabel}>LinkedIn</td>
+                <td style={styles.tableValue}>{resumeData?.socialLinks?.linkedin}</td>
+              </tr>
+            )}
+            {resumeData?.socialLinks?.website && (
+              <tr>
+                <td style={styles.tableLabel}>Website</td>
+                <td style={styles.tableValue}>{resumeData?.socialLinks?.website}</td>
+              </tr>
+            )}
               </tbody>
             </table>
           </>
@@ -204,6 +223,7 @@ const Template9 = ({ resumeData }) => {
         {/* Employment History */}
         {resumeData?.workExperience?.length > 0 && !(resumeData?.employmentDisabled) && (
           <>
+          <div style={{ marginBottom: '30px' }}>
             <h2 style={styles.sectionTitle}>
               {resumeData?.employmentTitle || 'Employment'}
             </h2>
@@ -225,6 +245,7 @@ const Template9 = ({ resumeData }) => {
                 )}
               </div>
             ))}
+          </div>
           </>
         )}
 
@@ -233,6 +254,7 @@ const Template9 = ({ resumeData }) => {
         {/* Education */}
         {resumeData?.education?.length > 0 && !(resumeData?.educationDisabled) && (
           <>
+          <div style={{ marginBottom: '30px' }}>
             <h2 style={styles.sectionTitle}>
               {resumeData?.educationTitle || 'Education'}
             </h2>
@@ -270,6 +292,7 @@ const Template9 = ({ resumeData }) => {
                 )}
               </div>
             ))}
+            </div>
           </>
         )}
 
@@ -290,15 +313,45 @@ const Template9 = ({ resumeData }) => {
           </div>
         )}
 
-{resumeData?.customSections?.map((section, index) => (
-  <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
-    <h2 style={styles.sectionTitle}>{section.title}</h2>
-    <div 
-      style={styles.profileText}
-      dangerouslySetInnerHTML={{ __html: section.content }} 
-    />
-  </div>
-))}
+          {!(resumeData?.languagesDisabled) && (
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.languagesTitle || 'Languages'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {(resumeData?.languages || [])
+                .map((language, index) => (
+                  <li key={index} style={styles.sidebarListItem}>
+                     {language.name} ({language.level})
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Hobbies */}
+        {resumeData?.hobbies?.length > 0 && !(resumeData?.hobbiesDisabled) && (
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.hobbiesTitle || 'Hobbies'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {resumeData.hobbies.map((hobby, idx) => (
+                <li style={styles.sidebarListItem} key={idx}>{hobby}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {resumeData?.customSections?.map((section, index) => (
+          <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+            <h2 style={styles.sectionTitle}>{section.title}</h2>
+            <div 
+              style={styles.profileText}
+              dangerouslySetInnerHTML={{ __html: section.content }} 
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

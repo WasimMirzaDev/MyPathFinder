@@ -7,7 +7,7 @@ const JobSearch = () => {
   return (
     <>
       <MasterLayout>
-        <BreadCrum title='Job Search' subTitle='Find roles that align with your experience, strengths and goals' />
+        <BreadCrum title='Job Search' subTitle='Find roles that align with your experience, strengths and goals.' />
         <VacanciesList />
       </MasterLayout>
     </>

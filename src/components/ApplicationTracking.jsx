@@ -173,7 +173,7 @@ export default function ApplicationTracking() {
             selector: row => row?.position,
             sortable: true,
             cell: row => (
-                <a className="fw-bold text-primary text-decoration-none" href={row?.positionLink}>
+                <a className="fw-bold text-primary text-decoration-none" href={row?.positionLink} target="_blank" rel="noopener noreferrer">
                     {row?.position}
                 </a>
             ),

@@ -228,6 +228,65 @@ const Template12 = ({ resumeData }) => {
             </div>
           </section>
         )}
+
+        {!(resumeData?.skillsDisabled) && (
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.skillsTitle || 'Skills'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {(resumeData?.skill || [])
+                .filter(skill => skill.selected)
+                .map((skill, index) => (
+                  <li key={index} style={styles.sidebarListItem}>
+                     {skill.name || skill}
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Languages */}
+        {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+          <div style={styles.leftColumn}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.languagesTitle || 'Languages'}
+            </h2>
+            <ul style={styles.bulletList}>
+              {(resumeData?.languages || []).map((language, index) => (
+            <li key={index} style={styles.sidebarListItem}>
+               {language.name} ({language.level})
+            </li>
+               ))}
+            </ul>
+          </div>
+          )}
+
+        {/* Hobbies */}
+        {resumeData?.hobbies?.length > 0 && !(resumeData?.hobbiesDisabled) && (
+          <div style={styles.leftColumn}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.hobbiesTitle || 'Hobbies'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {(resumeData?.hobbies || []).map((hobby, idx) => (
+                <li style={styles.sidebarListItem} key={idx}>{hobby}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Custom Sections */}
+
+        {resumeData?.customSections?.map((section, index) => (
+          <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+            <h2 style={styles.sectionTitle}>{section.title}</h2>
+            <div 
+              style={styles.profileText}
+              dangerouslySetInnerHTML={{ __html: section.content }} 
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

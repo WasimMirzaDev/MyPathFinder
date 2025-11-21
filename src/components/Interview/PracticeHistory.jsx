@@ -128,7 +128,7 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                     onClick={() => handleViewDetails(q?.min_history[0])}
                                     title='view feedback'
                                     >
-                                        <h6>Min Score</h6>
+                                        <h6>Worst Score</h6>
                                         <div className="d-flex align-items-center gap-1">
                                             <div style={{ "--phoenix-circle-progress-bar": q?.min_score }}>
                                                 <svg
@@ -167,7 +167,7 @@ export default function PracticeHistory({history , handleViewDetails}) {
                                     onClick={() => handleViewDetails(q?.max_history[0])}
                                     title='view feedback'
                                     >
-                                        <h6>Max Score</h6>
+                                        <h6>Best Score</h6>
                                         <div className="d-flex align-items-center gap-1">
                                             <div style={{ "--phoenix-circle-progress-bar": q?.max_score }}>
                                                 <svg

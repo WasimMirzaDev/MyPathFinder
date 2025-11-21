@@ -849,7 +849,7 @@ export default function Prepration() {
                                         <Spinner animation="border" variant="primary" style={{ width: '3rem', height: '3rem' }} />
                                     </div>
                                     <h4>Finalising Your Report</h4>
-                                    <p className="text-muted">Please wait while we analyze your response <br></br>{loadingText}...</p>
+                                    <p className="text-muted">Please wait while we analyse your response <br></br>{loadingText}...</p>
                                     <div className="progress mt-3" style={{ height: '10px' }}>
                                         <div
                                             className="progress-bar progress-bar-striped progress-bar-animated"

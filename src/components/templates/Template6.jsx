@@ -99,13 +99,17 @@ const Template6 = ({ resumeData }) => {
       <div style={styles.header}>
         {resumeData?.candidateName?.[0]?.firstName}{" "}
         {resumeData?.candidateName?.[0]?.familyName ? ` ${resumeData?.candidateName?.[0]?.familyName}` : ''}
-        {resumeData?.location?.formatted ? ` | ${resumeData.location?.formatted} , ` : ''}
-        {resumeData?.location?.city ? `${resumeData.location?.city}` : ''}
         {resumeData?.email?.[0] ? ` | ${resumeData?.email?.[0]}` : ''}
         {resumeData?.phoneNumber?.[0]?.formattedNumber ? ` | ${resumeData?.phoneNumber?.[0]?.formattedNumber}` : ''}
-        {resumeData?.socialLinks?.github ? ` | ${resumeData.socialLinks.github}` : ''}
-        {resumeData?.socialLinks?.linkedin ? ` | ${resumeData.socialLinks.linkedin}` : ''}
-        {resumeData?.socialLinks?.website ? ` | ${resumeData.socialLinks.website}` : ''}
+        {resumeData?.location?.formatted ? ` | ${resumeData.location?.formatted},` : ''}
+        {resumeData?.location?.city ? `${resumeData.location?.city}` : ''}
+        {resumeData?.location?.postCode ? ` (${resumeData.location?.postCode})` : ''}
+        <br></br>
+        {resumeData?.socialLinks?.github ? ` Github: ${resumeData.socialLinks.github}` : ''}
+        <br></br>
+        {resumeData?.socialLinks?.linkedin ? ` LinkedIn: ${resumeData.socialLinks.linkedin}` : ''}
+        <br></br>
+        {resumeData?.socialLinks?.website ? ` Website: ${resumeData.socialLinks.website}` : ''}
       </div>
 
       {/* Candidate Headline */}
@@ -214,6 +218,43 @@ const Template6 = ({ resumeData }) => {
           ))}
         </div>
         )}
+
+        {/* Hobbies */}
+        {resumeData?.hobbies?.length > 0 && !(resumeData?.hobbiesDisabled) && (
+          <div style={styles.leftColumn}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.hobbiesTitle || 'Hobbies'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {resumeData.hobbies.map((hobby, idx) => (
+                <li style={styles.sidebarListItem} key={idx}>{hobby}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+          <div style={styles.leftColumn}>
+            <h2 style={styles.sectionTitle}>{resumeData?.languagesTitle || 'Languages'}</h2>
+            <ul style={styles.bulletList}>
+              {(resumeData?.languages).map((language, index) => (
+            <li key={index} style={styles.sidebarListItem}>
+               {language.name} ({language.level})
+            </li>
+               ))}
+            </ul>
+          </div>
+          )}
+
+        {resumeData?.customSections?.map((section, index) => (
+          <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+            <h2 style={styles.sectionTitle}>{section.title}</h2>
+            <div 
+              style={styles.profileText}
+              dangerouslySetInnerHTML={{ __html: section.content }} 
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

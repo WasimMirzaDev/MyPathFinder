@@ -17,6 +17,11 @@ const Template13 = ({ resumeData }) => {
       padding: '40px 50px',
       boxShadow: '0 0 10px rgba(0,0,0,0.1)'
     },
+    headline: {
+      fontSize: '15px',
+      color: '#7a1e37',
+      fontWeight: 'bold'
+    },
     header: {
       display: 'flex',
       alignItems: 'center',
@@ -113,6 +118,9 @@ const Template13 = ({ resumeData }) => {
         <div style={styles.headerBar}></div>
         <div style={styles.name}>
           {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
+          <p style={styles.headline}>
+          {resumeData?.headline || 'Professional title'}
+        </p>
         </div>
       </div>
 
@@ -235,6 +243,65 @@ const Template13 = ({ resumeData }) => {
           </div>
         </>
       )}
+
+
+        {!(resumeData?.skillsDisabled) && (
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.skillsTitle || 'Skills'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {(resumeData?.skill || [])
+                .filter(skill => skill.selected)
+                .map((skill, index) => (
+                  <li key={index} style={styles.sidebarListItem}>
+                     {skill.name || skill}
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Languages */}
+        {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+          <div style={styles.leftColumn}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.languagesTitle || 'Languages'}
+            </h2>
+            <ul style={styles.bulletList}>
+              {(resumeData?.languages || []).map((language, index) => (
+            <li key={index} style={styles.sidebarListItem}>
+               {language.name} ({language.level})
+            </li>
+               ))}
+            </ul>
+          </div>
+          )}
+
+        {/* Hobbies */}
+        {resumeData?.hobbies?.length > 0 && !(resumeData?.hobbiesDisabled) && (
+          <div style={styles.leftColumn}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.hobbiesTitle || 'Hobbies'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {(resumeData?.hobbies || []).map((hobby, idx) => (
+                <li style={styles.sidebarListItem} key={idx}>{hobby}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+      {/* Custom Sections */}
+      {resumeData?.customSections?.map((section, index) => (
+        <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+          <h2 style={styles.sectionTitle}>{section.title}</h2>
+          <div
+            style={styles.sectionContent}
+            dangerouslySetInnerHTML={{ __html: section.content }}
+          />
+        </div>
+      ))}
     </div>
   );
 };

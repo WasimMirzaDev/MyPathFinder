@@ -128,13 +128,25 @@ const Template7 = ({ resumeData }) => {
           pageBreakBefore: "auto",
           pageBreakAfter: "auto",
       marginRight: '5px'
-    }
+    },
+    headlineText: {
+      fontSize: '15px',
+      fontWeight: '600',
+      margin: '10px 0 4px',
+    },
   };
 
   return (
     <div style={styles.container}>
       {/* Left Sidebar */}
       <div style={styles.leftSidebar}>
+
+        <h2 style={styles.sidebarTitle}>Social Links</h2>
+        <ul style={styles.sidebarList}>
+          {resumeData?.socialLinks?.github ? <li style={{fontSize: '14px'}}> {resumeData.socialLinks.github}</li> : ''}
+          {resumeData?.socialLinks?.linkedin ? <li style={{fontSize: '14px'}}> {resumeData.socialLinks.linkedin}</li> : ''}
+          {resumeData?.socialLinks?.website ? <li style={{fontSize: '14px'}}> {resumeData.socialLinks.website}</li> : ''}
+        </ul>
         {/* Languages */}
         {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
           <div style={{ marginBottom: '30px' }}>
@@ -196,11 +208,14 @@ const Template7 = ({ resumeData }) => {
               <h1 style={styles.name}>
                 {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
               </h1>
+              <p style={styles.headlineText}>
+                {resumeData?.headline || "Results-Driven Partnerships & Client Success Leader"}
+              </p>
               <p style={styles.contactInfo}>
                 {resumeData?.email?.[0]} | {resumeData?.phoneNumber?.[0]?.formattedNumber}
               </p>
               <p style={styles.contactInfo}>
-                {resumeData?.location?.formatted}
+                {resumeData?.location?.formatted} | {resumeData?.location?.city} | {resumeData?.location?.postCode}
               </p>
             </div>
           </div>
@@ -269,6 +284,16 @@ const Template7 = ({ resumeData }) => {
           ))}
         </div>
         )}
+
+        {resumeData?.customSections?.map((section, index) => (
+          <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+            <h2 style={styles.sectionTitle}>{section.title}</h2>
+            <div 
+              style={styles.sectionText}
+              dangerouslySetInnerHTML={{ __html: section.content }} 
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

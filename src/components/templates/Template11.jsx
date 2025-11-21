@@ -129,6 +129,9 @@ const Template11 = ({ resumeData }) => {
       <h1 style={styles.resumeTitle}>
         {resumeData?.candidateName?.[0]?.firstName} {resumeData?.candidateName?.[0]?.familyName}
       </h1>
+      <p style={styles.headline}>
+          {resumeData?.headline || 'Professional title'}
+        </p>
       <hr style={styles.horizontalRule} />
 
       <section style={styles.section}>
@@ -262,12 +265,53 @@ const Template11 = ({ resumeData }) => {
           <ul style={styles.bulletList}>
           {(resumeData?.skill || []).filter(skill => skill.selected).map((skill, index) => (
               <li key={index} style={styles.bulletItem}>
-                <strong>{skill.name}:</strong> {skill.level || 'Proficient'}
+                <strong>{skill.name}</strong>
               </li>
             ))}
           </ul>
         </section>
       )}
+
+      {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
+        <section style={styles.section}>
+          <h2 style={styles.sectionTitle}>{resumeData?.languagesTitle || 'Languages'}</h2>
+          {resumeData.languages.map((lang, idx) => {
+            return (
+              <div key={idx} style={styles.languageItem}>
+                 <li key={idx} style={styles.bulletItem}>
+                <strong>{lang.name}:</strong> {lang.level}
+              </li>
+              </div>
+            );
+          })}
+        </section>
+      )}
+
+
+      {/* Hobbies */}
+        {resumeData?.hobbies?.length > 0 && !(resumeData?.hobbiesDisabled) && (
+          <div style={styles.leftColumn}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.hobbiesTitle || 'Hobbies'}
+            </h2>
+            <ul style={styles.sidebarList}>
+              {(resumeData?.hobbies || []).map((hobby, idx) => (
+                <li style={styles.sidebarListItem} key={idx}>{hobby}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+
+      {resumeData?.customSections?.map((section, index) => (
+        <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+          <h2 style={styles.sectionTitle}>{section.title}</h2>
+          <div
+            style={{ marginTop: "15px" }}
+            dangerouslySetInnerHTML={{ __html: section.content }}
+          />
+        </div>
+      ))}
     </div>
   );
 };

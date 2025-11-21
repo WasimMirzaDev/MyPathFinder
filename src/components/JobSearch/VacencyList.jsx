@@ -67,11 +67,11 @@ const VacanciesList = () => {
   
         if (resultAction?.data?.id) {
           navigate(`/cv-generate/${resultAction.data.id}`);
-          toast.success('Empty resume created successfully! Start editing your CV.');
+          toast.success('Empty CV created successfully! Start editing your CV.');
         }
       } catch (error) {
-        console.error('Error creating empty resume:', error);
-        toast.error(error?.message || "Failed to create empty resume. Please try again.");
+        console.error('Error creating empty CV:', error);
+        toast.error(error?.message || "Failed to create empty CV. Please try again.");
       }
     };
 

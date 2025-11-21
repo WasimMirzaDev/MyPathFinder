@@ -11,6 +11,12 @@ const Template8 = ({ resumeData }) => {
       boxShadow: '0 0 20px rgba(0,0,0,0.1)',
       fontFamily: 'Arial, sans-serif'
     },
+    headline: {
+      margin: '12px 0 20px 0',
+      fontSize: '12px',
+      fontWeight: 'bold',
+      color: '#e9e9e9ff'
+    },
     leftSidebar: {
       width: '250px',
       backgroundColor: '#943b2b',
@@ -213,6 +219,9 @@ const Template8 = ({ resumeData }) => {
             />
           </div>
           ) : null}
+          <p style={styles.headline}>
+          {resumeData?.headline || 'Professional title'}
+        </p>
         </div>
 
         {/* Personal Details */}
@@ -242,27 +251,63 @@ const Template8 = ({ resumeData }) => {
             )}
 
             {resumeData?.location?.formatted && (
-              <div style={{ ...styles.detailItem, alignItems: 'flex-start' }}>
-                <div style={{ ...styles.detailIcon, marginTop: '2px' }}>🏠</div>
-                <span style={styles.addressText}>
-                  {resumeData.location.formatted.split(',').map((line, i) => (
-                    <React.Fragment key={i}>
-                      {line.trim()}
-                      {i < resumeData.location.formatted.split(',').length - 1 && <br />}
-                    </React.Fragment>
-                  ))}
-                </span>
+                  <div style={{ ...styles.detailItem, alignItems: 'flex-start' }}>
+                    <div style={{ ...styles.detailIcon, marginTop: '2px' }}>🏠</div>
+                    <span style={styles.addressText}>
+                      {resumeData.location.formatted.split(',').map((line, i) => (
+                        <React.Fragment key={i}>
+                          {line.trim()}
+                          {i < resumeData.location.formatted.split(',').length - 1 && <br />}
+                          
+                        </React.Fragment>
+                      ))}
+                                      {resumeData?.location?.city && (
+                   "," + resumeData.location.city
+                )}
+                {resumeData?.location?.postCode && (
+                  "," + resumeData?.location?.postCode
+                  
+                )}
+                    </span>
+                  </div>
+                )}
+            {resumeData?.socialLinks?.linkedin && (
+              <div style={styles.detailItem}>
+                <div style={styles.detailIcon}>🔗</div>
+                <span style={styles.detailText}>{resumeData.socialLinks.linkedin}</span>
               </div>
             )}
 
-            {resumeData?.website?.[0] && (
+            {resumeData?.socialLinks?.github && (
               <div style={styles.detailItem}>
-                <div style={styles.detailIcon}>💼</div>
-                <span style={styles.detailText}>
-                  {resumeData.website[0].replace(/^https?:\/\//, '')}
-                </span>
+                <div style={styles.detailIcon}>🔗</div>
+                <span style={styles.detailText}>{resumeData.socialLinks.github}</span>
               </div>
             )}
+
+            {resumeData?.socialLinks?.website && (
+              <div style={styles.detailItem}>
+                <div style={styles.detailIcon}>🔗</div>
+                <span style={styles.detailText}>{resumeData.socialLinks.website}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Skills */}
+        {!(resumeData?.skillsDisabled) && (
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={styles.sectionTitle}>
+              {resumeData?.skillsTitle || 'Skills'}
+            </h2>
+              {(resumeData?.skill || [])
+                .filter(skill => skill.selected)
+                .map((skill, index) => (
+                    <div key={index} style={styles.qualityItem}>
+                      <div style={styles.qualityDot} />
+                      <span style={styles.detailText}>{skill.name}</span>
+                    </div>
+                ))}
           </div>
         )}
 
@@ -383,6 +428,19 @@ const Template8 = ({ resumeData }) => {
             ))}
           </div>
         )}
+
+        {/* Custom Sections */}
+        {resumeData?.customSections?.map((section, index) => (
+           <div style={styles.contentSection}>
+          <div key={index} style={{ marginBottom: index === resumeData.customSections.length - 1 ? '5px' : '20px' }}>
+            <h2 style={styles.contentTitle}>{section.title}</h2>
+            <div
+              style={styles.contentText}
+              dangerouslySetInnerHTML={{ __html: section.content }}
+            />
+          </div>
+          </div>
+        ))}
       </div>
     </div>
   );
