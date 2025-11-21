@@ -262,10 +262,10 @@ const Template8 = ({ resumeData }) => {
                         </React.Fragment>
                       ))}
                                       {resumeData?.location?.city && (
-                   "," + resumeData.location.city
+                   " " + resumeData.location.city
                 )}
                 {resumeData?.location?.postCode && (
-                  "," + resumeData?.location?.postCode
+                  " " + resumeData?.location?.postCode
                   
                 )}
                     </span>
