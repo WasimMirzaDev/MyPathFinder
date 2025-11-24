@@ -32,8 +32,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
 import CoverLetter from "./components/coverLetter";
 import html2pdf from "html2pdf.js";
-import { baseUrl } from "../../api/axios";
-import axios from "axios";
+import axios ,{ baseUrl} from "../../api/axios";
 
 
 
@@ -81,6 +80,7 @@ const coverLetterjson = {
 
 export default function CVBuilder() {
     const { id } = useParams();
+    const resumeRef = useRef();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader, selectedTemplate , fetchingResumeLoader } = useSelector((state) => state.resume);
@@ -721,6 +721,55 @@ const downloadAndClose = async () => {
     }
 }, [parsedResume, downloadPDFLoader, fetchingResumeLoader, selectedTemplate]);
 
+
+
+// const handleDownloadPDF = async () => {
+//     setDownloadPDFLoader(true);
+//     try {
+//         const fullHTML = `
+//             ${resumeRef.current.innerHTML}
+//         `;
+
+//         // Save changes first and wait for it to complete
+//         // if (parsedResume !== prevParsedResume) {
+//         //     await new Promise((resolve, reject) => {
+//         //         dispatch(updateResumeById({ id, parsedResume }))
+//         //             .unwrap()
+//         //             .then(() => {
+//         //                 setHasUnsavedChanges(false);
+//         //                 toast.success('Changes saved successfully!');
+//         //                 resolve();
+//         //             })
+//         //             .catch((error) => {
+//         //                 toast.error('Failed to save changes');
+//         //                 reject(error);
+//         //             });
+//         //     });
+//         // }
+
+
+//         const response = await axios.post('/export-resume', {
+//             html: fullHTML,
+//             format: 'pdf'
+//         }, {
+//             responseType: 'blob'
+//         });
+
+//     const blob = new Blob([response.data], { type: 'application/pdf' });
+
+//     const url = window.URL.createObjectURL(blob);
+//     const a = document.createElement('a');
+//     a.href = url;
+//     a.download = 'resume.pdf';
+//     a.click();
+//     window.URL.revokeObjectURL(url);
+
+//     setDownloadPDFLoader(false);
+//     } catch {
+//     }
+// }
+
+
 const handleDownloadPDF = async () => {
     setDownloadPDFLoader(true);
     try {
@@ -803,6 +852,9 @@ const handleDownloadPDF = async () => {
 };
 
 // Helper function to create PDF viewer with consistent layout
+
+
+
 const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
     // Create overlay container
     const overlay = document.createElement('div');
@@ -4041,6 +4093,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
 
                                     const TemplateComponent = selectedTemplateData.template;
                                     return (
+                                        <div ref={resumeRef}>
                                         <TemplateComponent
                                             resumeData={{
                                                 ...(parsedResume || {
@@ -4062,6 +4115,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                 }),
                                             }}
                                         />
+                                        </div>
                                     );
                                 })()}
                             </div>
