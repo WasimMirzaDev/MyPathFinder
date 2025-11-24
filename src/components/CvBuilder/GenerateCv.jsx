@@ -795,7 +795,7 @@ const handleDownloadPDF = async () => {
     // For all templates including Classic, Default, Luxe
     if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
         try {
-            const response = await axios.get(`${baseUrl}/api/resume/${id}/download?template=${selectedTemplate}`, {
+            const response = await axios.get(`/resume/${id}/download?template=${selectedTemplate}`, {
                 responseType: 'blob'
             });
             
