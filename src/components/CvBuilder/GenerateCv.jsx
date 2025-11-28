@@ -794,19 +794,7 @@ export default function CVBuilder() {
 
 
         try {
-            const response = await axios.get(`/resume/${id}/download-doc?template=${selectedTemplate}`, {
-                responseType: 'blob'
-            });
-
-            // Create a blob from the PDF stream
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-
-            // Create object URL
-            const fileURL = URL.createObjectURL(blob);
-
-            // Create PDF viewer with download option
-            createPDFViewer(fileURL, blob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
-
+            window.open(`${baseUrl}/api/resumes/${id}/download-doc`, '_blank');
         } catch (error) {
             console.error('Error loading PDF:', error);
             toast.error('Failed to generate PDF');
