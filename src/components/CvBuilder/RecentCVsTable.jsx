@@ -13,7 +13,7 @@ const RecentCVsTable = ({
 }) => {
   return (
     <>
-      <div className="table-responsive">
+      <div className="">
         <table className="table table-hover align-middle mb-0 cv-table">
           <thead className="table-light">
             <tr>
@@ -37,13 +37,13 @@ const RecentCVsTable = ({
                 <td className="text-end">
                   {/* Dashboard: dropdown | Modal: buttons */}
                   {compact ? (
-                    <Dropdown drop="start" align="end">
+                    <Dropdown drop="bottom" align="start">
                       <Dropdown.Toggle variant="outline-secondary" size="sm" className="p-2">
                         {/* <i className="bi bi-three-dots-vertical"></i> */}
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-settings-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z" /><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /></svg>
                       </Dropdown.Toggle>
 
-                      <Dropdown.Menu>
+                      <Dropdown.Menu className="dropdown-menu-end">
                         <Dropdown.Item href={`/cv-generate/${item?.resume?.id}`}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye me-1"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
                           View

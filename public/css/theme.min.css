@@ -629,7 +629,7 @@
   --phoenix-btn-hover-bg: rgba(186, 103, 239, 0.2);
   --phoenix-btn-hover-border-color: rgba(227, 194, 249, 0.226);
   --phoenix-btn-focus-shadow-rgb: 149, 149, 250;
-  --phoenix-btn-active-color: #000000;
+  --phoenix-btn-active-color: #fff;
   --phoenix-btn-active-bg: rgba(239, 220, 251, 0.312);
   --phoenix-btn-active-border-color: rgba(227, 194, 249, 0.226);
   --phoenix-btn-active-shadow: initial;
@@ -646,7 +646,7 @@
   --phoenix-btn-hover-bg: rgba(49, 55, 74, 0.8);
   --phoenix-btn-hover-border-color: rgba(101, 105, 119, 0.55);
   --phoenix-btn-focus-shadow-rgb: 102, 108, 125;
-  --phoenix-btn-active-color: #fff;
+  --phoenix-btn-active-color: #000;
   --phoenix-btn-active-bg: rgba(137, 141, 152, 0.6);
   --phoenix-btn-active-border-color: rgba(101, 105, 119, 0.55);
   --phoenix-btn-active-shadow: initial;
@@ -5115,7 +5115,7 @@ textarea.form-control.is-invalid {
   display: inline-block;
   margin-left: 0.255em;
   vertical-align: 0.255em;
-  content: "";
+  /* content: ""; */
   border-top: 0.3em solid;
   border-right: 0.3em solid transparent;
   border-bottom: 0;
@@ -26888,7 +26888,7 @@ fieldset:disabled .table-list .page,
   --phoenix-btn-hover-bg: #BA67EF;
   --phoenix-btn-hover-border-color: #BA67EF;
   --phoenix-btn-focus-shadow-rgb: 186, 103, 239;
-  --phoenix-btn-active-color: #fff;
+  --phoenix-btn-active-color: #000;
   --phoenix-btn-active-bg: #BA67EF;
   --phoenix-btn-active-border-color: #BA67EF;
   --phoenix-btn-active-shadow: initial;
@@ -26905,7 +26905,7 @@ fieldset:disabled .table-list .page,
   --phoenix-btn-hover-bg: #191E31;
   --phoenix-btn-hover-border-color: #191E31;
   --phoenix-btn-focus-shadow-rgb: 25, 30, 49;
-  --phoenix-btn-active-color: #fff;
+  --phoenix-btn-active-color: #000;
   --phoenix-btn-active-bg: #191E31;
   --phoenix-btn-active-border-color: #191E31;
   --phoenix-btn-active-shadow: initial;

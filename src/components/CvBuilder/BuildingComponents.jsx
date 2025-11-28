@@ -468,7 +468,7 @@ export default function BuildingComponents() {
             {/* Recent CVs Section */}
             {recentCVs?.data?.length > 0 ? (
               <div className="col-12 col-xl-6">
-                <Card className="border h-100 w-100 overflow-hidden position-relative">
+                <Card className="border h-100 w-100 position-relative">
                   <Card.Body className="position-relative">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <h5 className="mb-0">Recent CVs</h5>

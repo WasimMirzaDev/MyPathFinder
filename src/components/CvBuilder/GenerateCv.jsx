@@ -22,7 +22,8 @@ import {
 } from "../templates";
 import toggleImage from '../../assets/images/P-solid-rgb.svg';
 
-import { Row, Col, Button, Card } from 'react-bootstrap';
+import { Row, Col, Button, Card, Dropdown} from "react-bootstrap";
+
 import { useDispatch, useSelector } from "react-redux";
 import { setParsedResume, updateField, analyzeResumeAi, setSelectedTemplate, fetchResumeById, updateResumeById } from "../../features/resume/resumeSlice";
 import html2canvas from "html2canvas";
@@ -32,7 +33,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ClassicCoverLetterTemplate } from "../cover-letter-templates";
 import CoverLetter from "./components/coverLetter";
 import html2pdf from "html2pdf.js";
-import axios ,{ baseUrl} from "../../api/axios";
+import axios, { baseUrl } from "../../api/axios";
 
 
 
@@ -83,7 +84,7 @@ export default function CVBuilder() {
     const resumeRef = useRef();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader, selectedTemplate , fetchingResumeLoader } = useSelector((state) => state.resume);
+    const { parsedResume, AnalyseResumeData, AiResumeLoader, prevParsedResume, saveChangesLoader, selectedTemplate, fetchingResumeLoader } = useSelector((state) => state.resume);
     const { data } = useSelector((state) => state.user);
     const [zoom, setZoom] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -687,356 +688,356 @@ export default function CVBuilder() {
 
     const [downloadPDFLoader, setDownloadPDFLoader] = useState(false);
 
-// Add this ref at the top of your component with other hooks
-const hasAutoDownloaded = useRef(false);
+    // Add this ref at the top of your component with other hooks
+    const hasAutoDownloaded = useRef(false);
 
-// Update the auto-download effect
-// Add this state at the top with other states
-const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-
-
-
-useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shouldAutoDownload = urlParams.get('download') === 'true';
-
-    if (shouldAutoDownload && !downloadPDFLoader && parsedResume && !hasAutoDownloaded.current && !fetchingResumeLoader) {
-        hasAutoDownloaded.current = true; // Mark as downloaded
-const downloadAndClose = async () => {
-    setIsGeneratingPDF(true);
-    try {
-        // Show loading for at least 1 second for better UX
-        const loadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Start the download process
-        const downloadPromise = handleDownloadPDF();
-        
-        // Wait for both the minimum loading time and the download to complete
-        await Promise.all([loadingPromise, downloadPromise]);
-    } finally {
-        setIsGeneratingPDF(false);
-    }
-};
-        downloadAndClose();
-    }
-}, [parsedResume, downloadPDFLoader, fetchingResumeLoader, selectedTemplate]);
+    // Update the auto-download effect
+    // Add this state at the top with other states
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
 
 
-// const handleDownloadPDF = async () => {
-//     setDownloadPDFLoader(true);
-//     try {
-//         const fullHTML = `
-//             ${resumeRef.current.innerHTML}
-//         `;
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const shouldAutoDownload = urlParams.get('download') === 'true';
 
-//         // Save changes first and wait for it to complete
-//         // if (parsedResume !== prevParsedResume) {
-//         //     await new Promise((resolve, reject) => {
-//         //         dispatch(updateResumeById({ id, parsedResume }))
-//         //             .unwrap()
-//         //             .then(() => {
-//         //                 setHasUnsavedChanges(false);
-//         //                 toast.success('Changes saved successfully!');
-//         //                 resolve();
-//         //             })
-//         //             .catch((error) => {
-//         //                 toast.error('Failed to save changes');
-//         //                 reject(error);
-//         //             });
-//         //     });
-//         // }
+        if (shouldAutoDownload && !downloadPDFLoader && parsedResume && !hasAutoDownloaded.current && !fetchingResumeLoader) {
+            hasAutoDownloaded.current = true; // Mark as downloaded
+            const downloadAndClose = async () => {
+                setIsGeneratingPDF(true);
+                try {
+                    // Show loading for at least 1 second for better UX
+                    const loadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
 
+                    // Start the download process
+                    const downloadPromise = handleDownloadPDF();
 
-//         const response = await axios.post('/export-resume', {
-//             html: fullHTML,
-//             format: 'pdf'
-//         }, {
-//             responseType: 'blob'
-//         });
-
-//     const blob = new Blob([response.data], { type: 'application/pdf' });
-
-//     const url = window.URL.createObjectURL(blob);
-//     const a = document.createElement('a');
-//     a.href = url;
-//     a.download = 'resume.pdf';
-//     a.click();
-//     window.URL.revokeObjectURL(url);
-
-//     setDownloadPDFLoader(false);
-//     } catch {
-//     }
-// }
-
-const handleDownloadDocx = async () =>{
-    setDownloadPDFLoader(true);
-        try {
-        // Save changes first and wait for it to complete
-        if (parsedResume !== prevParsedResume) {
-            await new Promise((resolve, reject) => {
-                dispatch(updateResumeById({ id, parsedResume }))
-                    .unwrap()
-                    .then(() => {
-                        setHasUnsavedChanges(false);
-                        toast.success('Changes saved successfully!');
-                        resolve();
-                    })
-                    .catch((error) => {
-                        toast.error('Failed to save changes');
-                        reject(error);
-                    });
-            });
+                    // Wait for both the minimum loading time and the download to complete
+                    await Promise.all([loadingPromise, downloadPromise]);
+                } finally {
+                    setIsGeneratingPDF(false);
+                }
+            };
+            downloadAndClose();
         }
-    } catch {
-    }
+    }, [parsedResume, downloadPDFLoader, fetchingResumeLoader, selectedTemplate]);
+
+
+
+    // const handleDownloadPDF = async () => {
+    //     setDownloadPDFLoader(true);
+    //     try {
+    //         const fullHTML = `
+    //             ${resumeRef.current.innerHTML}
+    //         `;
+
+    //         // Save changes first and wait for it to complete
+    //         // if (parsedResume !== prevParsedResume) {
+    //         //     await new Promise((resolve, reject) => {
+    //         //         dispatch(updateResumeById({ id, parsedResume }))
+    //         //             .unwrap()
+    //         //             .then(() => {
+    //         //                 setHasUnsavedChanges(false);
+    //         //                 toast.success('Changes saved successfully!');
+    //         //                 resolve();
+    //         //             })
+    //         //             .catch((error) => {
+    //         //                 toast.error('Failed to save changes');
+    //         //                 reject(error);
+    //         //             });
+    //         //     });
+    //         // }
+
+
+    //         const response = await axios.post('/export-resume', {
+    //             html: fullHTML,
+    //             format: 'pdf'
+    //         }, {
+    //             responseType: 'blob'
+    //         });
+
+    //     const blob = new Blob([response.data], { type: 'application/pdf' });
+
+    //     const url = window.URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = 'resume.pdf';
+    //     a.click();
+    //     window.URL.revokeObjectURL(url);
+
+    //     setDownloadPDFLoader(false);
+    //     } catch {
+    //     }
+    // }
+
+    const handleDownloadDocx = async () => {
+        setDownloadPDFLoader(true);
+        try {
+            // Save changes first and wait for it to complete
+            if (parsedResume !== prevParsedResume) {
+                await new Promise((resolve, reject) => {
+                    dispatch(updateResumeById({ id, parsedResume }))
+                        .unwrap()
+                        .then(() => {
+                            setHasUnsavedChanges(false);
+                            toast.success('Changes saved successfully!');
+                            resolve();
+                        })
+                        .catch((error) => {
+                            toast.error('Failed to save changes');
+                            reject(error);
+                        });
+                });
+            }
+        } catch {
+        }
 
 
         try {
             const response = await axios.get(`/resume/${id}/download-doc?template=${selectedTemplate}`, {
                 responseType: 'blob'
             });
-            
+
             // Create a blob from the PDF stream
             const blob = new Blob([response.data], { type: 'application/pdf' });
-            
+
             // Create object URL
             const fileURL = URL.createObjectURL(blob);
-            
+
             // Create PDF viewer with download option
             createPDFViewer(fileURL, blob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
-            
+
         } catch (error) {
             console.error('Error loading PDF:', error);
             toast.error('Failed to generate PDF');
         } finally {
             setDownloadPDFLoader(false);
         }
-        return;    
-}
-
-
-const handleDownloadPDF = async () => {
-    setDownloadPDFLoader(true);
-    try {
-        // Save changes first and wait for it to complete
-        if (parsedResume !== prevParsedResume) {
-            await new Promise((resolve, reject) => {
-                dispatch(updateResumeById({ id, parsedResume }))
-                    .unwrap()
-                    .then(() => {
-                        setHasUnsavedChanges(false);
-                        toast.success('Changes saved successfully!');
-                        resolve();
-                    })
-                    .catch((error) => {
-                        toast.error('Failed to save changes');
-                        reject(error);
-                    });
-            });
-        }
-    } catch {
+        return;
     }
 
-    // For all templates including Classic, Default, Luxe
-    if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
+
+    const handleDownloadPDF = async () => {
+        setDownloadPDFLoader(true);
         try {
-            const response = await axios.get(`/resume/${id}/download?template=${selectedTemplate}`, {
-                responseType: 'blob'
-            });
-            
-            // Create a blob from the PDF stream
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-            
+            // Save changes first and wait for it to complete
+            if (parsedResume !== prevParsedResume) {
+                await new Promise((resolve, reject) => {
+                    dispatch(updateResumeById({ id, parsedResume }))
+                        .unwrap()
+                        .then(() => {
+                            setHasUnsavedChanges(false);
+                            toast.success('Changes saved successfully!');
+                            resolve();
+                        })
+                        .catch((error) => {
+                            toast.error('Failed to save changes');
+                            reject(error);
+                        });
+                });
+            }
+        } catch {
+        }
+
+        // For all templates including Classic, Default, Luxe
+        if (["Classic", "Default", "Luxe"].includes(selectedTemplate)) {
+            try {
+                const response = await axios.get(`/resume/${id}/download?template=${selectedTemplate}`, {
+                    responseType: 'blob'
+                });
+
+                // Create a blob from the PDF stream
+                const blob = new Blob([response.data], { type: 'application/pdf' });
+
+                // Create object URL
+                const fileURL = URL.createObjectURL(blob);
+
+                // Create PDF viewer with download option
+                createPDFViewer(fileURL, blob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
+
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                toast.error('Failed to generate PDF');
+            } finally {
+                setDownloadPDFLoader(false);
+            }
+            return;
+        }
+
+        // For other templates that use html2pdf (if any)
+        if (!cvRef.current) {
+            setDownloadPDFLoader(false);
+            return;
+        }
+
+        const element = cvRef.current;
+        const opt = {
+            margin: 5,
+            filename: `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+            pagebreak: { mode: ["css", "legacy"] }
+        };
+
+        try {
+            // Generate PDF as blob instead of saving directly
+            const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
+
             // Create object URL
-            const fileURL = URL.createObjectURL(blob);
-            
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
             // Create PDF viewer with download option
-            createPDFViewer(fileURL, blob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
-            
+            createPDFViewer(pdfUrl, pdfBlob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
+
         } catch (error) {
-            console.error('Error loading PDF:', error);
+            console.error('Error generating PDF with html2pdf:', error);
             toast.error('Failed to generate PDF');
         } finally {
             setDownloadPDFLoader(false);
         }
-        return;
-    }
-    
-    // For other templates that use html2pdf (if any)
-    if (!cvRef.current) {
-        setDownloadPDFLoader(false);
-        return;
-    }
-
-    const element = cvRef.current;
-    const opt = {
-        margin: 5,
-        filename: `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"] }
     };
 
-    try {
-        // Generate PDF as blob instead of saving directly
-        const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
-        
-        // Create object URL
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        
-        // Create PDF viewer with download option
-        createPDFViewer(pdfUrl, pdfBlob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
-        
-    } catch (error) {
-        console.error('Error generating PDF with html2pdf:', error);
-        toast.error('Failed to generate PDF');
-    } finally {
-        setDownloadPDFLoader(false);
-    }
-};
-
-// Helper function to create PDF viewer with consistent layout
+    // Helper function to create PDF viewer with consistent layout
 
 
 
-const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
-    // Create overlay container
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'white';
-    overlay.style.zIndex = '9998';
-    overlay.id = 'pdf-overlay';
-    
-    // Create iframe to display PDF
-    const iframe = document.createElement('iframe');
-    iframe.style.width = '100%';
-    iframe.style.height = 'calc(100vh - 60px)'; // Leave space for header
-    iframe.style.border = 'none';
-    iframe.style.position = 'fixed';
-    iframe.style.top = '60px'; // Space for header
-    iframe.style.left = '0';
-    iframe.style.zIndex = '9999';
-    iframe.style.background = 'white';
-    iframe.src = pdfUrl;
-    
-    // Create header container for buttons
-    const header = document.createElement('div');
-    header.style.position = 'fixed';
-    header.style.top = '0';
-    header.style.left = '0';
-    header.style.width = '100%';
-    header.style.height = '60px';
-    header.style.backgroundColor = '#f8f9fa';
-    header.style.borderBottom = '1px solid #dee2e6';
-    header.style.zIndex = '10000';
-    header.style.display = 'flex';
-    header.style.alignItems = 'center';
-    header.style.justifyContent = 'space-between';
-    header.style.padding = '0 20px';
-    
-    // Create title
-    const title = document.createElement('div');
-    title.textContent = 'PDF Preview';
-    title.style.fontSize = '18px';
-    title.style.fontWeight = 'bold';
-    title.style.color = '#7a1e37';
-    
-    // Create buttons container
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.style.display = 'flex';
-    buttonsContainer.style.gap = '10px';
-    
-    // Create download button
-    const downloadButton = document.createElement('button');
-    downloadButton.textContent = '⬇ Download PDF';
-    downloadButton.style.padding = '10px 15px';
-    downloadButton.style.backgroundColor = '#28a745';
-    downloadButton.style.color = 'white';
-    downloadButton.style.border = 'none';
-    downloadButton.style.borderRadius = '5px';
-    downloadButton.style.cursor = 'pointer';
-    downloadButton.style.fontSize = '14px';
-    downloadButton.style.fontWeight = 'bold';
-    downloadButton.onclick = () => {
-        // Create download link
-        const downloadLink = document.createElement('a');
-        downloadLink.href = pdfUrl;
-        downloadLink.download = filename;
-        downloadLink.style.display = 'none';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    };
-    
-    // Create close button
-    const closeButton = document.createElement('button');
-    closeButton.textContent = '✕ Close PDF';
-    closeButton.style.padding = '10px 15px';
-    closeButton.style.backgroundColor = '#7a1e37';
-    closeButton.style.color = 'white';
-    closeButton.style.border = 'none';
-    closeButton.style.borderRadius = '5px';
-    closeButton.style.cursor = 'pointer';
-    closeButton.style.fontSize = '14px';
-    closeButton.style.fontWeight = 'bold';
-    closeButton.onclick = () => {
-        // Remove all elements
-        document.body.removeChild(overlay);
-        document.body.removeChild(iframe);
-        document.body.removeChild(header);
-        // Restore body scroll
-        document.body.style.overflow = '';
-        // Clean up URL
-        URL.revokeObjectURL(pdfUrl);
-    };
-    
-    // Add buttons to container
-    buttonsContainer.appendChild(downloadButton);
-    buttonsContainer.appendChild(closeButton);
-    
-    // Add title and buttons to header
-    header.appendChild(title);
-    header.appendChild(buttonsContainer);
-    
-    // Add elements to page
-    document.body.appendChild(overlay);
-    document.body.appendChild(iframe);
-    document.body.appendChild(header);
-    
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-    
-    // Clean up URL when viewer is closed
-    const cleanup = () => {
-        if (document.body.contains(header)) {
+    const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
+        // Create overlay container
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'white';
+        overlay.style.zIndex = '9998';
+        overlay.id = 'pdf-overlay';
+
+        // Create iframe to display PDF
+        const iframe = document.createElement('iframe');
+        iframe.style.width = '100%';
+        iframe.style.height = 'calc(100vh - 60px)'; // Leave space for header
+        iframe.style.border = 'none';
+        iframe.style.position = 'fixed';
+        iframe.style.top = '60px'; // Space for header
+        iframe.style.left = '0';
+        iframe.style.zIndex = '9999';
+        iframe.style.background = 'white';
+        iframe.src = pdfUrl;
+
+        // Create header container for buttons
+        const header = document.createElement('div');
+        header.style.position = 'fixed';
+        header.style.top = '0';
+        header.style.left = '0';
+        header.style.width = '100%';
+        header.style.height = '60px';
+        header.style.backgroundColor = '#f8f9fa';
+        header.style.borderBottom = '1px solid #dee2e6';
+        header.style.zIndex = '10000';
+        header.style.display = 'flex';
+        header.style.alignItems = 'center';
+        header.style.justifyContent = 'space-between';
+        header.style.padding = '0 20px';
+
+        // Create title
+        const title = document.createElement('div');
+        title.textContent = 'PDF Preview';
+        title.style.fontSize = '18px';
+        title.style.fontWeight = 'bold';
+        title.style.color = '#7a1e37';
+
+        // Create buttons container
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.style.display = 'flex';
+        buttonsContainer.style.gap = '10px';
+
+        // Create download button
+        const downloadButton = document.createElement('button');
+        downloadButton.textContent = '⬇ Download PDF';
+        downloadButton.style.padding = '10px 15px';
+        downloadButton.style.backgroundColor = '#28a745';
+        downloadButton.style.color = 'white';
+        downloadButton.style.border = 'none';
+        downloadButton.style.borderRadius = '5px';
+        downloadButton.style.cursor = 'pointer';
+        downloadButton.style.fontSize = '14px';
+        downloadButton.style.fontWeight = 'bold';
+        downloadButton.onclick = () => {
+            // Create download link
+            const downloadLink = document.createElement('a');
+            downloadLink.href = pdfUrl;
+            downloadLink.download = filename;
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        };
+
+        // Create close button
+        const closeButton = document.createElement('button');
+        closeButton.textContent = '✕ Close PDF';
+        closeButton.style.padding = '10px 15px';
+        closeButton.style.backgroundColor = '#7a1e37';
+        closeButton.style.color = 'white';
+        closeButton.style.border = 'none';
+        closeButton.style.borderRadius = '5px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.fontSize = '14px';
+        closeButton.style.fontWeight = 'bold';
+        closeButton.onclick = () => {
+            // Remove all elements
             document.body.removeChild(overlay);
             document.body.removeChild(iframe);
             document.body.removeChild(header);
+            // Restore body scroll
             document.body.style.overflow = '';
+            // Clean up URL
             URL.revokeObjectURL(pdfUrl);
-        }
+        };
+
+        // Add buttons to container
+        buttonsContainer.appendChild(downloadButton);
+        buttonsContainer.appendChild(closeButton);
+
+        // Add title and buttons to header
+        header.appendChild(title);
+        header.appendChild(buttonsContainer);
+
+        // Add elements to page
+        document.body.appendChild(overlay);
+        document.body.appendChild(iframe);
+        document.body.appendChild(header);
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+
+        // Clean up URL when viewer is closed
+        const cleanup = () => {
+            if (document.body.contains(header)) {
+                document.body.removeChild(overlay);
+                document.body.removeChild(iframe);
+                document.body.removeChild(header);
+                document.body.style.overflow = '';
+                URL.revokeObjectURL(pdfUrl);
+            }
+        };
+
+        // Also allow closing with Escape key
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') {
+                cleanup();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+
+        // Store cleanup function on elements for potential external use
+        overlay.cleanup = cleanup;
+        header.cleanup = cleanup;
     };
-    
-    // Also allow closing with Escape key
-    const handleEscape = (event) => {
-        if (event.key === 'Escape') {
-            cleanup();
-            document.removeEventListener('keydown', handleEscape);
-        }
-    };
-    
-    document.addEventListener('keydown', handleEscape);
-    
-    // Store cleanup function on elements for potential external use
-    overlay.cleanup = cleanup;
-    header.cleanup = cleanup;
-};
 
     const previewContainerRef = useRef(null);
 
@@ -1800,7 +1801,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 )
                                                                             }
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M5 12l5 5l10 -10" />
                                                                             </svg>
@@ -1827,7 +1828,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
                                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
@@ -2215,8 +2216,8 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                         height="28"
                                                                     /> */}
                                                                     {!parsedResume?.employmentDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingEmploymentTitle ? (
@@ -2265,7 +2266,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 )
                                                                             }
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M5 12l5 5l10 -10" />
                                                                             </svg>
@@ -2292,7 +2293,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
                                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
@@ -2632,8 +2633,8 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                         height="28"
                                                                     /> */}
                                                                     {!parsedResume?.educationDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingEducationTitle ? (
@@ -2681,7 +2682,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 )
                                                                             }
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M5 12l5 5l10 -10" />
                                                                             </svg>
@@ -2707,7 +2708,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
                                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
@@ -2950,8 +2951,8 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                         height="28"
                                                                     /> */}
                                                                     {!parsedResume?.skillsDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingSkillsTitle ? (
@@ -3000,7 +3001,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 )
                                                                             }
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M5 12l5 5l10 -10" />
                                                                             </svg>
@@ -3027,7 +3028,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
                                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
@@ -3185,8 +3186,8 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                         height="28"
                                                                     /> */}
                                                                     {!parsedResume?.languagesDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingLanguagesTitle ? (
@@ -3235,7 +3236,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 )
                                                                             }
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M5 12l5 5l10 -10" />
                                                                             </svg>
@@ -3262,7 +3263,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
                                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
@@ -3391,8 +3392,8 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                         height="28"
                                                                     /> */}
                                                                     {!parsedResume?.hobbiesDisabled ?
-                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
-                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
+                                                                        (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>)
+                                                                        : (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg>)
                                                                     }
                                                                 </button>
                                                                 {parsedResume?.editingHobbiesTitle ? (
@@ -3440,7 +3441,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 )
                                                                             }
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-check">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M5 12l5 5l10 -10" />
                                                                             </svg>
@@ -3466,7 +3467,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#222222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
                                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
@@ -3523,7 +3524,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                                                                         dispatch(updateField({ path: "hobbies", value: updatedHobbies }));
                                                                                     }}
                                                                                 >
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
                                                                                 </button>
                                                                             </span>
                                                                         ))}
@@ -4100,7 +4101,7 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                         <FiUpload size={14} /> 
                                         <span className="d-none d-xl-inline ms-1">New Upload</span>
                                         </Button> */}
-                                        <Button
+                                        {/* <Button
                                             variant="outline-primary"
                                             size="sm"
                                             onClick={handleDownloadPDF}
@@ -4109,7 +4110,24 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                         >
                                             {downloadPDFLoader ? <FiLoader size={14} className="animate-spin" /> : <FiDownload size={14} />}
                                             <span className="ms-1">{downloadPDFLoader ? "Generating..." : "Download PDF"}</span>
-                                        </Button>
+                                        </Button> */}
+                                        <Dropdown drop="bottom" align="start">
+                                            <Dropdown.Toggle variant="outline-primary" size="sm" className="btn btn-outline-primary">
+                                                Download
+                                            </Dropdown.Toggle>
+
+                                            <Dropdown.Menu className="dropdown-menu-end">
+                                                <Dropdown.Item onClick={handleDownloadPDF}>
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-file-type-pdf me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /><path d="M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6" /><path d="M17 18h2" /><path d="M20 15h-3v6" /><path d="M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" /></svg>
+                                                    Download as PDF
+                                                </Dropdown.Item>
+
+                                                <Dropdown.Item onClick={handleDownloadDocx}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-file-type-docx me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /><path d="M2 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" /><path d="M17 16.5a1.5 1.5 0 0 0 -3 0v3a1.5 1.5 0 0 0 3 0" /><path d="M9.5 15a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -3 0v-3a1.5 1.5 0 0 1 1.5 -1.5z" /><path d="M19.5 15l3 6" /><path d="M19.5 21l3 -6" /></svg>
+                                                    Download as DOCX
+                                                </Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
                                     </div>
                                 </div>
 
@@ -4140,27 +4158,27 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                                     const TemplateComponent = selectedTemplateData.template;
                                     return (
                                         <div ref={resumeRef}>
-                                        <TemplateComponent
-                                            resumeData={{
-                                                ...(parsedResume || {
-                                                    candidateName: [{ firstName: '', familyName: '' }],
-                                                    headline: '',
-                                                    summary: [{ paragraph: '' }],
-                                                    phoneNumber: [{ formattedNumber: '' }],
-                                                    email: [''],
-                                                    location: { formatted: '' },
-                                                    workExperience: [],
-                                                    education: [],
-                                                    skill: [],
-                                                    profilePic: null,
-                                                    website: [''],
-                                                    certifications: [],
-                                                    languages: [],
-                                                    hobbies: [],
-                                                    customSections: [],
-                                                }),
-                                            }}
-                                        />
+                                            <TemplateComponent
+                                                resumeData={{
+                                                    ...(parsedResume || {
+                                                        candidateName: [{ firstName: '', familyName: '' }],
+                                                        headline: '',
+                                                        summary: [{ paragraph: '' }],
+                                                        phoneNumber: [{ formattedNumber: '' }],
+                                                        email: [''],
+                                                        location: { formatted: '' },
+                                                        workExperience: [],
+                                                        education: [],
+                                                        skill: [],
+                                                        profilePic: null,
+                                                        website: [''],
+                                                        certifications: [],
+                                                        languages: [],
+                                                        hobbies: [],
+                                                        customSections: [],
+                                                    }),
+                                                }}
+                                            />
                                         </div>
                                     );
                                 })()}
@@ -4206,67 +4224,67 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                     </Card> */}
                 </Col>
             </div>
-{isGeneratingPDF && (
-    <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 9999,
-        backdropFilter: 'blur(5px)'
-    }}>
-        <div style={{
-            backgroundColor: 'white',
-            padding: '2rem',
-            borderRadius: '12px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-            textAlign: 'center',
-            maxWidth: '400px',
-            width: '90%'
-        }}>
-            <div style={{
-                display: 'inline-block',
-                width: '50px',
-                height: '50px',
-                border: '4px solid rgba(122, 30, 55, 0.2)',
-                borderRadius: '50%',
-                borderTopColor: '#7a1e37',
-                animation: 'spin 1s ease-in-out infinite',
-                marginBottom: '1rem'
-            }} />
-            <h3 style={{ 
-                color: '#333',
-                marginBottom: '0.5rem',
-                fontWeight: '600'
-            }}>Generating Your CV</h3>
-            <p style={{ 
-                color: '#666',
-                margin: '0.5rem 0 1rem'
-            }}>Please wait while we prepare your document...</p>
-            <div style={{
-                height: '4px',
-                width: '100%',
-                backgroundColor: '#f0f0f0',
-                borderRadius: '2px',
-                overflow: 'hidden',
-                marginTop: '1rem'
-            }}>
+            {isGeneratingPDF && (
                 <div style={{
-                    height: '100%',
-                    width: '100%',
-                    backgroundColor: '#7a1e37',
-                    borderRadius: '2px',
-                    animation: 'loading 1.5s ease-in-out infinite'
-                }} />
-            </div>
-        </div>
-        <style jsx>{`
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 9999,
+                    backdropFilter: 'blur(5px)'
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '2rem',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                        textAlign: 'center',
+                        maxWidth: '400px',
+                        width: '90%'
+                    }}>
+                        <div style={{
+                            display: 'inline-block',
+                            width: '50px',
+                            height: '50px',
+                            border: '4px solid rgba(122, 30, 55, 0.2)',
+                            borderRadius: '50%',
+                            borderTopColor: '#7a1e37',
+                            animation: 'spin 1s ease-in-out infinite',
+                            marginBottom: '1rem'
+                        }} />
+                        <h3 style={{
+                            color: '#333',
+                            marginBottom: '0.5rem',
+                            fontWeight: '600'
+                        }}>Generating Your CV</h3>
+                        <p style={{
+                            color: '#666',
+                            margin: '0.5rem 0 1rem'
+                        }}>Please wait while we prepare your document...</p>
+                        <div style={{
+                            height: '4px',
+                            width: '100%',
+                            backgroundColor: '#f0f0f0',
+                            borderRadius: '2px',
+                            overflow: 'hidden',
+                            marginTop: '1rem'
+                        }}>
+                            <div style={{
+                                height: '100%',
+                                width: '100%',
+                                backgroundColor: '#7a1e37',
+                                borderRadius: '2px',
+                                animation: 'loading 1.5s ease-in-out infinite'
+                            }} />
+                        </div>
+                    </div>
+                    <style jsx>{`
             @keyframes spin {
                 to { transform: rotate(360deg); }
             }
@@ -4275,8 +4293,8 @@ const createPDFViewer = (pdfUrl, pdfBlob, filename) => {
                 100% { transform: translateX(100%); }
             }
         `}</style>
-    </div>
-)}
+                </div>
+            )}
         </div>
     );
 }
