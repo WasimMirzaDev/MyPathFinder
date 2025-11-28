@@ -302,6 +302,7 @@ const Template5 = ({ resumeData }) => {
 
 
           {/* Social Links */}
+          {(resumeData?.socialLinks?.github || resumeData?.socialLinks?.linkedin || resumeData?.socialLinks?.website) && (
           <div>
               <section style={styles.sidebarSection}>
                 <h3 style={styles.sidebarTitle}>Social Links</h3>
@@ -322,6 +323,7 @@ const Template5 = ({ resumeData }) => {
                 )}
               </section>
           </div>
+          )}
 
 
           {/* Languages */}

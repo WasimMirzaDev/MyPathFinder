@@ -187,7 +187,7 @@ const Template11 = ({ resumeData }) => {
         </p>
       </section>
 
-    {!(resumeData?.educationDisabled) && (
+    {!(resumeData?.educationDisabled) && (resumeData?.education?.length > 0) && (
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>{resumeData?.educationTitle || "Education"}</h2>
         {resumeData?.education?.map((edu, index) => (
@@ -233,7 +233,7 @@ const Template11 = ({ resumeData }) => {
       )}
 
 
-      {!(resumeData?.employmentDisabled) && (
+      {!(resumeData?.employmentDisabled) && (resumeData?.workExperience?.length > 0) && (
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>{resumeData?.employmentTitle || "Employment"}</h2>
         {resumeData?.workExperience?.map((job, index) => (

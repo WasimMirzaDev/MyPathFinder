@@ -301,7 +301,7 @@ const Template9 = ({ resumeData }) => {
           </>
         )}
 
-        {!(resumeData?.skillsDisabled) && (
+        {!(resumeData?.skillsDisabled) && (resumeData?.skill?.length > 0) && (
           <div style={{ marginBottom: '30px' }}>
             <h2 style={styles.sectionTitle}>
               {resumeData?.skillsTitle || 'Skills'}
@@ -318,7 +318,7 @@ const Template9 = ({ resumeData }) => {
           </div>
         )}
 
-          {!(resumeData?.languagesDisabled) && (
+          {!(resumeData?.languagesDisabled) && (resumeData?.languages?.length > 0) && (
           <div style={{ marginBottom: '30px' }}>
             <h2 style={styles.sectionTitle}>
               {resumeData?.languagesTitle || 'Languages'}

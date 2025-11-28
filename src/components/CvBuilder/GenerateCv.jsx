@@ -769,6 +769,52 @@ const downloadAndClose = async () => {
 //     }
 // }
 
+const handleDownloadDocx = async () =>{
+    setDownloadPDFLoader(true);
+        try {
+        // Save changes first and wait for it to complete
+        if (parsedResume !== prevParsedResume) {
+            await new Promise((resolve, reject) => {
+                dispatch(updateResumeById({ id, parsedResume }))
+                    .unwrap()
+                    .then(() => {
+                        setHasUnsavedChanges(false);
+                        toast.success('Changes saved successfully!');
+                        resolve();
+                    })
+                    .catch((error) => {
+                        toast.error('Failed to save changes');
+                        reject(error);
+                    });
+            });
+        }
+    } catch {
+    }
+
+
+        try {
+            const response = await axios.get(`/resume/${id}/download-doc?template=${selectedTemplate}`, {
+                responseType: 'blob'
+            });
+            
+            // Create a blob from the PDF stream
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            
+            // Create object URL
+            const fileURL = URL.createObjectURL(blob);
+            
+            // Create PDF viewer with download option
+            createPDFViewer(fileURL, blob, `${parsedResume?.candidateName?.[0]?.firstName || "CV"}.pdf`);
+            
+        } catch (error) {
+            console.error('Error loading PDF:', error);
+            toast.error('Failed to generate PDF');
+        } finally {
+            setDownloadPDFLoader(false);
+        }
+        return;    
+}
+
 
 const handleDownloadPDF = async () => {
     setDownloadPDFLoader(true);

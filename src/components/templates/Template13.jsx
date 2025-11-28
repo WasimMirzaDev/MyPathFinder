@@ -245,7 +245,7 @@ const Template13 = ({ resumeData }) => {
       )}
 
 
-        {!(resumeData?.skillsDisabled) && (
+        {!(resumeData?.skillsDisabled) && (resumeData?.skill?.length > 0) && (
           <div style={{ marginBottom: '30px' }}>
             <h2 style={styles.sectionTitle}>
               {resumeData?.skillsTitle || 'Skills'}

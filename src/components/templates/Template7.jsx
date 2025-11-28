@@ -141,12 +141,16 @@ const Template7 = ({ resumeData }) => {
       {/* Left Sidebar */}
       <div style={styles.leftSidebar}>
 
-        <h2 style={styles.sidebarTitle}>Social Links</h2>
-        <ul style={styles.sidebarList}>
-          {resumeData?.socialLinks?.github ? <li style={{fontSize: '14px'}}> {resumeData.socialLinks.github}</li> : ''}
-          {resumeData?.socialLinks?.linkedin ? <li style={{fontSize: '14px'}}> {resumeData.socialLinks.linkedin}</li> : ''}
-          {resumeData?.socialLinks?.website ? <li style={{fontSize: '14px'}}> {resumeData.socialLinks.website}</li> : ''}
-        </ul>
+        {(resumeData?.socialLinks?.github || resumeData?.socialLinks?.linkedin || resumeData?.socialLinks?.website) && (
+          <div>
+            <h2 style={styles.sidebarTitle}>Social Links</h2>
+            <ul style={styles.sidebarList}>
+              {resumeData?.socialLinks?.github && <li style={{fontSize: '14px'}}> {resumeData.socialLinks.github}</li>}
+              {resumeData?.socialLinks?.linkedin && <li style={{fontSize: '14px'}}> {resumeData.socialLinks.linkedin}</li>}
+              {resumeData?.socialLinks?.website && <li style={{fontSize: '14px'}}> {resumeData.socialLinks.website}</li>}
+            </ul>
+          </div>
+        )}
         {/* Languages */}
         {resumeData?.languages?.length > 0 && !(resumeData?.languagesDisabled) && (
           <div style={{ marginBottom: '30px' }}>
@@ -162,7 +166,7 @@ const Template7 = ({ resumeData }) => {
 
 
 {/* Skills Section */}
-{!(resumeData?.skillsDisabled) && (
+{!(resumeData?.skillsDisabled) && (resumeData?.skill?.length > 0) && (
   <div style={{ marginBottom: '30px' }}>
     <h3 style={styles.sidebarTitle}>{resumeData?.skillsTitle || "SKILLS"}</h3>
     <ul style={styles.sidebarList}>
@@ -259,7 +263,7 @@ const Template7 = ({ resumeData }) => {
         )}
 
         {/* Education */}
-        {!(resumeData?.educationDisabled) && (
+        {!(resumeData?.educationDisabled) && (resumeData?.education?.length > 0) && (
         <div>
           <h2 style={styles.sectionTitle}>{resumeData?.educationTitle ||"EDUCATION"}</h2>
           
