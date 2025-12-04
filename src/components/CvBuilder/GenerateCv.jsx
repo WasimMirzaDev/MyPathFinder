@@ -4101,7 +4101,7 @@ export default function CVBuilder() {
                                         </Button> */}
                                         <Dropdown drop="bottom" align="start">
                                             <Dropdown.Toggle variant="outline-primary" size="sm" className="btn btn-outline-primary">
-                                                Download
+                                                {downloadPDFLoader ? "Generating..." : "Download"}
                                             </Dropdown.Toggle>
 
                                             <Dropdown.Menu className="dropdown-menu-end">
